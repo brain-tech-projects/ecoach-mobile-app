@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
+import 'package:ecoach_pro/core/constants/app_config.dart';
 import 'package:ecoach_pro/core/storage/local_storage.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 
@@ -31,10 +32,11 @@ class SplashController extends GetxController {
       );
     }
 
-    // TODO(auth): if a valid session token exists, go to the home route.
-    final next = _storage.isOnboardingCompleted
-        ? AppRoutes.login
-        : AppRoutes.onboarding;
+    // While AppConfig.alwaysShowOnboarding is true, onboarding is shown on
+    // every launch (demo / QA). Later it is shown on first launch only.
+    final showOnboarding =
+        AppConfig.alwaysShowOnboarding || !_storage.isOnboardingCompleted;
+    final next = showOnboarding ? AppRoutes.onboarding : AppRoutes.dashboard;
     Get.offNamed<void>(next);
   }
 }

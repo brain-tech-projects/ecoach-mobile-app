@@ -34,6 +34,7 @@ flutter:
   assets:
     # Resolution-aware: logo.png (1x), 2.0x/logo.png, 3.0x/logo.png
     - assets/images/
+    - assets/images/icons/
 
   fonts:
     - family: Poppins

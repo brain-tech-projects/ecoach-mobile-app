@@ -44,7 +44,7 @@ class OnboardingPage extends GetView<OnboardingController> {
             Obx(
               () => OnboardingActionButton(
                 label: controller.isLastPage ? AppStrings.continueLabel : AppStrings.skip,
-                onPressed: controller.continueOnboarding,
+                onPressed: controller.complete,
                 scale: r.scale,
               ),
             ),

@@ -1,3 +1,5 @@
+
+
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/foundation.dart';
@@ -20,16 +22,22 @@ Future<void> main() async {
       stackTrace: details.stack,
     );
   };
+
   PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
-    AppLogger.error('Uncaught async error', error: error, stackTrace: stack);
+    AppLogger.error(
+      'Uncaught async error',
+      error: error,
+      stackTrace: stack,
+    );
     return true;
   };
 
   // Phones are portrait-only (matches the web design).
-  await SystemChrome.setPreferredOrientations(const [
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   final storage = await LocalStorage.create();

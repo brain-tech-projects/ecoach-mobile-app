@@ -46,6 +46,9 @@ class Responsive {
   /// Content never grows wider than the design width (keeps tablets tidy).
   double get contentMaxWidth => designWidth * scale;
 
+  /// Empty space on each side when the screen is wider than the design.
+  double get gutter => math.max(0.0, (size.width - contentMaxWidth) / 2);
+
   bool get isTablet => size.shortestSide >= 600;
 }
 

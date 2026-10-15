@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 
 /// Base styles at the 393 pt design width. Always apply
-/// `.scaled(context.r.scale)` so they track the screen size.
+/// `.scaled(r.scale)` so they track the screen size.
 abstract final class AppTextStyles {
   static const String fontFamily = 'Poppins';
 
+  // ---- Onboarding ----------------------------------------------------------
   static const TextStyle onboardingTitle = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
@@ -14,7 +15,6 @@ abstract final class AppTextStyles {
     height: 1.5,
     color: AppColors.white,
   );
-
   static const TextStyle onboardingBody = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
@@ -22,7 +22,6 @@ abstract final class AppTextStyles {
     height: 1.5,
     color: AppColors.white,
   );
-
   static const TextStyle pill = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
@@ -30,13 +29,156 @@ abstract final class AppTextStyles {
     height: 1.5,
     color: AppColors.accent,
   );
-
   static const TextStyle action = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
     height: 1.5,
     color: AppColors.accent,
+  );
+
+  // ---- Auth ----------------------------------------------------------------
+  static const TextStyle authTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle authSubtitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.625,
+    color: AppColors.white,
+  );
+  static const TextStyle optionLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle stepCounter = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle buttonLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.black,
+  );
+  static const TextStyle buttonLabelSmall = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.black,
+  );
+  static const TextStyle fieldText = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle fieldHint = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.hint,
+  );
+  static const TextStyle link = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+
+  // ---- Dashboard -----------------------------------------------------------
+  static const TextStyle dashWelcome = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 1.3,
+    color: AppColors.white,
+  );
+  static const TextStyle dashName = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+    color: AppColors.white,
+  );
+  static const TextStyle heroTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle heroSubtitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle heroButton = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.black,
+  );
+  static const TextStyle statValue = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.accent,
+  );
+  static const TextStyle statLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle sectionTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle programTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle programDesc = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.descGrey,
+  );
+  static const TextStyle navLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
   );
 }
 

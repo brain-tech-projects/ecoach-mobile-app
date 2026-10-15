@@ -22,3 +22,4 @@ abstract final class OnboardingContent {
     ),
   ];
 }
+          
