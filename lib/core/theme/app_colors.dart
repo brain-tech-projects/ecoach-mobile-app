@@ -24,7 +24,7 @@ abstract final class AppColors {
 
   // Auth: role selection
   static const Color selectGreen = Color(0xFF4AD82B);
-  static const Color selectedFill = Color(0x294AD82B);
+  static const Color selectedFill = Color(0x214AD82B);
   static const Color unselectedBorder = Color(0xFF6C757D);
   static const Color checkIdle = Color(0xFF54676A);
   static const Color checkMark = Color(0xFF0E2C33);
@@ -47,4 +47,11 @@ abstract final class AppColors {
   static const Color navBg = Color(0xFF233B42);
   static const Color navBorder = Color(0xFF6E7172);
   static const Color descGrey = Color(0xFFB9B9B9);
+
+  // Sign-up flow
+  static const Color error = Color(0xFFE5283C);
+  static const Color textMuted = Color(0xFFC1C1C1);
+  static const Color countryFill = Color(0xFF233A40);
+  static const Color countryBorder = Color(0xFF3D5C61);
+  static const Color checkboxBorder = Color(0xFF586F6F);
 }

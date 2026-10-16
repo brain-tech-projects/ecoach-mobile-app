@@ -42,7 +42,7 @@ abstract final class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w600,
-    height: 1.5,
+    height: 1.4,
     color: AppColors.white,
   );
   static const TextStyle authSubtitle = TextStyle(
@@ -179,6 +179,85 @@ abstract final class AppTextStyles {
     fontWeight: FontWeight.w500,
     height: 1.5,
     color: AppColors.white,
+  );
+
+  // ---- Sign-up flow / OTP ---------------------------------------------------
+  static const TextStyle fieldLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle fieldError = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.error,
+  );
+  static const TextStyle countryValue = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle noteText = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.46,
+    color: AppColors.white,
+  );
+  static const TextStyle ageNumber = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 23,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle otpTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+    color: AppColors.white,
+  );
+  static const TextStyle otpBody = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.83,
+    color: AppColors.textMuted,
+  );
+  static const TextStyle otpEmail = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.83,
+    color: AppColors.accent,
+  );
+  static const TextStyle otpDigit = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+    color: AppColors.white,
+  );
+  static const TextStyle footerText = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle footerLink = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.accent,
   );
 }
 

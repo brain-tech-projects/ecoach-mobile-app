@@ -12,10 +12,18 @@ import 'package:ecoach_pro/core/widgets/app_background.dart';
 /// Content starts at the design's y = 20 pt (shifted below the status bar on
 /// notched phones), so design offsets can be used as `designY - 20`.
 class AuthScaffold extends StatelessWidget {
-  const AuthScaffold({super.key, required this.child, required this.onBack});
+  const AuthScaffold({
+    super.key,
+    required this.child,
+    required this.onBack,
+    this.footer,
+  });
 
   final Widget child;
   final VoidCallback onBack;
+
+  /// Optional widget pinned to the bottom (e.g. "Resend Code").
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -28,19 +36,39 @@ class AuthScaffold extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Positioned.fill(
-              child: SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.only(top: top, bottom: bottom),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: r.contentMaxWidth),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: r.s(22)),
-                      child: child,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: EdgeInsets.only(
+                        top: top,
+                        bottom: footer == null ? bottom : r.s(16),
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: r.contentMaxWidth,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: r.s(22),
+                            ),
+                            child: child,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  if (footer != null)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom: math.max(r.safeBottom, r.s(18.5)),
+                      ),
+                      child: footer,
+                    ),
+                ],
               ),
             ),
             Positioned(

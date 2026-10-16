@@ -14,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Central error reporting. Plug Crashlytics / Sentry in here later.
-  FlutterError.onError = (FlutterErrorDetails details) {
+  FlutterError.onError = (FlutterErrorDetails details) {  
     FlutterError.presentError(details);
     AppLogger.error(
       'Flutter framework error',

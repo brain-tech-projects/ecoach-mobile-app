@@ -19,6 +19,8 @@ class AuthTextField extends StatelessWidget {
     this.textInputAction,
     this.autofillHints,
     this.suffix,
+    this.borderColor = AppColors.fieldBorder,
+    this.onChanged,
     this.scale = 1.0,
   });
 
@@ -32,6 +34,8 @@ class AuthTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
   final Widget? suffix;
+  final Color borderColor;
+  final ValueChanged<String>? onChanged;
   final double scale;
 
   @override
@@ -42,7 +46,7 @@ class AuthTextField extends StatelessWidget {
       height: 55.3 * s,
       decoration: BoxDecoration(
         color: AppColors.fieldFill,
-        border: Border.all(color: AppColors.fieldBorder),
+        border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(11 * s),
       ),
       child: Stack(
@@ -72,6 +76,7 @@ class AuthTextField extends StatelessWidget {
                 keyboardType: keyboardType,
                 textInputAction: textInputAction,
                 autofillHints: autofillHints,
+                onChanged: onChanged,
                 autocorrect: false,
                 enableSuggestions: !obscureText,
                 cursorColor: AppColors.accent,

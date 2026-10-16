@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/widgets/app_asset_icon.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/user_role.dart';
+import 'package:ecoach_pro/features/auth/presentation/widgets/selection_controls.dart';
 
 /// Per-role visual metrics measured from the web design (design points).
 class _RoleVisual {
@@ -118,37 +119,12 @@ class RoleOptionCard extends StatelessWidget {
                 Positioned(
                   right: 20.7 * s,
                   top: (_centerY - 13) * s,
-                  child: _CheckBadge(selected: selected, scale: s),
+                  child: CircleCheck(selected: selected, scale: s),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CheckBadge extends StatelessWidget {
-  const _CheckBadge({required this.selected, required this.scale});
-
-  final bool selected;
-  final double scale;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 26 * scale,
-      height: 26 * scale,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: selected ? AppColors.selectGreen : AppColors.checkIdle,
-      ),
-      child: Icon(
-        Icons.check,
-        size: 16 * scale,
-        color: AppColors.checkMark,
       ),
     );
   }
