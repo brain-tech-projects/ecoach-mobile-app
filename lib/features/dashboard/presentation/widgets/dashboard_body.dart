@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
+import 'package:ecoach_pro/core/widgets/app_bottom_nav.dart';
 import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_data.dart';
-import 'package:ecoach_pro/features/dashboard/presentation/widgets/app_bottom_nav.dart';
+import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_stat.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/hero_banner.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/program_tile.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/stats_grid.dart';
@@ -16,6 +17,7 @@ class DashboardBody extends StatelessWidget {
     required this.data,
     required this.navBottomInset,
     required this.onOpenAuth,
+    this.onStatTap,
     this.onJoinNow,
     this.onTakeTour,
     this.onInstallApp,
@@ -24,6 +26,7 @@ class DashboardBody extends StatelessWidget {
   final DashboardData data;
   final double navBottomInset;
   final VoidCallback onOpenAuth;
+  final ValueChanged<DashboardStat>? onStatTap;
   final VoidCallback? onJoinNow;
   final VoidCallback? onTakeTour;
   final VoidCallback? onInstallApp;
@@ -51,7 +54,7 @@ class DashboardBody extends StatelessWidget {
         SliverPadding(
           padding: EdgeInsets.fromLTRB(hPad, 24 * s, hPad, 0),
           sliver: SliverToBoxAdapter(
-            child: StatsGrid(stats: data.stats, scale: s, onTap: onOpenAuth),
+            child: StatsGrid(stats: data.stats, scale: s, onTap: onStatTap),
           ),
         ),
         SliverPadding(

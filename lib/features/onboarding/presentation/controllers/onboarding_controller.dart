@@ -39,6 +39,29 @@ class OnboardingController extends GetxController {
     await pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic);
   }
 
+
+
+
+
+  /// "Skip": slides 1-3 go to the next slide, the last slide finishes onboarding.
+  Future<void> onSkip() async {
+    if (isLastPage) {
+      await complete();
+      return;
+    }
+    if (!pageController.hasClients) return;
+    await pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+
+
+
+
+
+
   /// Skip moves to the next slide.
   /// On the last slide, complete onboarding and open the dashboard.
   Future<void> complete() async {

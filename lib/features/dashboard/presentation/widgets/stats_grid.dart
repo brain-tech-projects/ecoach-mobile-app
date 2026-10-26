@@ -16,7 +16,7 @@ class StatsGrid extends StatelessWidget {
 
   final List<DashboardStat> stats;
   final double scale;
-  final VoidCallback? onTap;
+  final ValueChanged<DashboardStat>? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class _StatCard extends StatelessWidget {
 
   final DashboardStat stat;
   final double scale;
-  final VoidCallback? onTap;
+  final ValueChanged<DashboardStat>? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class _StatCard extends StatelessWidget {
         side: const BorderSide(color: AppColors.cardBorder),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap == null ? null : () => onTap!(stat),
         child: CustomPaint(
           painter: _CirclesPainter(scale: s),
           child: ConstrainedBox(

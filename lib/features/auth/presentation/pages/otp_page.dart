@@ -104,7 +104,7 @@ class OtpPage extends GetView<OtpController> {
           AppPrimaryButton(
             label: 'Verify Email',
             onPressed: controller.verify,
-            scale: s,
+            scale: s,// 
           ),
         ],
       ),

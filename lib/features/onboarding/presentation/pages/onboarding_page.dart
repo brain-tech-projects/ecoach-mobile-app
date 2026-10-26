@@ -35,20 +35,30 @@ class OnboardingPage extends GetView<OnboardingController> {
                 controller: controller.pageController,
                 onPageChanged: controller.onPageChanged,
                 itemCount: controller.pages.length,
-                itemBuilder: (context, index) => OnboardingPageItem(data: controller.pages[index]),
+                itemBuilder: (context, index) =>
+                    OnboardingPageItem(data: controller.pages[index]),
               ),
             ),
-            Obx(() => PageIndicator(count: controller.pages.length, currentIndex: controller.currentIndex.value, scale: r.scale)),
-            SizedBox(height: r.s(18)),
-
             Obx(
-              () => OnboardingActionButton(
-                label: controller.isLastPage ? AppStrings.continueLabel : AppStrings.skip,
-                onPressed: controller.complete,
+              () => PageIndicator(
+                count: controller.pages.length,
+                currentIndex: controller.currentIndex.value,
                 scale: r.scale,
               ),
             ),
-
+            SizedBox(height: r.s(18)),
+            Obx(() {
+              // Read the observable first: a short-circuited `&&` would skip
+              // it and GetX would report an Obx without any observable.
+              final isLast = controller.isLastPage;
+              final showContinue =
+                  OnboardingController.showContinueOnLastPage && isLast;
+              return OnboardingActionButton(
+                label: showContinue ? AppStrings.continueLabel : AppStrings.skip,
+                onPressed: controller.onSkip,
+                scale: r.scale,
+              );
+            }),
             SizedBox(height: bottomPadding),
           ],
         ),

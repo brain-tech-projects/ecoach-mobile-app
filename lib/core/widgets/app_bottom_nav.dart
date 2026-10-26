@@ -85,7 +85,7 @@ class _NavTile extends StatelessWidget {
     final color = selected ? AppColors.accent : AppColors.white;
 
     return Semantics(
-      button: true,
+      button: true, 
       selected: selected,
       label: spec.label,
       child: ExcludeSemantics(

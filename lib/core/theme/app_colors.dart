@@ -54,4 +54,25 @@ abstract final class AppColors {
   static const Color countryFill = Color(0xFF233A40);
   static const Color countryBorder = Color(0xFF3D5C61);
   static const Color checkboxBorder = Color(0xFF586F6F);
+
+  // Side menu / settings / contact
+  static const Color menuIcon = Color(0xFF60E46F);
+  static const Color avatarGradTop = Color(0xFF0F3A2F);
+  static const Color avatarGradBottom = Color(0xFF4CCB59);
+  static const Color termsCardFill = Color(0xFF1A3137);
+  static const Color termsCardBorder = Color(0xFF42555A);
+  static const Color termsContentFill = Color(0xFF162E35);
+  static const Color termsText = Color(0xFFD6D9DA);
+
+  // Training / skills / video
+  static const Color ringTrack = Color(0xFF8A9598);
+  static const Color skillPillFill = Color(0xFF243B42);
+  static const Color skillPillBorder = Color(0xFF696D6E);
+  static const Color popupBg = Color(0xFF0B3743);
+  static const Color popupDivider = Color(0xFF476A73);
+  static const Color dialogBg = Color(0xFF0B3542);
+  static const Color toastText = Color(0xFF212529);
+  static const Color menuPanelText = Color(0xFF202124);
+  static const Color checkBlue = Color(0xFF4285F4);
+  static const Color playOverlay = Color(0x4769F675);
 }

@@ -19,6 +19,9 @@ dependencies:
   # Simple key-value persistence (onboarding flag, etc.)
   shared_preferences: ^2.5.3
 
+  # Video playback (training & skills videos)
+  video_player: ^2.9.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -36,6 +39,10 @@ flutter:
     - assets/images/
     - assets/images/icons/
     - assets/images/icons/choice/
+    - assets/images/icons/menu/
+    - assets/images/training/
+    - assets/images/skills/
+    - assets/images/drills/
 
   fonts:
     - family: Poppins

@@ -61,4 +61,39 @@ abstract final class AppAssets {
 
   // Form icons (sign-up)
   static const String iconUser = '$_icons/user.png';
+
+  // Side menu
+  static const String _menu = '$_icons/menu';
+  static const String menuPersonal = '$_menu/personal.png';
+  static const String menuSkills = '$_menu/skills.png';
+  static const String menuCoaches = '$_menu/coaches.png';
+  static const String menuTrophy = '$_menu/trophy.png';
+  static const String menuSubscription = '$_menu/subscription.png';
+  static const String menuInvitation = '$_menu/invitation.png';
+  static const String menuSettings = '$_menu/settings.png';
+  static const String menuContact = '$_menu/contact.png';
+  static const String menuClose = '$_menu/close.png';
+  static const String menuAvatarUser = '$_menu/avatar_user.png';
+
+  // Contact form
+  static const String iconPhone = '$_icons/phone.png';
+  static const String iconPencil = '$_icons/pencil.png';
+
+  // Training / skills (dummy images - replaced by API images later)
+  static const String trainingTile = '$_images/training/fundamentals_tile.jpg';
+  static const String thumbActive = '$_images/training/thumb_active.jpg';
+  static const String thumbLocked = '$_images/training/thumb_locked.jpg';
+  static const String skillDribbling = '$_images/skills/dribbling.jpg';
+  static const String skillBallMastery = '$_images/skills/ball_mastery.jpg';
+  static const String skillFitness = '$_images/skills/fitness.jpg';
+  static const String skillBallControl = '$_images/skills/ball_control.jpg';
+  static const String skillTricks = '$_images/skills/tricks.jpg';
+  static const String skillAllSkills = '$_images/skills/all_skills.jpg';
+  static const String drill8 = '$_images/drills/drill_8.jpg';
+  static const String drill11 = '$_images/drills/drill_11.jpg';
+  static const String drill12 = '$_images/drills/drill_12.jpg';
+  static const String drill13 = '$_images/drills/drill_13.jpg';
+  static const String drill15 = '$_images/drills/drill_15.jpg';
+  static const String drill19 = '$_images/drills/drill_19.jpg';
+  static const String posterDribbleTurn = '$_images/drills/poster_dribble_turn.jpg';
 }

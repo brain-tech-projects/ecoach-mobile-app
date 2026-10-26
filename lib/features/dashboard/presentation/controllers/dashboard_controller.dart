@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
+import 'package:ecoach_pro/core/navigation/main_nav.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_data.dart';
+import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_stat.dart';
 import 'package:ecoach_pro/features/dashboard/domain/repositories/dashboard_repository.dart';
 
 class DashboardController extends GetxController {
@@ -43,5 +45,23 @@ class DashboardController extends GetxController {
   void onJoinNow() {}
   void onTakeTour() {}
   void onInstallApp() {}
-  void onNavTap(int index) {}
+
+  void onStatTap(DashboardStat stat) {
+    switch (stat.label) {
+      case 'Matches tracked':
+        Get.toNamed<void>(AppRoutes.ratingTracker);
+        break;
+      case 'Reward Points':
+      case 'Trophies':
+        Get.toNamed<void>(AppRoutes.trophyRoom);
+        break;
+      default:
+        openAuth();
+    }
+  }
+
+  /// Signed-out users are sent to login / sign-up for tabs other than Home.
+  void onNavTap(int index) => MainNav.onTabSelected(index);
+
+  void openMenu() => MainNav.openMenu();
 }

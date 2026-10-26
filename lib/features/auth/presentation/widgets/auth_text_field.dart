@@ -19,6 +19,8 @@ class AuthTextField extends StatelessWidget {
     this.textInputAction,
     this.autofillHints,
     this.suffix,
+    this.height = 55.3,
+    this.multiline = false,
     this.borderColor = AppColors.fieldBorder,
     this.onChanged,
     this.scale = 1.0,
@@ -34,6 +36,10 @@ class AuthTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
   final Widget? suffix;
+  final double height;
+
+  /// Multi-line message box: icon and text are top-aligned.
+  final bool multiline;
   final Color borderColor;
   final ValueChanged<String>? onChanged;
   final double scale;
@@ -43,7 +49,7 @@ class AuthTextField extends StatelessWidget {
     final s = scale;
 
     return Container(
-      height: 55.3 * s,
+      height: height * s,
       decoration: BoxDecoration(
         color: AppColors.fieldFill,
         border: Border.all(color: borderColor),
@@ -53,8 +59,8 @@ class AuthTextField extends StatelessWidget {
         children: <Widget>[
           Positioned(
             left: (25.7 - iconWidth / 2) * s,
-            top: 0,
-            bottom: 0,
+            top: multiline ? (26.5 - iconHeight / 2) * s : 0,
+            bottom: multiline ? null : 0,
             child: Center(
               child: AppAssetIcon(
                 iconAsset,
@@ -67,10 +73,14 @@ class AuthTextField extends StatelessWidget {
           Positioned(
             left: 48 * s,
             right: (suffix == null ? 16 : 52) * s,
-            top: 0,
-            bottom: 0,
+            top: multiline ? 17.7 * s : 0,
+            bottom: multiline ? 10 * s : 0,
             child: Center(
               child: TextField(
+                maxLines: multiline ? null : 1,
+                expands: multiline,
+                textAlignVertical:
+                    multiline ? TextAlignVertical.top : TextAlignVertical.center,
                 controller: controller,
                 obscureText: obscureText,
                 keyboardType: keyboardType,

@@ -2,7 +2,7 @@
 
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';                  
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,7 +20,7 @@ Future<void> main() async {
       'Flutter framework error',
       error: details.exception,
       stackTrace: details.stack,
-    );
+    );// 
   };
 
   PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
@@ -30,12 +30,12 @@ Future<void> main() async {
       stackTrace: stack,
     );
     return true;
-  };
+     };
 
   // Phones are portrait-only (matches the web design).
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitDown,      
   ]);
 
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -47,4 +47,5 @@ Future<void> main() async {
   }
 
   runApp(EcoachApp(storage: storage));
-}
+  
+}     

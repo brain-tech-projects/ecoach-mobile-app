@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
+import 'package:ecoach_pro/core/widgets/app_bottom_nav.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:ecoach_pro/features/dashboard/presentation/widgets/app_bottom_nav.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/dashboard_body.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/dashboard_header.dart';
 
@@ -28,7 +28,10 @@ class DashboardPage extends GetView<DashboardController> {
           Column(
             children: <Widget>[
               // Fixed (does not scroll).
-              DashboardHeader(onProfileTap: controller.openAuth),
+              DashboardHeader(
+                onProfileTap: controller.openAuth,
+                onMenuTap: controller.openMenu,
+              ),
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.vertical(
@@ -43,6 +46,7 @@ class DashboardPage extends GetView<DashboardController> {
                           data: data,
                           navBottomInset: navBottom,
                           onOpenAuth: controller.openAuth,
+                          onStatTap: controller.onStatTap,
                           onJoinNow: controller.onJoinNow,
                           onTakeTour: controller.onTakeTour,
                           onInstallApp: controller.onInstallApp,

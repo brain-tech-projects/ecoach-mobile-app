@@ -259,6 +259,213 @@ abstract final class AppTextStyles {
     height: 1.5,
     color: AppColors.accent,
   );
+
+  // ---- Side menu / sub pages ------------------------------------------------
+  static const TextStyle menuItem = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle pageTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle termsHeader = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle termsBody = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+    color: AppColors.termsText,
+  );
+  static const TextStyle contactTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle contactSubtitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.textMuted,
+  );
+  static const TextStyle contactEmail = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.accent,
+  );
+
+  // ---- Training / skills / video ---------------------------------------------
+  static const TextStyle trainHeadline = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle trainSubline = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle levelTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle levelPercent = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: AppColors.white,
+  );
+  static const TextStyle tileBadge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+    color: AppColors.background,
+  );
+  static const TextStyle tilePill = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: AppColors.white,
+  );
+  static const TextStyle sectionHeading = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle videoTime = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: AppColors.white,
+  );
+  static const TextStyle skillPill = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle drillTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle drillDesc = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.descGrey,
+  );
+  static const TextStyle viewsCount = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: AppColors.background,
+  );
+  static const TextStyle popupItem = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle detailDesc = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.descGrey,
+  );
+  static const TextStyle infoLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle infoValue = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: AppColors.descGrey,
+  );
+  static const TextStyle dialogTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+    color: AppColors.white,
+  );
+  static const TextStyle dialogBody = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    color: AppColors.descGrey,
+  );
+  static const TextStyle dialogButton = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: AppColors.accent,
+  );
+  static const TextStyle toastTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    color: AppColors.toastText,
+  );
+  static const TextStyle toastBody = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    height: 1.27,
+    color: AppColors.toastText,
+  );
+  static const TextStyle playerMenu = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10.5,
+    fontWeight: FontWeight.w400,
+    height: 1.2,
+    color: AppColors.menuPanelText,
+  );
 }
 
 extension TextStyleScaling on TextStyle {
