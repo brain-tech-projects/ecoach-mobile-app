@@ -31,7 +31,7 @@ abstract final class AppToast {
     _ToastData(
       id: ++_seq,
       message: message,
-      icon: Icons.error_outline,
+      icon: Icons.cancel,
       isError: true,
     ),
   );

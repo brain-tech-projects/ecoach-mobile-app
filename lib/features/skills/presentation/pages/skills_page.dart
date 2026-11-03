@@ -26,9 +26,27 @@ class SkillsPage extends GetView<SkillsController> {
         if (categories.isEmpty) {
           if (controller.errorMessage.value != null) {
             return Center(
-              child: TextButton(
-                onPressed: controller.load,
-                child: Text('Retry', style: AppTextStyles.action.scaled(s)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    controller.errorMessage.value!,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.trainSubline.scaled(s),
+                  ),
+                  TextButton(
+                    onPressed: controller.load,
+                    child: Text('Retry', style: AppTextStyles.action.scaled(s)),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (!controller.isLoading.value) {
+            return Center(
+              child: Text(
+                'No skills yet.',
+                style: AppTextStyles.trainSubline.scaled(s),
               ),
             );
           }

@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/services/session_service.dart';
 import 'package:ecoach_pro/features/auth/data/models/user_model.dart';
 import 'package:ecoach_pro/features/dashboard/data/models/banner_model.dart';
 import 'package:ecoach_pro/features/dashboard/data/models/dashboard_details.dart';
+import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 
 /// Every backend call of the app lives here (one method per endpoint).
@@ -247,6 +248,125 @@ class ApiService {
           .map((e) => TrainingVideo.fromJson(Map<String, dynamic>.from(e)))
           .toList();
     });
+  }
+
+  // ---- Skills -----------------------------------------------------------------
+
+  Future<ApiResponse<List<SkillCategory>>> getSkillTypes() async {
+    final res = await _network.get(ApiEndpoints.skillTypes);
+    return res.map<List<SkillCategory>>((data) {
+      if (data is! List) return const <SkillCategory>[];
+      return data
+          .whereType<Map>()
+          .map((e) => SkillCategory.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    });
+  }
+
+  /// Drills of one skill area. Answers `Subscription required` without a plan.
+  Future<ApiResponse<List<Drill>>> getSkillVideos(int skillTypeId) async {
+    final res = await _network.post(
+      ApiEndpoints.skillVideos,
+      body: <String, dynamic>{'skill_type_id': skillTypeId, 'is_free': false},
+    );
+    return res.map<List<Drill>>((data) {
+      if (data is! List) return const <Drill>[];
+      return data
+          .whereType<Map>()
+          .map((e) => Drill.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    });
+  }
+
+  /// Full drill (video URL, points, focus, equipment, completed).
+  Future<ApiResponse<Drill>> getSkillVideoDetails(int skillVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.skillVideoDetails,
+      body: <String, dynamic>{'skill_video_id': skillVideoId},
+    );
+    return res.map<Drill>(
+      (data) => data is Map
+          ? Drill.fromJson(Map<String, dynamic>.from(data))
+          : null,
+    );
+  }
+
+  Future<ApiResponse<void>> markSkillVideoCompleted(int skillVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.markSkillVideoCompleted,
+      body: <String, dynamic>{'skill_video_id': skillVideoId},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  /// "Add to / remove from Personal Training Session".
+  Future<ApiResponse<void>> setVideoInPersonalSession(
+    int skillVideoId, {
+    required bool add,
+  }) async {
+    final res = await _network.post(
+      ApiEndpoints.addVideoToPersonalized,
+      body: <String, dynamic>{
+        'skill_video_id': skillVideoId,
+        'action': add ? 'add' : 'remove',
+      },
+    );
+    return res.map<void>((_) => null);
+  }
+
+  /// "Add to / remove from My Skills".
+  Future<ApiResponse<void>> setVideoInMySkills(
+    int skillVideoId, {
+    required bool add,
+  }) async {
+    final res = await _network.post(
+      ApiEndpoints.addSkillToPersonalized,
+      body: <String, dynamic>{
+        'skill_video_id': skillVideoId,
+        'action': add ? 'add' : 'remove',
+      },
+    );
+    return res.map<void>((_) => null);
+  }
+
+  // ---- Skill notes ------------------------------------------------------------
+
+  Future<ApiResponse<List<SkillNote>>> getSkillNotes(int skillVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.getSkillNotes,
+      body: <String, dynamic>{'skill_video_id': skillVideoId},
+    );
+    return res.map<List<SkillNote>>((data) {
+      if (data is! List) return const <SkillNote>[];
+      return data
+          .whereType<Map>()
+          .map((e) => SkillNote.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    });
+  }
+
+  Future<ApiResponse<void>> addSkillNote(int skillVideoId, String note) async {
+    final res = await _network.post(
+      ApiEndpoints.storeSkillNote,
+      body: <String, dynamic>{'skill_video_id': skillVideoId, 'note': note},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  Future<ApiResponse<void>> updateSkillNote(int noteId, String note) async {
+    final res = await _network.post(
+      ApiEndpoints.updateSkillNote,
+      body: <String, dynamic>{'note_id': noteId, 'note': note},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  Future<ApiResponse<void>> deleteSkillNote(int noteId) async {
+    final res = await _network.post(
+      ApiEndpoints.deleteSkillNote,
+      body: <String, dynamic>{'note_id': noteId},
+    );
+    return res.map<void>((_) => null);
   }
 
   // ---- helpers ----------------------------------------------------------------

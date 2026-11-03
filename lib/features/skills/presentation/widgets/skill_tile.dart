@@ -40,7 +40,16 @@ class SkillTile extends StatelessWidget {
                   height: 144.7 * s,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10 * s),
-                    child: Image.asset(category.imageAsset, fit: BoxFit.cover),
+                    child: category.imageAsset != null
+                        ? Image.asset(category.imageAsset!, fit: BoxFit.cover)
+                        : category.imageUrl == null
+                        ? const ColoredBox(color: AppColors.ringTrack)
+                        : Image.network(
+                            category.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) =>
+                                const ColoredBox(color: AppColors.ringTrack),
+                          ),
                   ),
                 ),
                 Positioned(

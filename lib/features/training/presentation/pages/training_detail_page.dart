@@ -130,11 +130,13 @@ class TrainingDetailPage extends GetView<TrainingDetailController> {
     );
   }
 
+  /// "Next available in 2 Days" from `available_after_days`.
   static String _lockedLabel(TrainingVideo video) {
-    final when = video.availableIn;
-    return when == null
-        ? 'Complete the previous video to unlock'
-        : 'Next available in $when';
+    final days = video.availableAfterDays;
+    if (days == null || days <= 0) {
+      return 'Complete the previous video to unlock';
+    }
+    return 'Next available in $days ${days == 1 ? 'Day' : 'Days'}';
   }
 }
 

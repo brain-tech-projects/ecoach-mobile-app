@@ -136,8 +136,13 @@ class DashboardController extends GetxController {
       case 'Matches tracked':
         MainNav.open(AppRoutes.ratingTracker);
         break;
-      case 'Reward Points':
       case 'Trophies':
+        // "My Trophies" tab of the trophies page.
+        if (MainNav.requireLogin()) {
+          Get.toNamed<void>(AppRoutes.allTrophy, arguments: 1);
+        }
+        break;
+      case 'Reward Points':
         MainNav.open(AppRoutes.trophyRoom);
         break;
       default:

@@ -26,9 +26,27 @@ class SkillListPage extends GetView<SkillListController> {
         if (drills.isEmpty) {
           if (controller.errorMessage.value != null) {
             return Center(
-              child: TextButton(
-                onPressed: controller.load,
-                child: Text('Retry', style: AppTextStyles.action.scaled(s)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    controller.errorMessage.value!,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.trainSubline.scaled(s),
+                  ),
+                  TextButton(
+                    onPressed: controller.load,
+                    child: Text('Retry', style: AppTextStyles.action.scaled(s)),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (!controller.isLoading.value) {
+            return Center(
+              child: Text(
+                'No drills yet.',
+                style: AppTextStyles.trainSubline.scaled(s),
               ),
             );
           }
@@ -41,8 +59,10 @@ class SkillListPage extends GetView<SkillListController> {
               padding: EdgeInsets.fromLTRB(hPad, 27.8 * s, hPad, 25.2 * s),
               sliver: SliverToBoxAdapter(
                 child: Text(
-                  'Get ready to ${controller.category.name} like a pro. '
-                  'Choose a drill to get started.',
+                  controller.category.isAll
+                      ? 'Choose a drill to get started.'
+                      : 'Get ready to ${controller.category.name} like a pro. '
+                            'Choose a drill to get started.',
                   textAlign: TextAlign.center,
                   style: AppTextStyles.trainSubline.scaled(s),
                 ),
@@ -62,6 +82,8 @@ class SkillListPage extends GetView<SkillListController> {
                     onMenu: (anchor) => showDrillMenu(
                       anchor,
                       scale: s,
+                      sessionAdded: !drill.canAddToSession,
+                      mySkillsAdded: !drill.canAddToMySkills,
                       onAddToSession: () => controller.addToPersonalSession(drill),
                       onAddToMySkills: () => controller.addToMySkills(drill),
                       onAddNote: () => controller.addNote(drill),

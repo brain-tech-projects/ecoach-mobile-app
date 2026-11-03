@@ -8,6 +8,7 @@ import 'package:ecoach_pro/core/widgets/app_loader.dart';
 import 'package:ecoach_pro/core/widgets/sub_page_scaffold.dart';
 import 'package:ecoach_pro/features/stats/presentation/controllers/trophy_room_controller.dart';
 import 'package:ecoach_pro/features/stats/presentation/widgets/point_history_card.dart';
+import 'package:ecoach_pro/features/stats/presentation/widgets/trophy_card.dart';
 
 class TrophyRoomPage extends GetView<TrophyRoomController> {
   const TrophyRoomPage({super.key});
@@ -83,7 +84,7 @@ class _Body extends StatelessWidget {
                     ),
                   ),
                 )
-              else
+              else if (controller.myTrophies.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(
@@ -94,6 +95,25 @@ class _Body extends StatelessWidget {
                         style: AppTextStyles.programDesc.scaled(s),
                       ),
                     ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(24 * s, 20 * s, 24 * s, 20 * s),
+                  sliver: SliverList.separated(
+                    itemCount: (controller.myTrophies.length + 1) ~/ 2,
+                    separatorBuilder: (_, _) => SizedBox(height: 16.3 * s),
+                    itemBuilder: (context, row) {
+                      final list = controller.myTrophies;
+                      final i = row * 2;
+                      return TrophyGridRow(
+                        scale: s,
+                        left: MyTrophyCard(item: list[i], scale: s),
+                        right: i + 1 < list.length
+                            ? MyTrophyCard(item: list[i + 1], scale: s)
+                            : null,
+                      );
+                    },
                   ),
                 ),
             ],

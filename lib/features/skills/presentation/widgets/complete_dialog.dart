@@ -7,7 +7,15 @@ import 'package:ecoach_pro/core/utils/responsive.dart';
 
 /// "Great Work!" confirmation. Pops `true` on Confirm, `false` on Cancel.
 class CompleteDialog extends StatelessWidget {
-  const CompleteDialog({super.key});
+  const CompleteDialog({
+    super.key,
+    this.title = 'Great Work!',
+    this.message = 'Confirm you have completed this skill. Keep practising each '
+        'skill and increase your eCoach stats.',
+  });
+
+  final String title;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +33,11 @@ class CompleteDialog extends StatelessWidget {
           children: <Widget>[
             Semantics(
               header: true,
-              child: Text('Great Work!', style: AppTextStyles.dialogTitle.scaled(s)),
+              child: Text(title, style: AppTextStyles.dialogTitle.scaled(s)),
             ),
             SizedBox(height: 15.5 * s),
             Text(
-              'Confirm you have completed this skill. Keep practising each '
-              'skill and increase your eCoach stats.',
+              message,
               style: AppTextStyles.dialogBody.scaled(s),
             ),
             SizedBox(height: 20.3 * s),

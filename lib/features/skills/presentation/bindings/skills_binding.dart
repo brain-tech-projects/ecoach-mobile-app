@@ -1,17 +1,20 @@
 import 'package:get/get.dart';
 
-import 'package:ecoach_pro/features/skills/data/repositories/dummy_skills_repository.dart';
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/features/skills/data/repositories/api_skills_repository.dart';
 import 'package:ecoach_pro/features/skills/domain/repositories/skills_repository.dart';
 import 'package:ecoach_pro/features/skills/presentation/controllers/skill_detail_controller.dart';
 import 'package:ecoach_pro/features/skills/presentation/controllers/skill_list_controller.dart';
 import 'package:ecoach_pro/features/skills/presentation/controllers/skills_controller.dart';
+
+SkillsRepository _repository() => ApiSkillsRepository(Get.find<ApiService>());
 
 class SkillsBinding extends Bindings {
   SkillsBinding();
 
   @override
   void dependencies() {
-    Get.lazyPut<SkillsRepository>(DummySkillsRepository.new);
+    Get.lazyPut<SkillsRepository>(_repository);
     Get.put<SkillsController>(SkillsController(Get.find<SkillsRepository>()));
   }
 }
@@ -21,7 +24,7 @@ class SkillListBinding extends Bindings {
 
   @override
   void dependencies() {
-    Get.lazyPut<SkillsRepository>(DummySkillsRepository.new);
+    Get.lazyPut<SkillsRepository>(_repository);
     Get.put<SkillListController>(SkillListController(Get.find<SkillsRepository>()));
   }
 }
@@ -31,6 +34,9 @@ class SkillDetailBinding extends Bindings {
 
   @override
   void dependencies() {
-    Get.lazyPut<SkillDetailController>(SkillDetailController.new);
+    Get.lazyPut<SkillsRepository>(_repository);
+    Get.put<SkillDetailController>(
+      SkillDetailController(Get.find<SkillsRepository>()),
+    );
   }
 }

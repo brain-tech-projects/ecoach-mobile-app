@@ -68,6 +68,7 @@ class TrainingVideo {
     this.completed = false,
     this.locked = false,
     this.availableIn,
+    this.availableAfterDays,
   });
 
   factory TrainingVideo.fromJson(Map<String, dynamic> json) {
@@ -80,10 +81,17 @@ class TrainingVideo {
       points: _int(json['reward_points']),
       completed: json['completed'] == true,
       locked: json['locked'] == true,
-      // "1 day 4 hours" while locked, 0 once available.
-      availableIn: availableIn is String && availableIn.isNotEmpty
+      // "1 day 4 hours" for the next video, but "locked" (or 0) for the
+      // ones further away: those are not a countdown, so ignore them.
+      availableIn:
+          availableIn is String &&
+              availableIn.isNotEmpty &&
+              availableIn.toLowerCase() != 'locked'
           ? availableIn
           : null,
+      availableAfterDays: json['available_after_days'] == null
+          ? null
+          : _int(json['available_after_days']),
     );
   }
 
@@ -97,4 +105,7 @@ class TrainingVideo {
 
   /// Time until it unlocks ("1 day 4 hours"), null when not applicable.
   final String? availableIn;
+
+  /// `available_after_days`: days after the previous video this one unlocks.
+  final int? availableAfterDays;
 }

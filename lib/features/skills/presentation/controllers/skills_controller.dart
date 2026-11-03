@@ -12,6 +12,7 @@ class SkillsController extends GetxController {
   final SkillsRepository _repository;
 
   final RxList<SkillCategory> categories = <SkillCategory>[].obs;
+  final RxBool isLoading = true.obs;
   final RxnString errorMessage = RxnString();
 
   @override
@@ -21,12 +22,30 @@ class SkillsController extends GetxController {
   }
 
   Future<void> load() async {
+    isLoading.value = true;
     errorMessage.value = null;
     try {
-      categories.assignAll(await _repository.fetchCategories());
+      final res = await _repository.fetchCategories();
+      if (res.isSubscriptionRequired) {
+        Get.offNamed<void>(AppRoutes.subscription);
+        return;
+      }
+      if (!res.success) {
+        errorMessage.value = res.message;
+        return;
+      }
+      // API areas + the static "All Skills" tile at the end.
+      categories.assignAll(<SkillCategory>[
+        ...(res.data ?? const <SkillCategory>[]).where(
+          (c) => c.name.toLowerCase() != 'all skills',
+        ),
+        SkillCategory.all,
+      ]);
     } catch (error, stackTrace) {
       AppLogger.error('Skills load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load the skills.';
+    } finally {
+      isLoading.value = false;
     }
   }
 

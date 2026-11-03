@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/features/stats/presentation/pages/rating_tracker_page.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
@@ -14,6 +15,10 @@ import 'package:ecoach_pro/features/auth/presentation/pages/otp_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/set_password_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/sign_up_page.dart';
+import 'package:ecoach_pro/features/coach/presentation/bindings/coach_binding.dart';
+import 'package:ecoach_pro/features/coach/presentation/pages/coach_invitation_page.dart';
+import 'package:ecoach_pro/features/coach/presentation/pages/coach_training_detail_page.dart';
+import 'package:ecoach_pro/features/coach/presentation/pages/coach_training_page.dart';
 import 'package:ecoach_pro/features/contact/presentation/bindings/contact_binding.dart';
 import 'package:ecoach_pro/features/contact/presentation/pages/contact_page.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/bindings/dashboard_binding.dart';
@@ -30,6 +35,11 @@ import 'package:ecoach_pro/features/skills/presentation/bindings/skills_binding.
 import 'package:ecoach_pro/features/skills/presentation/pages/skill_detail_page.dart';
 import 'package:ecoach_pro/features/skills/presentation/pages/skill_list_page.dart';
 import 'package:ecoach_pro/features/skills/presentation/pages/skills_page.dart';
+import 'package:ecoach_pro/features/stats/presentation/bindings/stats_binding.dart';
+import 'package:ecoach_pro/features/stats/presentation/bindings/trophy_binding.dart';
+import 'package:ecoach_pro/features/stats/presentation/pages/trophy_detail_page.dart';
+import 'package:ecoach_pro/features/stats/presentation/pages/trophy_room_page.dart';
+import 'package:ecoach_pro/features/stats/presentation/pages/trophy_store_page.dart';
 import 'package:ecoach_pro/features/training/presentation/bindings/training_binding.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_detail_page.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_page.dart';
@@ -163,6 +173,57 @@ abstract final class AppPages {
       binding: SkillDetailBinding(),
       transition: Transition.cupertino,
     ),
+    GetPage<void>(
+      name: AppRoutes.trophyRoom,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const TrophyStorePage(),
+      binding: TrophyStoreBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.trophyRoomDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const TrophyDetailPage(),
+      binding: TrophyDetailBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.allTrophy,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const TrophyRoomPage(),
+      binding: StatsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachTraining,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const CoachTrainingPage(),
+      binding: CoachTrainingBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachTrainingDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const CoachTrainingDetailPage(),
+      binding: CoachTrainingDetailBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachInvitation,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const CoachInvitationPage(),
+      binding: CoachInvitationBinding(),
+      transition: Transition.cupertino,
+    ),
+
+    GetPage<void>(
+      name: AppRoutes.ratingTracker,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const RatingTrackerPage(),
+      binding: StatsBinding(),
+      transition: Transition.cupertino,
+    ),
+    
 
 
 

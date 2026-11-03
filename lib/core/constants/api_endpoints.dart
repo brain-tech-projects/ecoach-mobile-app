@@ -19,4 +19,16 @@ abstract final class ApiEndpoints {
   // Training
   static const String trainingTypes = '/training-types';
   static const String trainingVideos = '/training-videos';
+
+  // Skills
+  static const String skillTypes = '/skill-types';
+  static const String skillVideos = '/skill-videos';
+  static const String skillVideoDetails = '/skill-video-details';
+  static const String markSkillVideoCompleted = '/mark-skill-video-completed';
+  static const String addVideoToPersonalized = '/add-video-to-personalized';
+  static const String addSkillToPersonalized = '/add-skill-to-personalized';
+  static const String storeSkillNote = '/store-skill-note';
+  static const String getSkillNotes = '/get-skill-notes';
+  static const String updateSkillNote = '/update-skill-note';
+  static const String deleteSkillNote = '/delete-skill-note';
 }

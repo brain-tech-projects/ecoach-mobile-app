@@ -10,13 +10,15 @@ Future<void> showDrillMenu(
   BuildContext anchor, {
   required double scale,
   required VoidCallback onAddToSession,
-  required VoidCallback onAddToMySkills,
   required VoidCallback onAddNote,
+  VoidCallback? onAddToMySkills,
+  bool sessionAdded = false,
+  bool mySkillsAdded = false,
 }) {
   final box = anchor.findRenderObject()! as RenderBox;
   final origin = box.localToGlobal(Offset.zero);
   final screen = MediaQuery.sizeOf(anchor);
-  final panelHeight = 123.7 * scale;
+  final panelHeight = (onAddToMySkills == null ? 97.0 : 123.7) * scale;
   final reservedBottom = 90 * scale; // floating tab bar
 
   final below = origin.dy + box.size.height + 6 * scale;
@@ -36,8 +38,12 @@ Future<void> showDrillMenu(
 
       return _MenuPanel(
         scale: scale,
+        sessionAdded: sessionAdded,
+        mySkillsAdded: mySkillsAdded,
         onAddToSession: () => run(onAddToSession),
-        onAddToMySkills: () => run(onAddToMySkills),
+        onAddToMySkills: onAddToMySkills == null
+            ? null
+            : () => run(onAddToMySkills),
         onAddNote: () => run(onAddNote),
       );
     },
@@ -47,14 +53,18 @@ Future<void> showDrillMenu(
 class _MenuPanel extends StatelessWidget {
   const _MenuPanel({
     required this.scale,
+    required this.sessionAdded,
+    required this.mySkillsAdded,
     required this.onAddToSession,
     required this.onAddToMySkills,
     required this.onAddNote,
   });
 
   final double scale;
+  final bool sessionAdded;
+  final bool mySkillsAdded;
   final VoidCallback onAddToSession;
-  final VoidCallback onAddToMySkills;
+  final VoidCallback? onAddToMySkills;
   final VoidCallback onAddNote;
 
   @override
@@ -70,15 +80,31 @@ class _MenuPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           _Item(
-            label: 'Add to Personal Training Session',
+            label: sessionAdded
+                ? 'Remove from Personal Training Session'
+                : 'Add to Personal Training Session',
+            icon: sessionAdded ? Icons.delete_outline : Icons.add_circle_outline,
             height: 54.7 * s,
             scale: s,
             onTap: onAddToSession,
           ),
           Container(height: 1 * s, color: AppColors.popupDivider),
           SizedBox(height: 6.3 * s),
-          _Item(label: 'Add to My Skills', height: 26 * s, scale: s, onTap: onAddToMySkills),
-          _Item(label: 'Add Note', height: 26 * s, scale: s, onTap: onAddNote),
+          if (onAddToMySkills != null)
+            _Item(
+              label: mySkillsAdded ? 'Remove from My Skills' : 'Add to My Skills',
+              icon: mySkillsAdded ? Icons.delete_outline : Icons.add_circle_outline,
+              height: 26 * s,
+              scale: s,
+              onTap: onAddToMySkills!,
+            ),
+          _Item(
+            label: 'Add Note',
+            icon: Icons.add_circle_outline,
+            height: 26 * s,
+            scale: s,
+            onTap: onAddNote,
+          ),
           SizedBox(height: 3.3 * s),
         ],
       ),
@@ -89,12 +115,14 @@ class _MenuPanel extends StatelessWidget {
 class _Item extends StatelessWidget {
   const _Item({
     required this.label,
+    required this.icon,
     required this.height,
     required this.scale,
     required this.onTap,
   });
 
   final String label;
+  final IconData icon;
   final double height;
   final double scale;
   final VoidCallback onTap;
@@ -110,7 +138,7 @@ class _Item extends StatelessWidget {
         child: Row(
           children: <Widget>[
             SizedBox(width: 17.7 * s),
-            Icon(Icons.add_circle_outline, size: 14.7 * s, color: AppColors.white),
+            Icon(icon, size: 14.7 * s, color: AppColors.white),
             SizedBox(width: 10 * s),
             Expanded(
               child: Padding(

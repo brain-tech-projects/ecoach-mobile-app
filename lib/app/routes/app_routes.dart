@@ -17,5 +17,16 @@ abstract final class AppRoutes {
   static const String skillList = '/skill-list';
   static const String skillDetail = '/skill-detail';
   static const String ratingTracker = '/rating-tracker';
+  /// Trophy Room: points balance + all trophies to redeem.
   static const String trophyRoom = '/trophy-room';
+  /// One trophy + Redeem (arguments: Trophy).
+  static const String trophyRoomDetail = '/trophy-room-detail';
+  /// Points History / My Trophies tabs (arguments: 0 or 1).
+  static const String allTrophy = '/all-trophy';
+  /// Coaches Training: skills set by the coach.
+  static const String coachTraining = '/coach-training';
+  /// One assigned training video (arguments: AssignedTraining).
+  static const String coachTrainingDetail = '/coach-training-detail';
+  /// Coach Invitation: connected coach / pending invitations.
+  static const String coachInvitation = '/coach-invitation';
 }

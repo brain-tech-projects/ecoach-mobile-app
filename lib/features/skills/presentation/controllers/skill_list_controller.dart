@@ -4,6 +4,8 @@ import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 import 'package:ecoach_pro/features/skills/domain/repositories/skills_repository.dart';
+import 'package:ecoach_pro/features/skills/presentation/controllers/drill_actions.dart';
+import 'package:ecoach_pro/features/skills/presentation/widgets/notes_dialog.dart';
 
 /// Drills of one skill area.
 class SkillListController extends GetxController {
@@ -14,6 +16,7 @@ class SkillListController extends GetxController {
   final SkillCategory category = Get.arguments as SkillCategory;
 
   final RxList<Drill> drills = <Drill>[].obs;
+  final RxBool isLoading = true.obs;
   final RxnString errorMessage = RxnString();
 
   @override
@@ -23,20 +26,49 @@ class SkillListController extends GetxController {
   }
 
   Future<void> load() async {
+    isLoading.value = true;
     errorMessage.value = null;
     try {
-      drills.assignAll(await _repository.fetchDrills(category.id));
+      final res = category.isAll
+          ? await _repository.fetchAllDrills()
+          : await _repository.fetchDrills(category.id);
+      if (res.isSubscriptionRequired) {
+        Get.offNamed<void>(AppRoutes.subscription);
+        return;
+      }
+      if (!res.success) {
+        errorMessage.value = res.message;
+        return;
+      }
+      drills.assignAll(res.data ?? const <Drill>[]);
     } catch (error, stackTrace) {
       AppLogger.error('Drills load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load the drills.';
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void openDrill(Drill drill) =>
-      Get.toNamed<void>(AppRoutes.skillDetail, arguments: drill);
+  Future<void> openDrill(Drill drill) async {
+    await Get.toNamed<void>(AppRoutes.skillDetail, arguments: drill);
+    // Views / completion may have changed.
+    load();
+  }
 
-  // "⋮" menu actions - wired to the API later.
-  void addToPersonalSession(Drill drill) {}
-  void addToMySkills(Drill drill) {}
-  void addNote(Drill drill) {}
+  void _replace(Drill updated) {
+    final i = drills.indexWhere((d) => d.id == updated.id);
+    if (i != -1) drills[i] = updated;
+  }
+
+  Future<void> addToPersonalSession(Drill drill) async {
+    final updated = await DrillActions.toggleSession(_repository, drill);
+    if (updated != null) _replace(updated);
+  }
+
+  Future<void> addToMySkills(Drill drill) async {
+    final updated = await DrillActions.toggleMySkills(_repository, drill);
+    if (updated != null) _replace(updated);
+  }
+
+  void addNote(Drill drill) => showNotesDialog(drill);
 }

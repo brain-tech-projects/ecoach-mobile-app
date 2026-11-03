@@ -30,6 +30,7 @@ abstract final class MenuItems {
     MenuItem(
       label: 'Coaches Training',
       iconAsset: AppAssets.menuCoaches,
+      route: AppRoutes.coachTraining,
     ),
     MenuItem(
       label: 'Trophy Room',
@@ -44,6 +45,7 @@ abstract final class MenuItems {
     MenuItem(
       label: 'Coach Invitation',
       iconAsset: AppAssets.menuInvitation,
+      route: AppRoutes.coachInvitation,
     ),
     MenuItem(
       label: 'App Settings',
