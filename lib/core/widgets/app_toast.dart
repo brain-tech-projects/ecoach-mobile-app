@@ -26,6 +26,16 @@ abstract final class AppToast {
     _ToastData(id: ++_seq, message: message, icon: Icons.lock_outline),
   );
 
+  /// Red toast for failed requests / validation messages.
+  static void error(String message) => _add(
+    _ToastData(
+      id: ++_seq,
+      message: message,
+      icon: Icons.error_outline,
+      isError: true,
+    ),
+  );
+
   static void reward({required String title, required String message}) =>
       _add(_ToastData(id: ++_seq, title: title, message: message));
 
@@ -56,9 +66,11 @@ class _ToastData {
     required this.message,
     this.title,
     this.icon,
+    this.isError = false,
   });
 
   final int id;
+  final bool isError;
   final IconData? icon;
   final String? title;
   final String message;
@@ -126,7 +138,9 @@ class _ToastCard extends StatelessWidget {
               Icon(
                 data.icon ?? Icons.check_circle,
                 size: 20 * s,
-                color: data.icon == null
+                color: data.isError
+                    ? AppColors.error
+                    : data.icon == null
                     ? AppColors.selectGreen
                     : AppColors.unselectedBorder,
               ),

@@ -13,6 +13,7 @@ class AppPrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.scale = 1.0,
     this.enabled = true,
+    this.loading = false,
     this.labelStyle = AppTextStyles.buttonLabel,
   });
 
@@ -20,6 +21,9 @@ class AppPrimaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double scale;
   final bool enabled;
+
+  /// Shows a spinner instead of the arrow and ignores taps (request running).
+  final bool loading;
   final TextStyle labelStyle;
 
   @override
@@ -69,11 +73,19 @@ class AppPrimaryButton extends StatelessWidget {
                       color: AppColors.background,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      size: 18 * scale,
-                      color: AppColors.white,
-                    ),
+                    child: loading
+                        ? Padding(
+                            padding: EdgeInsets.all(7 * scale),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.white,
+                            ),
+                          )
+                        : Icon(
+                            Icons.arrow_forward,
+                            size: 18 * scale,
+                            color: AppColors.white,
+                          ),
                   ),
                 ),
               ],
@@ -90,7 +102,7 @@ class AppPrimaryButton extends StatelessWidget {
       child: ExcludeSemantics(
         child: Opacity(
           opacity: enabled ? 1 : 0.5,
-          child: IgnorePointer(ignoring: !enabled, child: button),
+          child: IgnorePointer(ignoring: !enabled || loading, child: button),
         ),
       ),
     );

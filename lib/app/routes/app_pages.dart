@@ -1,10 +1,17 @@
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
+import 'package:ecoach_pro/core/middleware/auth_middleware.dart';
+import 'package:ecoach_pro/features/subscription/presentation/bindings/subscription_binding.dart';
+import 'package:ecoach_pro/features/subscription/presentation/pages/subscription_page.dart';
+import 'package:ecoach_pro/features/auth/presentation/bindings/forgot_password_binding.dart';
+import 'package:ecoach_pro/features/auth/presentation/bindings/set_password_binding.dart';
 import 'package:ecoach_pro/features/auth/presentation/bindings/sign_in_binding.dart';
 import 'package:ecoach_pro/features/auth/presentation/bindings/otp_binding.dart';
 import 'package:ecoach_pro/features/auth/presentation/bindings/sign_up_binding.dart';
+import 'package:ecoach_pro/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/otp_page.dart';
+import 'package:ecoach_pro/features/auth/presentation/pages/set_password_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:ecoach_pro/features/contact/presentation/bindings/contact_binding.dart';
@@ -80,6 +87,25 @@ abstract final class AppPages {
       transition: Transition.cupertino,
     ),
     GetPage<void>(
+      name: AppRoutes.subscription,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const SubscriptionPage(),
+      binding: SubscriptionBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.forgotPassword,
+      page: () => const ForgotPasswordPage(),
+      binding: ForgotPasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.setNewPassword,
+      page: () => const SetPasswordPage(),
+      binding: SetPasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
       name: AppRoutes.menu,
       page: () => const MenuPage(),
       binding: SideMenuBinding(),
@@ -88,18 +114,21 @@ abstract final class AppPages {
     ),
     GetPage<void>(
       name: AppRoutes.appSettings,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const AppSettingsPage(),
       binding: AppSettingsBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<void>(
       name: AppRoutes.contact,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const ContactPage(),
       binding: ContactBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<void>(
       name: AppRoutes.training,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const TrainingPage(),
       binding: TrainingBinding(),
       transition: Transition.fadeIn,
@@ -107,12 +136,14 @@ abstract final class AppPages {
     ),
     GetPage<void>(
       name: AppRoutes.trainingDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const TrainingDetailPage(),
       binding: TrainingDetailBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<void>(
       name: AppRoutes.skills,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const SkillsPage(),
       binding: SkillsBinding(),
       transition: Transition.fadeIn,
@@ -120,12 +151,14 @@ abstract final class AppPages {
     ),
     GetPage<void>(
       name: AppRoutes.skillList,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const SkillListPage(),
       binding: SkillListBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<void>(
       name: AppRoutes.skillDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const SkillDetailPage(),
       binding: SkillDetailBinding(),
       transition: Transition.cupertino,

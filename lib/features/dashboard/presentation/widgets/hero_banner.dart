@@ -83,11 +83,11 @@ class HeroBanner extends StatelessWidget {
                           scale: s,
                           onTap: onTakeTour,
                         ),
-                        _HeroPill(
-                          label: 'Install App',
-                          scale: s,
-                          onTap: onInstallApp,
-                        ),
+                        // _HeroPill(
+                        //   label: 'Install App',
+                        //   scale: s,
+                        //   onTap: onInstallApp,
+                        // ),
                       ],
                     ),
                   ],

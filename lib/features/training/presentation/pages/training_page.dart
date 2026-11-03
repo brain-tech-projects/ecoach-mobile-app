@@ -79,9 +79,11 @@ class TrainingPage extends GetView<TrainingController> {
               ),
               SizedBox(height: 24.8 * s),
               LevelProgressCard(
-                level: levels.first,
+                level: controller.currentLevel.value ?? levels.first,
                 scale: s,
-                onTap: () => controller.openLevel(levels.first),
+                onTap: () => controller.openLevel(
+                  controller.currentLevel.value ?? levels.first,
+                ),
               ),
               SizedBox(height: 24.3 * s),
               ...rows,

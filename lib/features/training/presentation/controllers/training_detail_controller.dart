@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
-import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 import 'package:ecoach_pro/features/training/domain/repositories/training_repository.dart';
 
-/// One level: the player + the row of numbered videos (locked / unlocked).
+/// One level: the player (or the locked preview) + the row of numbered
+/// videos.
 class TrainingDetailController extends GetxController {
   TrainingDetailController(this._repository);
 
@@ -15,7 +16,6 @@ class TrainingDetailController extends GetxController {
 
   final RxList<TrainingVideo> videos = <TrainingVideo>[].obs;
   final RxInt currentIndex = 0.obs;
-  late final RxInt unlocked = level.unlocked.obs;
   final RxBool isLoading = true.obs;
   final RxnString errorMessage = RxnString();
 
@@ -32,7 +32,24 @@ class TrainingDetailController extends GetxController {
     isLoading.value = true;
     errorMessage.value = null;
     try {
-      videos.assignAll(await _repository.fetchVideos(level.id));
+      final res = await _repository.fetchVideos(level.id);
+
+      // No plan: replace this page with the Subscription page (back goes
+      // to the level list).
+      if (res.isSubscriptionRequired) {
+        Get.offNamed<void>(AppRoutes.subscription);
+        return;
+      }
+      if (!res.success) {
+        errorMessage.value = res.message;
+        return;
+      }
+
+      final list = res.data ?? const <TrainingVideo>[];
+      videos.assignAll(list);
+      // Start on the first video not finished yet (or the last one).
+      final next = list.indexWhere((v) => !v.completed);
+      currentIndex.value = list.isEmpty ? 0 : (next == -1 ? list.length - 1 : next);
     } catch (error, stackTrace) {
       AppLogger.error('Videos load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load the videos.';
@@ -41,27 +58,10 @@ class TrainingDetailController extends GetxController {
     }
   }
 
-  bool isLocked(int index) => index >= unlocked.value;
+  /// Locked videos can be selected too: they show the lock + countdown.
+  void select(int index) => currentIndex.value = index;
 
-  void select(int index) {
-    if (isLocked(index)) {
-      AppToast.info('Finish the previous video to unlock this one.');
-      return;
-    }
-    currentIndex.value = index;
-  }
-
-  /// Finishing the newest unlocked video unlocks the next one and rewards
-  /// points.
-  void onVideoEnded() {
-    final video = current;
-    if (video == null || currentIndex.value != unlocked.value - 1) return;
-
-    // TODO(api): send the completion to the backend (points + unlock).
-    AppToast.reward(
-      title: 'Training Video Completed',
-      message: "You completed '${video.title}' and earned ${video.points} points!",
-    );
-    if (unlocked.value < level.total) unlocked.value++;
-  }
+  /// TODO(api): no "complete video" endpoint yet. When it exists, call it
+  /// here (points + unlock) and then `load()` to refresh the list.
+  void onVideoEnded() {}
 }

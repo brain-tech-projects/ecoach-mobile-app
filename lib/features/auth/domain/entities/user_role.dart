@@ -29,4 +29,7 @@ enum UserRole {
   final List<SignUpStepKind> flow;
 
   int get totalSteps => flow.length;
+
+  /// Value the backend expects: `Player`, `Coach` or `Parent`.
+  String get apiValue => name[0].toUpperCase() + name.substring(1);
 }

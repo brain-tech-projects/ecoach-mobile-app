@@ -72,18 +72,28 @@ class SignInPage extends GetView<SignInController> {
           SizedBox(height: 15.9 * s),
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
-              'Forgot Password?',
-              style: AppTextStyles.link.scaled(s),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: controller.openForgotPassword,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4 * s),
+                child: Text(
+                  'Forgot Password?',
+                  style: AppTextStyles.link.scaled(s),
+                ),
+              ),
             ),
           ),
           SizedBox(height: 24.5 * s),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.3 * s),
-            child: AppPrimaryButton(
-              label: 'Sign in',
-              onPressed: controller.signIn,
-              scale: s,
+            child: Obx(
+              () => AppPrimaryButton(
+                label: 'Sign in',
+                onPressed: controller.signIn,
+                loading: controller.isLoading.value,
+                scale: s,
+              ),
             ),
           ),
           SizedBox(height: 16 * s),

@@ -1,9 +1,9 @@
+import 'package:ecoach_pro/core/network/api_response.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 
-/// Source of training content. Swap the dummy implementation for the API one
-/// in `TrainingBinding` when the backend is ready.
+/// Source of training content (the API one is `ApiTrainingRepository`).
 abstract interface class TrainingRepository {
-  Future<List<TrainingLevel>> fetchLevels();
+  Future<ApiResponse<TrainingOverview>> fetchLevels();
 
-  Future<List<TrainingVideo>> fetchVideos(String levelId);
+  Future<ApiResponse<List<TrainingVideo>>> fetchVideos(int levelId);
 }

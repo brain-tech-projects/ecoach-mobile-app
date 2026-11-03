@@ -101,6 +101,7 @@ class SignUpPage extends GetView<SignUpController> {
         AppPrimaryButton(
           label: label,
           enabled: controller.canProceed,
+          loading: isAccount && controller.isLoading.value,
           onPressed: controller.onNext,
           scale: s,
         ),

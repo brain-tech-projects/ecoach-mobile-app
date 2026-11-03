@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
@@ -17,13 +18,26 @@ class TrainingTile extends StatelessWidget {
   final double scale;
   final VoidCallback onTap;
 
+  Widget _image() {
+    final fallback = Image.asset(AppAssets.trainingTile, fit: BoxFit.cover);
+    final url = level.imageUrl;
+    if (url == null) return fallback;
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => fallback,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = scale;
 
     return Semantics(
       button: true,
-      label: '${level.title}, ${level.unlocked} of ${level.total}',
+      label: level.locked
+          ? '${level.title}, locked'
+          : '${level.title}, ${level.completed} of ${level.total}',
       child: ExcludeSemantics(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -36,14 +50,33 @@ class TrainingTile extends StatelessWidget {
                 Positioned.fill(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10 * s),
-                    child: Image.asset(level.imageAsset, fit: BoxFit.cover),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: <Widget>[
+                        _image(),
+                        if (level.locked) ...<Widget>[
+                          const ColoredBox(color: Color(0x8C000000)),
+                          Center(
+                            child: Icon(
+                              Icons.lock,
+                              size: 34 * s,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-                Positioned(
-                  top: -5.8 * s,
-                  right: -2.5 * s,
-                  child: _Badge(text: '${level.unlocked}/${level.total}', scale: s),
-                ),
+                if (!level.locked)
+                  Positioned(
+                    top: -5.8 * s,
+                    right: -2.5 * s,
+                    child: _Badge(
+                      text: '${level.completed}/${level.total}',
+                      scale: s,
+                    ),
+                  ),
                 Positioned(
                   left: 20.3 * s,
                   right: 20.3 * s,

@@ -8,6 +8,7 @@ class Program {
     required this.title,
     required this.description,
     required this.thumbnail,
+    this.route,
   });
 
   final String id;
@@ -16,4 +17,7 @@ class Program {
 
   /// An `assets/...` path (dummy data) or an `https://...` URL (API).
   final String thumbnail;
+
+  /// Page opened on tap (signed-in home). Null = not built yet.
+  final String? route;
 }

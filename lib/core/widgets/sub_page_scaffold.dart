@@ -20,6 +20,7 @@ class SubPageScaffold extends StatelessWidget {
     required this.body,
     this.navIndex = -1,
     this.floatingAction,
+    this.showNav = true,
   });
 
   final String title;
@@ -29,11 +30,15 @@ class SubPageScaffold extends StatelessWidget {
   final int navIndex;
   final Widget? floatingAction;
 
+  /// false = no bottom tab bar (e.g. Subscription).
+  final bool showNav;
+
   @override
   Widget build(BuildContext context) {
     final r = Responsive.of(context);
     final s = r.scale;
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final keyboardOpen =
+        MediaQuery.viewInsetsOf(context).bottom > 0 || !showNav;
     final navBottom = math.max(8.7 * s, r.safeBottom);
     final navSpace = keyboardOpen
         ? 0.0

@@ -21,6 +21,7 @@ dependencies:
 
   # Video playback (training & skills videos)
   video_player: ^2.9.2
+  dio: ^5.11.1
 
 dev_dependencies:
   flutter_test:
