@@ -27,6 +27,13 @@ import 'package:ecoach_pro/features/coach/presentation/bindings/coach_binding.da
 import 'package:ecoach_pro/features/coach/presentation/pages/coach_invitation_page.dart';
 import 'package:ecoach_pro/features/coach/presentation/pages/coach_training_detail_page.dart';
 import 'package:ecoach_pro/features/coach/presentation/pages/coach_training_page.dart';
+import 'package:ecoach_pro/features/player/presentation/bindings/player_binding.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/chat_list_page.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/chat_page.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/my_profile_page.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/my_skills_page.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/notes_page.dart';
+import 'package:ecoach_pro/features/player/presentation/pages/notifications_page.dart';
 import 'package:ecoach_pro/features/contact/presentation/bindings/contact_binding.dart';
 import 'package:ecoach_pro/features/contact/presentation/pages/contact_page.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/bindings/dashboard_binding.dart';
@@ -277,6 +284,48 @@ abstract final class AppPages {
       middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const CoachInvitationPage(),
       binding: CoachInvitationBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.myProfile,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const MyProfilePage(),
+      binding: MyProfileBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.mySkills,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const MySkillsPage(),
+      binding: MySkillsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.notes,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const NotesPage(),
+      binding: NotesBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.chats,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const ChatListPage(),
+      binding: ChatListBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.chat,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const ChatPage(),
+      binding: ChatBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.notifications,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const NotificationsPage(),
+      binding: NotificationsBinding(),
       transition: Transition.cupertino,
     ),
 

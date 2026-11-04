@@ -25,7 +25,7 @@ abstract final class MenuItems {
     MenuItem(
       label: 'My Skills',
       iconAsset: AppAssets.menuSkills,
-      route: AppRoutes.skills,
+      route: AppRoutes.mySkills,
     ),
     MenuItem(
       label: 'Coaches Training',

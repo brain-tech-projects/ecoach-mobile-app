@@ -36,4 +36,11 @@ abstract final class AppRoutes {
   static const String coachTrainingDetail = '/coach-training-detail';
   /// Coach Invitation: connected coach / pending invitations.
   static const String coachInvitation = '/coach-invitation';
+  /// Profile menu pages.
+  static const String myProfile = '/my-profile';
+  static const String mySkills = '/my-skills';
+  static const String notes = '/notes';
+  static const String chats = '/chats';
+  static const String chat = '/chat';
+  static const String notifications = '/notifications';
 }

@@ -59,8 +59,11 @@ class SideMenuController extends GetxController {
   // Quick-action row under the name.
   void openRewards() => MainNav.open(AppRoutes.trophyRoom);
   void openEditProfile() => AppToast.info('Coming soon');
-  void openMessages() => AppToast.info('Coming soon');
-  void openNotifications() => AppToast.info('Coming soon');
+  void openMySkills() => MainNav.open(AppRoutes.mySkills);
+  void openNotes() => MainNav.open(AppRoutes.notes);
+  void openMyProfile() => MainNav.open(AppRoutes.myProfile);
+  void openMessages() => MainNav.open(AppRoutes.chats);
+  void openNotifications() => MainNav.open(AppRoutes.notifications);
 
   Future<void> confirmLogout() async {
     final yes = await Get.dialog<bool>(

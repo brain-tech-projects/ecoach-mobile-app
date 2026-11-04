@@ -65,14 +65,14 @@ class MenuPage extends GetView<SideMenuController> {
                           scale: s,
                           name: _firstName(user!.displayName),
                           photoUrl: user!.profilePhoto,
-                          onEditPhoto: controller.openEditProfile,
+                          onEditPhoto: controller.openMyProfile,
                         ),
                         SizedBox(height: 14 * s),
                         _QuickActions(
                           scale: s,
                           unread: controller.unreadCount.value,
-                          onStar: controller.openRewards,
-                          onEdit: controller.openEditProfile,
+                          onStar: controller.openMySkills,
+                          onEdit: controller.openNotes,
                           onChat: controller.openMessages,
                           onBell: controller.openNotifications,
                         ),
@@ -222,7 +222,9 @@ class _ProfileBlock extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
-              Container(
+              GestureDetector(
+                onTap: onEditPhoto,
+                child: Container(
                 width: 70 * s,
                 height: 70 * s,
                 clipBehavior: Clip.antiAlias,
@@ -245,6 +247,7 @@ class _ProfileBlock extends StatelessWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => fallback,
                       ),
+              ),
               ),
               Positioned(
                 right: 0,
