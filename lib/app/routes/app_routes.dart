@@ -14,6 +14,13 @@ abstract final class AppRoutes {
   static const String training = '/training';
   static const String trainingDetail = '/training-detail';
   static const String skills = '/skills';
+  static const String fun = '/fun';
+  static const String challenges = '/challenges';
+  static const String challengeDetail = '/challenge-detail';
+  static const String quizzes = '/quizzes';
+  static const String quizList = '/quiz-list';
+  static const String quizPlay = '/quiz-play';
+  static const String quizReview = '/quiz-review';
   static const String skillList = '/skill-list';
   static const String skillDetail = '/skill-detail';
   static const String ratingTracker = '/rating-tracker';

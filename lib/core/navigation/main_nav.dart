@@ -13,10 +13,22 @@ abstract final class MainNav {
   static const int trainingIndex = 0;
   static const int skillsIndex = 1;
   static const int homeIndex = 2;
+  static const int funIndex = 3;
 
   static const Set<String> _tabRoutes = <String>{
     AppRoutes.training,
     AppRoutes.skills,
+    AppRoutes.fun,
+  };
+
+  /// Pages inside the Fun tab: tapping the Fun tab there returns to its hub.
+  static const Set<String> _funRoutes = <String>{
+    AppRoutes.challenges,
+    AppRoutes.challengeDetail,
+    AppRoutes.quizzes,
+    AppRoutes.quizList,
+    AppRoutes.quizPlay,
+    AppRoutes.quizReview,
   };
 
   static bool get isLoggedIn => Get.find<SessionService>().isLoggedIn.value;
@@ -57,8 +69,22 @@ abstract final class MainNav {
     if (index == trainingIndex) return _openTab(AppRoutes.training);
     if (index == skillsIndex) return _openTab(AppRoutes.skills);
 
-    // Fun / Tracker: pages are not built yet.
+    if (index == funIndex) return _openFun();
+
+    // Tracker: page is not built yet.
     AppToast.info('Coming soon');
+  }
+
+  static void _openFun() {
+    final current = Get.currentRoute;
+    if (current == AppRoutes.fun) return;
+    if (_funRoutes.contains(current)) {
+      Get.until(
+        (route) => route.settings.name == AppRoutes.fun || route.isFirst,
+      );
+      return;
+    }
+    _openTab(AppRoutes.fun);
   }
 
   /// Switching between tab pages replaces the current tab instead of piling

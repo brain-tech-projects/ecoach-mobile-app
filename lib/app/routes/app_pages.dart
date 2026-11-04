@@ -3,6 +3,14 @@ import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/middleware/auth_middleware.dart';
+import 'package:ecoach_pro/features/fun/presentation/bindings/fun_binding.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/challenge_detail_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/challenges_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/fun_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/quiz_groups_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/quiz_list_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/quiz_play_page.dart';
+import 'package:ecoach_pro/features/fun/presentation/pages/quiz_review_page.dart';
 import 'package:ecoach_pro/features/subscription/presentation/bindings/subscription_binding.dart';
 import 'package:ecoach_pro/features/subscription/presentation/pages/subscription_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/bindings/forgot_password_binding.dart';
@@ -150,6 +158,62 @@ abstract final class AppPages {
       page: () => const TrainingDetailPage(),
       binding: TrainingDetailBinding(),
       transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.fun,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const FunPage(),
+      binding: FunBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.challenges,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const ChallengesPage(),
+      binding: ChallengesBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.challengeDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const ChallengeDetailPage(),
+      binding: ChallengeDetailBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.quizzes,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const QuizGroupsPage(),
+      binding: QuizGroupsBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.quizList,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const QuizListPage(),
+      binding: QuizListBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.quizPlay,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const QuizPlayPage(),
+      binding: QuizPlayBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
+    ),
+    GetPage<void>(
+      name: AppRoutes.quizReview,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const QuizReviewPage(),
+      binding: QuizReviewBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 250),
     ),
     GetPage<void>(
       name: AppRoutes.skills,

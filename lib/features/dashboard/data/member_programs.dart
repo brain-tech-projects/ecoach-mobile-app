@@ -47,6 +47,7 @@ abstract final class MemberPrograms {
       title: 'Just For Fun',
       description: 'Enjoy quick quizzes and fun challenges.',
       thumbnail: AppAssets.programWhatsNew,
+      route: AppRoutes.fun,
     ),
     Program(
       id: 'my-skills',
