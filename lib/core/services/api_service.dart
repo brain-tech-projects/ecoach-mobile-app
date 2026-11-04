@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/services/session_service.dart';
 import 'package:ecoach_pro/features/auth/data/models/user_model.dart';
 import 'package:ecoach_pro/features/dashboard/data/models/banner_model.dart';
 import 'package:ecoach_pro/features/dashboard/data/models/dashboard_details.dart';
+import 'package:ecoach_pro/features/fun/domain/entities/fun_entities.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 
@@ -367,6 +368,119 @@ class ApiService {
       body: <String, dynamic>{'note_id': noteId},
     );
     return res.map<void>((_) => null);
+  }
+
+  // ---- Fun: challenges --------------------------------------------------------
+
+  static List<T> _list<T>(Object? data, T Function(Map<String, dynamic>) build) =>
+      data is List
+      ? data
+            .whereType<Map>()
+            .map((e) => build(Map<String, dynamic>.from(e)))
+            .toList()
+      : <T>[];
+
+  Future<ApiResponse<List<Challenge>>> getChallenges() async {
+    final res = await _network.get(ApiEndpoints.challenges);
+    return res.map<List<Challenge>>((d) => _list(d, Challenge.fromJson));
+  }
+
+  Future<ApiResponse<Challenge>> getChallengeDetails(int challengeId) async {
+    final res = await _network.post(
+      ApiEndpoints.challengeDetails,
+      body: <String, dynamic>{'challenge_id': challengeId},
+    );
+    return res.map<Challenge>(
+      (d) => d is Map ? Challenge.fromJson(Map<String, dynamic>.from(d)) : null,
+    );
+  }
+
+  Future<ApiResponse<void>> setChallengeFavourite(
+    int challengeId, {
+    required bool add,
+  }) async {
+    final res = await _network.post(
+      ApiEndpoints.toggleFavouriteChallenge,
+      body: <String, dynamic>{
+        'challenge_id': challengeId,
+        'action': add ? 'add' : 'remove',
+      },
+    );
+    return res.map<void>((_) => null);
+  }
+
+  Future<ApiResponse<List<ChallengeNote>>> getChallengeNotes(
+    int challengeId,
+  ) async {
+    final res = await _network.post(
+      ApiEndpoints.getChallengeNotes,
+      body: <String, dynamic>{'challenge_id': challengeId},
+    );
+    return res.map<List<ChallengeNote>>((d) => _list(d, ChallengeNote.fromJson));
+  }
+
+  Future<ApiResponse<void>> addChallengeNote(
+    int challengeId,
+    String note,
+  ) async {
+    final res = await _network.post(
+      ApiEndpoints.storeChallengeNote,
+      body: <String, dynamic>{'challenge_id': challengeId, 'note': note},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  Future<ApiResponse<void>> updateChallengeNote(int noteId, String note) async {
+    final res = await _network.post(
+      ApiEndpoints.updateChallengeNote,
+      body: <String, dynamic>{'note_id': noteId, 'note': note},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  Future<ApiResponse<void>> deleteChallengeNote(int noteId) async {
+    final res = await _network.post(
+      ApiEndpoints.deleteChallengeNote,
+      body: <String, dynamic>{'note_id': noteId},
+    );
+    return res.map<void>((_) => null);
+  }
+
+  // ---- Fun: quizzes -----------------------------------------------------------
+
+  Future<ApiResponse<List<QuizGroup>>> getQuizTypes() async {
+    final res = await _network.get(ApiEndpoints.quizTypes);
+    return res.map<List<QuizGroup>>((d) => _list(d, QuizGroup.fromJson));
+  }
+
+  Future<ApiResponse<List<QuizSummary>>> getQuizzes(int quizTypeId) async {
+    final res = await _network.post(
+      ApiEndpoints.quizzes,
+      body: <String, dynamic>{'quiz_type_id': quizTypeId},
+    );
+    return res.map<List<QuizSummary>>((d) => _list(d, QuizSummary.fromJson));
+  }
+
+  Future<ApiResponse<List<QuizQuestion>>> getQuizQuestions(int quizId) async {
+    final res = await _network.post(
+      ApiEndpoints.questions,
+      body: <String, dynamic>{'quiz_id': quizId},
+    );
+    return res.map<List<QuizQuestion>>((d) => _list(d, QuizQuestion.fromJson));
+  }
+
+  /// [answers]: `[{question_id, selected_answer}]` (answer = the option text).
+  Future<ApiResponse<Map<String, dynamic>>> submitQuiz(
+    String quizId,
+    List<Map<String, String>> answers,
+  ) async {
+    final res = await _network.post(
+      ApiEndpoints.submitQuiz,
+      body: <String, dynamic>{'quiz_id': quizId, 'answers': answers},
+    );
+    return res.map<Map<String, dynamic>>(
+      (d) => d is Map ? Map<String, dynamic>.from(d) : null,
+    );
   }
 
   // ---- helpers ----------------------------------------------------------------

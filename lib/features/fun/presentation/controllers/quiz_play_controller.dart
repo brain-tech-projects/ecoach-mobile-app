@@ -31,7 +31,7 @@ class QuizPlayController extends GetxController {
   Future<void> load() async {
     isLoading.value = true;
     errorMessage.value = null;
-    final res = await _repository.fetchQuiz(summary.id);
+    final res = await _repository.fetchQuiz(summary);
     if (res.isSubscriptionRequired) {
       Get.offNamed<void>(AppRoutes.subscription);
       return;
@@ -76,11 +76,15 @@ class QuizPlayController extends GetxController {
     final q = quiz.value;
     if (q == null || isSubmitting.value) return;
     isSubmitting.value = true;
-    final res = await _repository.submitQuiz(q.id, answers.toList());
+    final res = await _repository.submitQuiz(q, answers.toList());
     isSubmitting.value = false;
     if (res.success && res.data != null) {
       result.value = res.data;
-      AppToast.success('Quiz submitted successfully');
+      AppToast.success(
+        res.message.isEmpty ? 'Quiz submitted successfully' : res.message,
+      );
+    } else if (res.isSubscriptionRequired) {
+      Get.toNamed<void>(AppRoutes.subscription);
     } else {
       AppToast.error(
         res.message.isEmpty ? 'Could not submit the quiz.' : res.message,

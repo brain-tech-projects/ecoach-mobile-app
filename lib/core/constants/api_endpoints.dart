@@ -31,4 +31,19 @@ abstract final class ApiEndpoints {
   static const String getSkillNotes = '/get-skill-notes';
   static const String updateSkillNote = '/update-skill-note';
   static const String deleteSkillNote = '/delete-skill-note';
+
+  // Fun: challenges
+  static const String challenges = '/challenges';
+  static const String challengeDetails = '/challenge-details';
+  static const String toggleFavouriteChallenge = '/toggle-favourite-challenge';
+  static const String storeChallengeNote = '/store-challenge-note';
+  static const String getChallengeNotes = '/get-challenge-notes';
+  static const String updateChallengeNote = '/update-challenge-note';
+  static const String deleteChallengeNote = '/delete-challenge-note';
+
+  // Fun: quizzes
+  static const String quizTypes = '/quiz-types';
+  static const String quizzes = '/quizzes';
+  static const String questions = '/questions';
+  static const String submitQuiz = '/submit';
 }

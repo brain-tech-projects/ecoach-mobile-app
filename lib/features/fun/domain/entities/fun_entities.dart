@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:ecoach_pro/core/config/env.dart';
+
+int _int(Object? v) => v is int ? v : int.tryParse('${v ?? 0}') ?? 0;
+
 /// A video challenge ("Maradona 7", "Wheelie Bins"...).
 ///
 /// [thumbnail] is an `assets/...` path (dummy data) or an `https://...` URL
@@ -16,20 +20,40 @@ class Challenge {
     this.note = '',
   });
 
+  factory Challenge.fromJson(Map<String, dynamic> json) => Challenge(
+    id: '${json['id']}',
+    title: (json['name'] ?? '').toString(),
+    thumbnail: Env.skillMediaUrl(json['image'] as String?) ?? '',
+    // Video file names contain spaces ("Just for fun/Maradona 7 Final.mp4").
+    videoUrl: (Env.skillMediaUrl(json['video'] as String?) ?? '').replaceAll(
+      ' ',
+      '%20',
+    ),
+    // `addToFavourite: true` means the "add" option is offered, i.e. the
+    // challenge is NOT a favourite yet.
+    isFavorite: json['addToFavourite'] == false,
+  );
+
   final String id;
   final String title;
   final String thumbnail;
   final String videoUrl;
   final bool isFavorite;
 
-  /// The user's own note for this challenge ("" = none).
+  /// Unused with the API (notes are a list, see [ChallengeNote]).
   final String note;
 
-  Challenge copyWith({bool? isFavorite, String? note}) => Challenge(
+  Challenge copyWith({
+    bool? isFavorite,
+    String? note,
+    String? title,
+    String? thumbnail,
+    String? videoUrl,
+  }) => Challenge(
     id: id,
-    title: title,
-    thumbnail: thumbnail,
-    videoUrl: videoUrl,
+    title: title ?? this.title,
+    thumbnail: thumbnail ?? this.thumbnail,
+    videoUrl: videoUrl ?? this.videoUrl,
     isFavorite: isFavorite ?? this.isFavorite,
     note: note ?? this.note,
   );
@@ -39,6 +63,12 @@ class Challenge {
 @immutable
 class QuizGroup {
   const QuizGroup({required this.id, required this.name, required this.logo});
+
+  factory QuizGroup.fromJson(Map<String, dynamic> json) => QuizGroup(
+    id: '${json['id']}',
+    name: (json['name'] ?? '').toString(),
+    logo: Env.skillMediaUrl(json['icon'] as String?) ?? '',
+  );
 
   final String id;
   final String name;
@@ -55,12 +85,27 @@ class QuizSummary {
     required this.title,
     required this.logo,
     this.questionCount = 0,
+    this.marksPerQuestion = 5,
   });
+
+  factory QuizSummary.fromJson(Map<String, dynamic> json) {
+    final marks = _int(json['marks_per_question']);
+    final max = _int(json['max_score']);
+    return QuizSummary(
+      id: '${json['id']}',
+      title: (json['title'] ?? '').toString(),
+      logo: Env.skillMediaUrl(json['icon'] as String?) ?? '',
+      marksPerQuestion: marks > 0 ? marks : 5,
+      // The API has no question count: max score / marks per question.
+      questionCount: marks > 0 ? max ~/ marks : 0,
+    );
+  }
 
   final String id;
   final String title;
   final String logo;
   final int questionCount;
+  final int marksPerQuestion;
 }
 
 @immutable
@@ -71,6 +116,14 @@ class QuizQuestion {
     required this.options,
     this.correctIndex,
   });
+
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) => QuizQuestion(
+    id: '${json['id']}',
+    text: (json['question'] ?? '').toString(),
+    options: json['options'] is List
+        ? (json['options'] as List).map((e) => e.toString()).toList()
+        : const <String>[],
+  );
 
   final String id;
   final String text;
@@ -135,4 +188,26 @@ class QuizReviewArgs {
 
   final Quiz quiz;
   final QuizResult result;
+}
+
+/// A note on a challenge (`/get-challenge-notes`).
+@immutable
+class ChallengeNote {
+  const ChallengeNote({
+    required this.id,
+    required this.text,
+    required this.createdAt,
+  });
+
+  factory ChallengeNote.fromJson(Map<String, dynamic> json) => ChallengeNote(
+    id: _int(json['id']),
+    text: (json['note'] ?? '').toString(),
+    createdAt:
+        DateTime.tryParse('${json['created_at'] ?? ''}')?.toLocal() ??
+        DateTime.now(),
+  );
+
+  final int id;
+  final String text;
+  final DateTime createdAt;
 }

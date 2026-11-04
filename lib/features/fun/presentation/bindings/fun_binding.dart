@@ -1,4 +1,7 @@
-import 'package:ecoach_pro/features/fun/data/repositories/dummy_fun_repository.dart';
+import 'package:get/get.dart';
+
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/features/fun/data/repositories/api_fun_repository.dart';
 import 'package:ecoach_pro/features/fun/domain/repositories/fun_repository.dart';
 import 'package:ecoach_pro/features/fun/presentation/controllers/challenge_detail_controller.dart';
 import 'package:ecoach_pro/features/fun/presentation/controllers/challenges_controller.dart';
@@ -7,10 +10,10 @@ import 'package:ecoach_pro/features/fun/presentation/controllers/quiz_groups_con
 import 'package:ecoach_pro/features/fun/presentation/controllers/quiz_list_controller.dart';
 import 'package:ecoach_pro/features/fun/presentation/controllers/quiz_play_controller.dart';
 import 'package:ecoach_pro/features/fun/presentation/controllers/quiz_review_controller.dart';
-import 'package:get/get.dart';
 
-// Swap DummyFunRepository for ApiFunRepository here when the API is ready.
-void _repo() => Get.lazyPut<FunRepository>(DummyFunRepository.new);
+void _repo() => Get.lazyPut<FunRepository>(
+  () => ApiFunRepository(Get.find<ApiService>()),
+);
 
 class FunBinding extends Bindings {
   @override
@@ -29,8 +32,12 @@ class ChallengesBinding extends Bindings {
 
 class ChallengeDetailBinding extends Bindings {
   @override
-  void dependencies() =>
-      Get.lazyPut<ChallengeDetailController>(ChallengeDetailController.new);
+  void dependencies() {
+    _repo();
+    Get.lazyPut<ChallengeDetailController>(
+      () => ChallengeDetailController(Get.find<FunRepository>()),
+    );
+  }
 }
 
 class QuizGroupsBinding extends Bindings {

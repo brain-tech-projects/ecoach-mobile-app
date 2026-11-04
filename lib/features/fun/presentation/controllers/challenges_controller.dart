@@ -6,7 +6,7 @@ import 'package:ecoach_pro/core/services/share_service.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/fun/domain/entities/fun_entities.dart';
 import 'package:ecoach_pro/features/fun/domain/repositories/fun_repository.dart';
-import 'package:ecoach_pro/features/fun/presentation/widgets/note_dialog.dart';
+import 'package:ecoach_pro/features/fun/presentation/widgets/challenge_notes_dialog.dart';
 
 class ChallengesController extends GetxController {
   ChallengesController(this._repository);
@@ -55,9 +55,15 @@ class ChallengesController extends GetxController {
     final res = await _repository.setFavorite(c.id, next);
     if (!res.success) {
       _replace(c);
-      AppToast.error(
-        res.message.isEmpty ? 'Could not update favourite.' : res.message,
-      );
+      if (res.isSubscriptionRequired) {
+        Get.toNamed<void>(AppRoutes.subscription);
+      } else {
+        AppToast.error(
+          res.message.isEmpty ? 'Could not update favourite.' : res.message,
+        );
+      }
+    } else if (res.message.isNotEmpty) {
+      AppToast.success(res.message);
     }
     _busy.remove(c.id);
   }
@@ -65,17 +71,8 @@ class ChallengesController extends GetxController {
   void open(Challenge c) =>
       Get.toNamed<void>(AppRoutes.challengeDetail, arguments: c);
 
-  Future<void> addNote(Challenge c) async {
-    final text = await showNoteDialog(initial: c.note);
-    if (text == null || text == c.note) return;
-    final res = await _repository.saveNote(c.id, text);
-    if (res.success) {
-      _replace(c.copyWith(note: text));
-      AppToast.success('Note saved');
-    } else {
-      AppToast.error(res.message.isEmpty ? 'Could not save note.' : res.message);
-    }
-  }
+  /// Notes popup (list / add / edit / delete through the notes API).
+  void addNote(Challenge c) => showChallengeNotesDialog(c);
 
   Future<void> share(Challenge c, {Rect? origin}) => ShareService.shareText(
     'Take on the "${c.title}" challenge in eCoach Pro!\n${c.videoUrl}',
