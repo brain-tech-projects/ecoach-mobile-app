@@ -16,7 +16,7 @@ abstract final class MenuItems {
     MenuItem(
       label: 'Personal Training Session',
       iconAsset: AppAssets.menuPersonal,
-      route: AppRoutes.training,
+      route: AppRoutes.personalTraining,
     ),
     MenuItem(
       label: 'AI Training Session',

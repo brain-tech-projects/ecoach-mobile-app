@@ -46,4 +46,37 @@ abstract final class ApiEndpoints {
   static const String quizzes = '/quizzes';
   static const String questions = '/questions';
   static const String submitQuiz = '/submit';
+
+  // Personal training / My skills
+  static const String personalTrainingSession = '/personal-training-session';
+  static const String favourites = '/favourites';
+
+  // Coach
+  static const String allocatedTrainings = '/allocated-trainings';
+  static const String allocatedTrainingCompleted =
+      '/allocated-training-completed';
+  static const String checkCoachConnection = '/check-coach-connection';
+  static const String myConnectedCoaches = '/my-connected-coaches';
+  static const String disconnectCoach = '/disconnect-coach';
+  static const String sendInvitationToCoach = '/send-invitation-to-coach';
+
+  // Trophies
+  static const String trophies = '/trophies';
+  static const String redeemTrophy = '/redeem-trophy';
+
+  // Settings / contact
+  static const String myPlanHistory = '/my-plan-history';
+  static const String changePassword = '/change-password';
+  static const String contactUs = '/contact-us';
+
+  // Notes / notifications / profile / chat
+  static const String allChallengeNotes = '/all-challenge-notes';
+  static const String allSkillNotes = '/all-skill-notes';
+  static const String getNotifications = '/get-notifications';
+  static const String markNotification = '/mark-notification';
+  static const String markAllNotifications = '/mark-all-notifications';
+  static const String profile = '/profile';
+  static const String updateProfile = '/update-profile';
+  static const String sendMessage = '/send-message';
+  static const String openChat = '/open-chat';
 }

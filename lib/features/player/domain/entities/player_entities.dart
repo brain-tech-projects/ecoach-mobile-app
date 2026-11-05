@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:ecoach_pro/features/auth/data/signup_content.dart';
+import 'package:ecoach_pro/features/auth/domain/entities/signup_step.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 
 /// Editable "My Profile" data.
@@ -46,22 +48,20 @@ class PlayerProfile {
 abstract final class ProfileOptions {
   static final List<String> ages =
       List<String>.generate(45, (i) => '${i + 4}'); // 4 - 48
-  static const List<String> positions = <String>[
-    'Goalkeeper', 'Defender', 'Midfielder', 'Winger', 'Forward',
-  ];
-  static const List<String> levels = <String>[
-    'Just starting out', 'Learning the basics', 'Confident player',
-    'Club player', 'Advanced',
-  ];
-  static const List<String> improve = <String>[
-    'Dribbling', 'Passing', 'Shooting', 'First touch', 'Defending', 'Fitness',
-  ];
-  static const List<String> biggestDifference = <String>[
-    'Confidence', 'Technique', 'Fitness', 'Teamwork', 'Game understanding',
-  ];
-  static const List<String> frequency = <String>[
-    'Once a week', '2× a week', '3× a week', '4× a week', 'Every day',
-  ];
+  // Same wording as the sign-up questions, because that is what the API
+  // stores (e.g. "Just starting out", "2× a week").
+  static List<String> _labels(SignUpStepKind kind) => SignUpContent
+      .questionFor(kind)!
+      .options
+      .map((o) => o.label)
+      .toList();
+
+  static List<String> get positions => _labels(SignUpStepKind.positions);
+  static List<String> get levels => _labels(SignUpStepKind.level);
+  static List<String> get improve => _labels(SignUpStepKind.improve);
+  static List<String> get biggestDifference =>
+      _labels(SignUpStepKind.difference);
+  static List<String> get frequency => _labels(SignUpStepKind.frequency);
   static const Map<String, String> countries = <String, String>{
     'AU': 'Australia', 'BR': 'Brazil', 'CA': 'Canada', 'EG': 'Egypt',
     'FR': 'France', 'DE': 'Germany', 'GH': 'Ghana', 'IN': 'India',

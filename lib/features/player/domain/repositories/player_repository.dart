@@ -18,10 +18,14 @@ abstract interface class PlayerRepository {
   Future<List<NoteNode>> fetchSkillNotes();
   Future<void> deleteNote(String noteId);
 
+  /// Challenge notes grouped by challenge (ids prefixed `challenge:`).
+  Future<List<NoteNode>> fetchChallengeNotes();
+
   // Chat with the coach
   Future<List<ChatMessage>> fetchMessages(String coachId);
   Future<ChatMessage> sendMessage(String coachId, String text);
 
   // Notifications
   Future<List<AppNotification>> fetchNotifications();
+  Future<void> markAllNotificationsRead();
 }

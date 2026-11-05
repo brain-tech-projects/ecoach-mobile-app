@@ -27,6 +27,8 @@ class NotificationsController extends GetxController {
     errorMessage.value = null;
     try {
       items.assignAll(await _repository.fetchNotifications());
+      // Opening the screen counts as reading them (best effort).
+      _repository.markAllNotificationsRead().catchError((Object _) {});
     } catch (error, stackTrace) {
       AppLogger.error('Notifications load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load notifications.';

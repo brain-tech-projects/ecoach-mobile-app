@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
 import 'package:ecoach_pro/core/widgets/app_loader.dart';
@@ -50,11 +51,40 @@ class CoachInvitationPage extends GetView<CoachInvitationController> {
                 coach != null
                     ? "You're connected to a coach. Any new invitations will "
                         'appear here.'
-                    : 'You have no coach invitations right now. New '
-                        'invitations will appear here.',
+                    : 'You are not currently connected to a coach. Please '
+                        'enter your coaches email address to invite them to '
+                        'join eCoachPro.',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.trainSubline.scaled(s),
               ),
+              if (coach == null) ...<Widget>[
+                SizedBox(height: 14 * s),
+                Center(
+                  child: Semantics(
+                    button: true,
+                    label: 'Invite a coach',
+                    child: GestureDetector(
+                      onTap: controller.openInvite,
+                      child: Container(
+                        width: 41 * s,
+                        height: 41 * s,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              AppColors.selectGreen,
+                              Color(0xFF16813B),
+                            ],
+                          ),
+                        ),
+                        child: Icon(Icons.add, size: 26 * s, color: Colors.black87),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               if (coach != null) ...<Widget>[
                 SizedBox(height: 16.7 * s),
                 CoachCard(

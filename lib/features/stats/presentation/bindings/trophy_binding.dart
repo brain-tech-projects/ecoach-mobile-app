@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
-import 'package:ecoach_pro/features/stats/data/repositories/dummy_trophy_repository.dart';
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/features/stats/data/repositories/api_trophy_repository.dart';
 import 'package:ecoach_pro/features/stats/domain/repositories/trophy_repository.dart';
 import 'package:ecoach_pro/features/stats/presentation/controllers/trophy_detail_controller.dart';
 import 'package:ecoach_pro/features/stats/presentation/controllers/trophy_store_controller.dart';
@@ -9,7 +10,10 @@ import 'package:ecoach_pro/features/stats/presentation/controllers/trophy_store_
 /// redeemed trophies between pages). Swap the implementation for the API.
 void ensureTrophyRepository() {
   if (!Get.isRegistered<TrophyRepository>()) {
-    Get.put<TrophyRepository>(DummyTrophyRepository(), permanent: true);
+    Get.put<TrophyRepository>(
+      ApiTrophyRepository(Get.find<ApiService>()),
+      permanent: true,
+    );
   }
 }
 

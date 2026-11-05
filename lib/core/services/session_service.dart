@@ -33,6 +33,14 @@ class SessionService extends GetxService {
     isLoggedIn.value = true;
   }
 
+  /// Replaces the signed-in user (e.g. after editing the profile).
+  Future<void> updateUser(UserModel userModel) async {
+    final token = _tokens.token;
+    if (token == null) return;
+    await _tokens.save(token: token, user: userModel.toJson());
+    user.value = userModel;
+  }
+
   Future<void> clear() async {
     await _tokens.clear();
     user.value = null;

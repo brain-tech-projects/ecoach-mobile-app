@@ -105,10 +105,13 @@ class ContactPage extends GetView<ContactController> {
             SizedBox(height: 24.6 * s),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24 * s),
-              child: AppPrimaryButton(
-                label: 'Submit',
-                onPressed: controller.submit,
-                scale: s,
+              child: Obx(
+                () => AppPrimaryButton(
+                  label: 'Submit',
+                  loading: controller.loading.value,
+                  onPressed: controller.submit,
+                  scale: s,
+                ),
               ),
             ),
           ],

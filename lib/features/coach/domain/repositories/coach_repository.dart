@@ -12,4 +12,7 @@ abstract interface class CoachRepository {
 
   /// Marks an assigned training as completed. Throws on failure.
   Future<void> completeTraining(String trainingId);
+
+  /// Emails an invitation to a coach; returns the server's message.
+  Future<String> inviteCoach(String email);
 }

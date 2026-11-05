@@ -4,7 +4,9 @@ import 'package:ecoach_pro/features/coach/domain/repositories/coach_repository.d
 import 'package:ecoach_pro/features/fun/domain/repositories/fun_repository.dart';
 import 'package:ecoach_pro/features/fun/presentation/bindings/fun_binding.dart';
 import 'package:ecoach_pro/features/coach/presentation/bindings/coach_binding.dart';
-import 'package:ecoach_pro/features/player/data/repositories/dummy_player_repository.dart';
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/core/services/session_service.dart';
+import 'package:ecoach_pro/features/player/data/repositories/api_player_repository.dart';
 import 'package:ecoach_pro/features/player/domain/repositories/player_repository.dart';
 import 'package:ecoach_pro/features/player/presentation/controllers/chat_controller.dart';
 import 'package:ecoach_pro/features/player/presentation/controllers/chat_list_controller.dart';
@@ -14,10 +16,13 @@ import 'package:ecoach_pro/features/player/presentation/controllers/notes_contro
 import 'package:ecoach_pro/features/player/presentation/controllers/notifications_controller.dart';
 
 /// One shared repository (keeps removals / notes / messages between pages).
-/// Replace `DummyPlayerRepository` with the API version here.
+/// Backed by the API (`ApiPlayerRepository`).
 void ensurePlayerRepository() {
   if (!Get.isRegistered<PlayerRepository>()) {
-    Get.put<PlayerRepository>(DummyPlayerRepository(), permanent: true);
+    Get.put<PlayerRepository>(
+      ApiPlayerRepository(Get.find<ApiService>(), Get.find<SessionService>()),
+      permanent: true,
+    );
   }
   ensureCoachRepository();
 }

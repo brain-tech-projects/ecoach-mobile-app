@@ -483,6 +483,124 @@ class ApiService {
     );
   }
 
+  // ---- Menu sections: raw responses (repositories parse them) ------------------
+
+  // Personal training session + My skills
+  Future<ApiResponse<List<Drill>>> getPersonalTrainingSession() async {
+    final res = await _network.get(ApiEndpoints.personalTrainingSession);
+    return res.map<List<Drill>>((d) => _list(d, Drill.fromJson));
+  }
+
+  Future<ApiResponse<dynamic>> getFavourites() =>
+      _network.get(ApiEndpoints.favourites);
+
+  // Coach
+  Future<ApiResponse<dynamic>> getAllocatedTrainings() =>
+      _network.get(ApiEndpoints.allocatedTrainings);
+
+  /// The backend route is a GET that reads a JSON body.
+  Future<ApiResponse<dynamic>> completeAllocatedTraining(int id) =>
+      _network.get(
+        ApiEndpoints.allocatedTrainingCompleted,
+        body: <String, dynamic>{'coach_training_id': id},
+      );
+
+  Future<ApiResponse<dynamic>> checkCoachConnection() =>
+      _network.get(ApiEndpoints.checkCoachConnection);
+
+  Future<ApiResponse<dynamic>> getConnectedCoaches() =>
+      _network.get(ApiEndpoints.myConnectedCoaches);
+
+  Future<ApiResponse<dynamic>> disconnectCoach(int coachId) => _network.post(
+    ApiEndpoints.disconnectCoach,
+    body: <String, dynamic>{'coach_id': coachId},
+  );
+
+  Future<ApiResponse<dynamic>> sendInvitationToCoach(String email) =>
+      _network.post(
+        ApiEndpoints.sendInvitationToCoach,
+        body: <String, dynamic>{'email': email},
+      );
+
+  // Trophies
+  Future<ApiResponse<dynamic>> getTrophies() =>
+      _network.get(ApiEndpoints.trophies);
+
+  Future<ApiResponse<dynamic>> redeemTrophy(int trophyId) => _network.post(
+    ApiEndpoints.redeemTrophy,
+    body: <String, dynamic>{'trophy_id': trophyId},
+  );
+
+  // Settings / contact
+  Future<ApiResponse<dynamic>> getPlanHistory() =>
+      _network.get(ApiEndpoints.myPlanHistory);
+
+  Future<ApiResponse<dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmation,
+  }) => _network.post(
+    ApiEndpoints.changePassword,
+    body: <String, dynamic>{
+      'old_password': oldPassword,
+      'new_password': newPassword,
+      'new_password_confirmation': confirmation,
+    },
+  );
+
+  /// Public (no token needed).
+  Future<ApiResponse<dynamic>> contactUs({
+    required String name,
+    required String email,
+    required String phone,
+    required String issue,
+  }) => _network.post(
+    ApiEndpoints.contactUs,
+    auth: false,
+    body: <String, dynamic>{
+      'name': name,
+      'email': email,
+      'phone_number': phone,
+      'issue': issue,
+    },
+  );
+
+  // Notes / notifications
+  Future<ApiResponse<dynamic>> getAllChallengeNotes() =>
+      _network.get(ApiEndpoints.allChallengeNotes);
+
+  Future<ApiResponse<dynamic>> getAllSkillNotes() =>
+      _network.get(ApiEndpoints.allSkillNotes);
+
+  Future<ApiResponse<dynamic>> getNotifications() =>
+      _network.get(ApiEndpoints.getNotifications);
+
+  Future<ApiResponse<dynamic>> markNotificationRead(int id) => _network.post(
+    ApiEndpoints.markNotification,
+    body: <String, dynamic>{'notification_id': id},
+  );
+
+  Future<ApiResponse<dynamic>> markAllNotificationsRead() =>
+      _network.post(ApiEndpoints.markAllNotifications);
+
+  // Profile / chat
+  Future<ApiResponse<dynamic>> getProfile() =>
+      _network.get(ApiEndpoints.profile);
+
+  Future<ApiResponse<dynamic>> updateProfile(Map<String, dynamic> body) =>
+      _network.post(ApiEndpoints.updateProfile, body: body);
+
+  Future<ApiResponse<dynamic>> openChat(int receiverId) => _network.post(
+    ApiEndpoints.openChat,
+    body: <String, dynamic>{'receiver_id': receiverId},
+  );
+
+  Future<ApiResponse<dynamic>> sendChatMessage(int receiverId, String text) =>
+      _network.post(
+        ApiEndpoints.sendMessage,
+        body: <String, dynamic>{'receiver_id': receiverId, 'message': text},
+      );
+
   // ---- helpers ----------------------------------------------------------------
 
   static UserModel? _user(Object? data) =>

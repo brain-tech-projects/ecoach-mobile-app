@@ -72,8 +72,9 @@ class NetworkClient {
   Future<ApiResponse<dynamic>> get(
     String path, {
     Map<String, dynamic>? query,
+    Map<String, dynamic>? body,
     bool auth = true,
-  }) => _send('GET', path, query: query, auth: auth);
+  }) => _send('GET', path, query: query, body: body, auth: auth);
 
   Future<ApiResponse<dynamic>> post(
     String path, {

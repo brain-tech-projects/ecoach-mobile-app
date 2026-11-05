@@ -11,6 +11,8 @@ import 'package:ecoach_pro/features/fun/presentation/pages/quiz_groups_page.dart
 import 'package:ecoach_pro/features/fun/presentation/pages/quiz_list_page.dart';
 import 'package:ecoach_pro/features/fun/presentation/pages/quiz_play_page.dart';
 import 'package:ecoach_pro/features/fun/presentation/pages/quiz_review_page.dart';
+import 'package:ecoach_pro/features/personal_training/presentation/bindings/personal_training_binding.dart';
+import 'package:ecoach_pro/features/personal_training/presentation/pages/personal_training_page.dart';
 import 'package:ecoach_pro/features/subscription/presentation/bindings/subscription_binding.dart';
 import 'package:ecoach_pro/features/subscription/presentation/pages/subscription_page.dart';
 import 'package:ecoach_pro/features/auth/presentation/bindings/forgot_password_binding.dart';
@@ -136,6 +138,13 @@ abstract final class AppPages {
       binding: SideMenuBinding(),
       transition: Transition.leftToRight,
       transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage<void>(
+      name: AppRoutes.personalTraining,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const PersonalTrainingPage(),
+      binding: PersonalTrainingBinding(),
+      transition: Transition.cupertino,
     ),
     GetPage<void>(
       name: AppRoutes.appSettings,

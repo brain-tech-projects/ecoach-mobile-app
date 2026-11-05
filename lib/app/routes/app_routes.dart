@@ -12,6 +12,7 @@ abstract final class AppRoutes {
   static const String appSettings = '/app-settings';
   static const String contact = '/contact';
   static const String training = '/training';
+  static const String personalTraining = '/personal-training';
   static const String trainingDetail = '/training-detail';
   static const String skills = '/skills';
   static const String fun = '/fun';
