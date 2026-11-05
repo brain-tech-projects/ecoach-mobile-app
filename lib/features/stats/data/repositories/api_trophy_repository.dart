@@ -10,7 +10,6 @@ class ApiTrophyRepository implements TrophyRepository {
   final ApiService _api;
 
   double? _points;
-  final List<MyTrophy> _redeemed = <MyTrophy>[];
 
   static double? _num(Object? v) =>
       v == null ? null : (v is num ? v.toDouble() : double.tryParse('$v'));
@@ -43,11 +42,48 @@ class ApiTrophyRepository implements TrophyRepository {
     ];
   }
 
-  /// TODO(api): there is no "my trophies" endpoint yet; this list only holds
-  /// the trophies redeemed since the app was opened.
+  static const List<String> _months = <String>[
+    'january', 'february', 'march', 'april', 'may', 'june', 'july',
+    'august', 'september', 'october', 'november', 'december',
+  ];
+
+  /// "04 November 2026 01:10 PM"
+  static DateTime _long(Object? v) {
+    final m = RegExp(r'(\d{1,2}) (\w+) (\d{4}) (\d{1,2}):(\d{2}) ?(AM|PM)?', caseSensitive: false)
+        .firstMatch('${v ?? ''}');
+    if (m == null) return DateTime.now();
+    var hour = int.parse(m.group(4)!) % 12;
+    if ((m.group(6) ?? '').toUpperCase() == 'PM') hour += 12;
+    final month = _months.indexOf(m.group(2)!.toLowerCase()) + 1;
+    return DateTime(
+      int.parse(m.group(3)!),
+      month == 0 ? 1 : month,
+      int.parse(m.group(1)!),
+      hour,
+      int.parse(m.group(5)!),
+    );
+  }
+
   @override
-  Future<List<MyTrophy>> fetchMyTrophies() async =>
-      List<MyTrophy>.unmodifiable(_redeemed.reversed);
+  Future<List<MyTrophy>> fetchMyTrophies() async {
+    final res = requireSuccess(await _api.getRedeemHistory());
+    final data = res.data;
+    if (data is! List) return const <MyTrophy>[];
+
+    return <MyTrophy>[
+      for (final e in data.whereType<Map>())
+        MyTrophy(
+          trophy: Trophy(
+            id: '',
+            name: (e['trophy_title'] ?? '').toString(),
+            points: (_num(e['points_spent']) ?? 0).round(),
+            imageUrl: Env.skillMediaUrl(e['trophy_icon'] as String?),
+          ),
+          points: _num(e['points_spent']) ?? 0,
+          redeemedAt: _long(e['redeemed_at']),
+        ),
+    ];
+  }
 
   @override
   Future<RedeemResult> redeem(Trophy trophy) async {
@@ -63,13 +99,6 @@ class ApiTrophyRepository implements TrophyRepository {
 
     final left = _num(res.body?['user_points']);
     if (left != null) _points = left;
-    _redeemed.add(
-      MyTrophy(
-        trophy: trophy,
-        points: trophy.points.toDouble(),
-        redeemedAt: DateTime.now(),
-      ),
-    );
     return res.message.isEmpty
         ? const RedeemResult.success()
         : RedeemResult.success(res.message);

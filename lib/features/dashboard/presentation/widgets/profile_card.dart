@@ -75,16 +75,16 @@ class ProfileCard extends StatelessWidget {
             ),
           ),
           if (flag != null)
-            Container(
-              width: 56 * s,
-              height: 36 * s,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(6 * s),
-              ),
-              child: Text(flag!, style: TextStyle(fontSize: 26 * s)),
-            ),
+            // Container(
+            //   width: 56 * s,
+            //   height: 36 * s,
+            //   alignment: Alignment.center,
+            //   decoration: BoxDecoration(
+            //     color: AppColors.background,
+            //     borderRadius: BorderRadius.circular(6 * s),
+            //   ),
+            //   child: Text(flag!, style: TextStyle(fontSize: 26 * s)),
+          Text(flag!, style: TextStyle(fontSize: 50 * s)),
         ],
       ),
     );

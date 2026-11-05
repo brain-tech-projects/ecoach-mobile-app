@@ -1,5 +1,3 @@
-import 'package:get/get.dart';
-
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:ecoach_pro/core/navigation/main_nav.dart';
@@ -13,6 +11,7 @@ import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_data.dar
 import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_stat.dart';
 import 'package:ecoach_pro/features/dashboard/domain/entities/program.dart';
 import 'package:ecoach_pro/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:get/get.dart';
 
 /// Home page for both states:
 ///  * signed out: static welcome content, every action opens login
@@ -51,11 +50,7 @@ class DashboardController extends GetxController {
     try {
       data.value = await _repository.fetchDashboard();
     } catch (error, stackTrace) {
-      AppLogger.error(
-        'Dashboard load failed',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      AppLogger.error('Dashboard load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load your dashboard.';
     }
   }
@@ -90,26 +85,10 @@ class DashboardController extends GetxController {
   List<DashboardStat> get memberStats {
     final d = details.value;
     return <DashboardStat>[
-      DashboardStat(
-        iconAsset: AppAssets.statClock,
-        value: '${d?.trackers ?? 0}',
-        label: 'Matches tracked',
-      ),
-      DashboardStat(
-        iconAsset: AppAssets.statTrophy,
-        value: '${d?.trophies ?? 0}',
-        label: 'Trophies',
-      ),
-      DashboardStat(
-        iconAsset: AppAssets.statCoin,
-        value: (d?.points ?? 0).toStringAsFixed(2),
-        label: 'Reward Points',
-      ),
-      DashboardStat(
-        iconAsset: AppAssets.statClip,
-        value: '${d?.streak ?? 0}/7',
-        label: 'Training streak in last 7 days',
-      ),
+      DashboardStat(iconAsset: AppAssets.statClock, value: '${d?.trackers ?? 0}', label: 'Matches tracked'),
+      DashboardStat(iconAsset: AppAssets.statTrophy, value: '${d?.trophies ?? 0}', label: 'Trophies'),
+      DashboardStat(iconAsset: AppAssets.statCoin, value: (d?.points ?? 0).toStringAsFixed(2), label: 'Reward Points'),
+      DashboardStat(iconAsset: AppAssets.statClip, value: '${d?.streak ?? 0}/7', label: 'Training streak in last 7 days'),
     ];
   }
 
@@ -145,15 +124,18 @@ class DashboardController extends GetxController {
       case 'Reward Points':
         MainNav.open(AppRoutes.trophyRoom);
         break;
+      case 'Training streak in last 7 days':
+        MainNav.open(AppRoutes.training);
+        break;
       default:
         MainNav.requireLogin();
     }
   }
 
-  void onEarnPoints() => MainNav.open(AppRoutes.trophyRoom);
+  void onEarnPoints() => MainNav.open(AppRoutes.skills);
   void onRedeemPoints() => MainNav.open(AppRoutes.trophyRoom);
   void onBellTap() {
-    if (MainNav.requireLogin()) AppToast.info('Coming soon');
+    if (MainNav.requireLogin()) MainNav.open(AppRoutes.notifications);
   }
 
   // Wired later.

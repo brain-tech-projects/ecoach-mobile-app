@@ -601,6 +601,50 @@ class ApiService {
         body: <String, dynamic>{'receiver_id': receiverId, 'message': text},
       );
 
+  // ---- Rating tracker / history ------------------------------------------------
+
+  Future<ApiResponse<dynamic>> getRatingTrackerList() =>
+      _network.get(ApiEndpoints.ratingTrackerList);
+
+  Future<ApiResponse<dynamic>> canAddMatch() =>
+      _network.get(ApiEndpoints.canAddMatch);
+
+  Future<ApiResponse<dynamic>> getRatingTrackerDetail(int id) => _network.get(
+    ApiEndpoints.ratingTrackerDetail,
+    query: <String, dynamic>{'id': id},
+  );
+
+  /// Create ([id] null) or update a match. A photo goes up as multipart.
+  Future<ApiResponse<dynamic>> saveRatingTracker({
+    int? id,
+    required Map<String, dynamic> fields,
+    String? photoPath,
+  }) {
+    final path = id == null
+        ? ApiEndpoints.ratingTracker
+        : ApiEndpoints.updateRatingTracker;
+    if (id == null && photoPath == null) {
+      return _network.post(path, body: fields);
+    }
+    return _network.postForm(
+      path,
+      fields: <String, dynamic>{if (id != null) 'id': id, ...fields},
+      fileField: 'match_photo',
+      filePath: photoPath,
+    );
+  }
+
+  Future<ApiResponse<dynamic>> deleteRatingTracker(int id) => _network.post(
+    ApiEndpoints.deleteRatingTracker,
+    body: <String, dynamic>{'id': id},
+  );
+
+  Future<ApiResponse<dynamic>> getPointsHistory() =>
+      _network.get(ApiEndpoints.pointsHistory);
+
+  Future<ApiResponse<dynamic>> getRedeemHistory() =>
+      _network.get(ApiEndpoints.redeemHistory);
+
   // ---- helpers ----------------------------------------------------------------
 
   static UserModel? _user(Object? data) =>

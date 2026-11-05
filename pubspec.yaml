@@ -46,6 +46,7 @@ flutter:
     - assets/images/training/
     - assets/images/skills/
     - assets/images/drills/
+    - assets/images/tracker/
 
   fonts:
     - family: Poppins

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
-import 'package:ecoach_pro/features/stats/data/repositories/dummy_stats_repository.dart';
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/features/stats/data/repositories/api_stats_repository.dart';
 import 'package:ecoach_pro/features/stats/domain/repositories/stats_repository.dart';
 import 'package:ecoach_pro/features/stats/domain/repositories/trophy_repository.dart';
 import 'package:ecoach_pro/features/stats/presentation/bindings/trophy_binding.dart';
@@ -11,7 +12,7 @@ class StatsBinding extends Bindings {
   @override
   void dependencies() {
     ensureTrophyRepository();
-    Get.lazyPut<StatsRepository>(DummyStatsRepository.new);
+    Get.lazyPut<StatsRepository>(() => ApiStatsRepository(Get.find<ApiService>()));
     Get.lazyPut<TrophyRoomController>(
       () => TrophyRoomController(
         Get.find<StatsRepository>(),

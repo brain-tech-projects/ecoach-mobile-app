@@ -79,4 +79,16 @@ abstract final class ApiEndpoints {
   static const String updateProfile = '/update-profile';
   static const String sendMessage = '/send-message';
   static const String openChat = '/open-chat';
+
+  // Rating tracker
+  static const String ratingTrackerList = '/rating-tracker-list';
+  static const String canAddMatch = '/can-add-match';
+  static const String ratingTrackerDetail = '/rating-tracker-detail';
+  static const String ratingTracker = '/rating-tracker';
+  static const String updateRatingTracker = '/update-rating-tracker';
+  static const String deleteRatingTracker = '/delete-rating-tracker';
+
+  // Points / trophies history
+  static const String pointsHistory = '/points-history';
+  static const String redeemHistory = '/redeem-history';
 }

@@ -82,6 +82,24 @@ class NetworkClient {
     bool auth = true,
   }) => _send('POST', path, body: body, auth: auth);
 
+  /// multipart/form-data POST (optionally with one file).
+  Future<ApiResponse<dynamic>> postForm(
+    String path, {
+    required Map<String, dynamic> fields,
+    String? fileField,
+    String? filePath,
+    bool auth = true,
+  }) async {
+    final map = <String, dynamic>{...fields};
+    if (fileField != null && filePath != null) {
+      map[fileField] = await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split('/').last,
+      );
+    }
+    return _send('POST', path, form: FormData.fromMap(map), auth: auth);
+  }
+
   Future<ApiResponse<dynamic>> put(
     String path, {
     Map<String, dynamic>? body,
@@ -101,13 +119,14 @@ class NetworkClient {
     String path, {
     Map<String, dynamic>? body,
     Map<String, dynamic>? query,
+    FormData? form,
     required bool auth,
   }) async {
     final hadToken = auth && _tokens.token != null;
     try {
       final response = await _dio.request<dynamic>(
         path,
-        data: body,
+        data: form ?? body,
         queryParameters: query,
         options: Options(method: method, extra: <String, dynamic>{'auth': auth}),
       );

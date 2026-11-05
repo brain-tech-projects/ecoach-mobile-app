@@ -18,6 +18,9 @@ class TrackerController extends GetxController {
   final RxBool loading = true.obs;
   final RxnString errorMessage = RxnString();
   final RxInt selectedYear = 0.obs;
+
+  /// From `can-add-match`: the add button is hidden when false.
+  final RxBool canAdd = false.obs;
   final RxSet<String> expanded = <String>{}.obs;
 
   @override
@@ -30,7 +33,10 @@ class TrackerController extends GetxController {
     if (!silent) loading.value = true;
     errorMessage.value = null;
     try {
+      // Start both requests, then wait for them.
+      final allowed = _repository.canAddMatch();
       final res = await _repository.fetchTracker();
+      canAdd.value = await allowed;
       if (!res.success || res.data == null) throw Exception(res.message);
       data.value = res.data;
       final years = res.data!.years;
@@ -39,7 +45,7 @@ class TrackerController extends GetxController {
       }
     } catch (error, stackTrace) {
       AppLogger.error('Tracker load failed', error: error, stackTrace: stackTrace);
-      if (data.value == null) errorMessage.value = 'Could not load your tracker.';
+      if (data.value == null) errorMessage.value = _message(error, 'Could not load your tracker.');
     } finally {
       loading.value = false;
     }
@@ -61,7 +67,15 @@ class TrackerController extends GetxController {
   }
 
   Future<void> openEdit(MatchEntry entry) async {
-    await Get.toNamed<void>(AppRoutes.matchRating, arguments: entry);
+    // Fresh copy from the details API; fall back to the list item.
+    MatchEntry toEdit = entry;
+    try {
+      final res = await _repository.fetchMatch(entry.id);
+      if (res.success && res.data != null) {
+        toEdit = res.data!.copyWith(photoUrl: res.data!.photoUrl ?? entry.photoUrl);
+      }
+    } catch (_) {}
+    await Get.toNamed<void>(AppRoutes.matchRating, arguments: toEdit);
     await load(silent: true);
   }
 
@@ -83,7 +97,13 @@ class TrackerController extends GetxController {
       AppToast.success('Match deleted');
     } catch (error, stackTrace) {
       AppLogger.error('Delete match failed', error: error, stackTrace: stackTrace);
-      AppToast.error('Could not delete the match. Please try again.');
+      AppToast.error(_message(error, 'Could not delete the match. Please try again.'));
     }
+  }
+
+  /// The server's message when there is one, otherwise [fallback].
+  static String _message(Object error, String fallback) {
+    final text = error.toString().replaceFirst('Exception: ', '').trim();
+    return text.isEmpty || text.startsWith('Instance of') ? fallback : text;
   }
 }

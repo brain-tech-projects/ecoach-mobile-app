@@ -23,9 +23,13 @@ class TrackerPage extends GetView<TrackerController> {
     return SubPageScaffold(
       title: 'Rating Tracker',
       navIndex: 4,
-      floatingAction: Padding(
-        padding: EdgeInsets.only(right: 5.3 * s, bottom: 6.7 * s),
-        child: _AddButton(scale: s, onTap: controller.openAdd),
+      floatingAction: Obx(
+        () => controller.canAdd.value
+            ? Padding(
+                padding: EdgeInsets.only(right: 5.3 * s, bottom: 6.7 * s),
+                child: _AddButton(scale: s, onTap: controller.openAdd),
+              )
+            : const SizedBox.shrink(),
       ),
       body: Obx(() {
         if (controller.loading.value && controller.data.value == null) return const AppLoader();

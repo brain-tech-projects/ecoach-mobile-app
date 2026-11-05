@@ -63,7 +63,7 @@ class MenuPage extends GetView<SideMenuController> {
                       if (loggedIn) ...<Widget>[
                         _ProfileBlock(
                           scale: s,
-                          name: _firstName(user!.displayName),
+                          name: "${user!.fullName}",
                           photoUrl: user!.profilePhoto,
                           onEditPhoto: controller.openMyProfile,
                         ),
@@ -456,6 +456,7 @@ class _MenuRow extends StatelessWidget {
                 SizedBox(width: 12 * s),
                 Expanded(
                   child: Text(
+                  // style: TextStyle(fontWeight: FontWeight.bold),
                     item.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

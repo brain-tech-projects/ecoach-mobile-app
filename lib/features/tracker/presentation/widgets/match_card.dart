@@ -272,6 +272,7 @@ class _OpponentRow extends StatelessWidget {
     return SizedBox(
       height: 48 * s,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Expanded(child: Text('Opponent:', style: _label(s))),
           Flexible(
@@ -324,6 +325,7 @@ class _InfoRow extends StatelessWidget {
         child: SizedBox(
           height: 45 * s,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Flexible(flex: 3, child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: _label(s))),
               SizedBox(width: 8 * s),

@@ -1,16 +1,21 @@
 import 'package:get/get.dart';
 
-import 'package:ecoach_pro/features/tracker/data/repositories/dummy_tracker_repository.dart';
+import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/core/services/session_service.dart';
+import 'package:ecoach_pro/features/tracker/data/repositories/api_tracker_repository.dart';
 import 'package:ecoach_pro/features/tracker/data/repositories/image_picker_photo_picker.dart';
 import 'package:ecoach_pro/features/tracker/domain/repositories/tracker_repository.dart';
 import 'package:ecoach_pro/features/tracker/presentation/controllers/match_form_controller.dart';
 import 'package:ecoach_pro/features/tracker/presentation/controllers/tracker_controller.dart';
 
 /// One shared repository for both tracker pages. Swap the dummy for the API
-/// version here (and register a real `MatchPhotoPicker`).
+/// version here (the photo picker is registered below).
 void ensureTrackerRepository() {
   if (!Get.isRegistered<TrackerRepository>()) {
-    Get.put<TrackerRepository>(DummyTrackerRepository(), permanent: true);
+    Get.put<TrackerRepository>(
+      ApiTrackerRepository(Get.find<ApiService>(), Get.find<SessionService>()),
+      permanent: true,
+    );
   }
   if (!Get.isRegistered<MatchPhotoPicker>()) {
     Get.put<MatchPhotoPicker>(ImagePickerMatchPhotoPicker(), permanent: true);

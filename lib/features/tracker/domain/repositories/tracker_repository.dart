@@ -6,6 +6,12 @@ import 'package:ecoach_pro/features/tracker/domain/entities/tracker_entities.dar
 abstract interface class TrackerRepository {
   Future<ApiResponse<TrackerData>> fetchTracker();
 
+  /// Whether the "add match" button may be shown.
+  Future<bool> canAddMatch();
+
+  /// One match with its full details (opens the edit form).
+  Future<ApiResponse<MatchEntry>> fetchMatch(String id);
+
   /// Creates ([MatchEntry.id] empty) or updates a match. A local
   /// [MatchEntry.photoPath] has to be uploaded by the implementation.
   Future<ApiResponse<MatchEntry>> saveMatch(MatchEntry entry);

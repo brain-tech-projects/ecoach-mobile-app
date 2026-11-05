@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/core/config/env.dart';
+
 /// User as returned by `register` and `login`.
 class UserModel {
   const UserModel({
@@ -13,6 +15,8 @@ class UserModel {
     this.parentGuardianEmail,
     this.profilePhoto,
     this.coverPhoto,
+    this.club,
+    this.myposition,
     this.isSubscribed = false,
     this.playingPosition = const <String>[],
     this.skillLevel = const <String>[],
@@ -33,6 +37,8 @@ class UserModel {
   final String? parentGuardianEmail;
   final String? profilePhoto;
   final String? coverPhoto;
+  final String? club;
+  final String? myposition;
   final bool isSubscribed;
   final List<String> playingPosition;
   final List<String> skillLevel;
@@ -41,8 +47,7 @@ class UserModel {
   final List<String> trainingFrequency;
 
   /// Name to show in the UI.
-  String get displayName =>
-      (nickname?.trim().isNotEmpty ?? false) ? nickname! : (fullName ?? email);
+  String get displayName => (nickname?.trim().isNotEmpty ?? false) ? nickname! : (fullName ?? email);
 
   /// Parent/guardian OTP not completed yet.
   bool get isInactive => status?.toLowerCase() == 'inactive';
@@ -58,8 +63,11 @@ class UserModel {
     country: json['country'] as String?,
     countryCode: json['country_code'] as String?,
     parentGuardianEmail: json['parent_guardian_email'] as String?,
-    profilePhoto: json['profile_photo'] as String?,
-    coverPhoto: json['cover_photo'] as String?,
+    // Relative paths (profile-photos/x.webp) become full URLs.
+    profilePhoto: Env.skillMediaUrl(json['profile_photo'] as String?),
+    coverPhoto: Env.skillMediaUrl(json['cover_photo'] as String?),
+    club: json['my_club'] as String?,
+    myposition: json['my_position'] as String?,
     isSubscribed: json['is_subscribed'] == true,
     playingPosition: _list(json['playing_position']),
     skillLevel: _list(json['skill_level']),
@@ -81,6 +89,8 @@ class UserModel {
     'parent_guardian_email': parentGuardianEmail,
     'profile_photo': profilePhoto,
     'cover_photo': coverPhoto,
+    'my_club': club,
+    'my_position': myposition,
     'is_subscribed': isSubscribed,
     'playing_position': playingPosition,
     'skill_level': skillLevel,
@@ -91,6 +101,5 @@ class UserModel {
 
   static int? _int(Object? v) => v is int ? v : int.tryParse('${v ?? ''}');
 
-  static List<String> _list(Object? v) =>
-      v is List ? v.map((e) => e.toString()).toList() : const <String>[];
+  static List<String> _list(Object? v) => v is List ? v.map((e) => e.toString()).toList() : const <String>[];
 }

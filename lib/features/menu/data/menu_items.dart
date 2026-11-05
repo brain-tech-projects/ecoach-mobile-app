@@ -8,11 +8,11 @@ import 'package:ecoach_pro/features/menu/domain/entities/menu_item.dart';
 /// "Coming soon" until their page exists - just fill in the route.
 abstract final class MenuItems {
   static const List<MenuItem> all = <MenuItem>[
-    MenuItem(
-      label: 'Install App',
-      icon: Icons.install_mobile_outlined,
-      action: MenuAction.installApp,
-    ),
+    // MenuItem(
+    //   label: 'Install App',
+    //   icon: Icons.install_mobile_outlined,
+    //   action: MenuAction.installApp,
+    // ),
     MenuItem(
       label: 'Personal Training Session',
       iconAsset: AppAssets.menuPersonal,

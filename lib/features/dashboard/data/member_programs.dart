@@ -11,7 +11,7 @@ abstract final class MemberPrograms {
       title: 'What\'s New & Open Access',
       description: 'See the latest tricks, drills and updates.',
       thumbnail: AppAssets.programWhatsNew,
-      route: AppRoutes.training,
+      route: AppRoutes.skillList,
     ),
     Program(
       id: 'ecoach-program',
@@ -26,7 +26,7 @@ abstract final class MemberPrograms {
       title: 'Personal Training Program',
       description: 'Create and follow your own personal training plan',
       thumbnail: AppAssets.programEcoach,
-      route: AppRoutes.skills,
+      route: AppRoutes.personalTraining,
     ),
     Program(
       id: 'match-tracker',
@@ -54,7 +54,7 @@ abstract final class MemberPrograms {
       title: 'My Skills',
       description: 'See your favorite skills all in one place',
       thumbnail: AppAssets.programEcoach,
-      route: AppRoutes.skills,
+      route: AppRoutes.mySkills,
     ),
     Program(
       id: 'coaches-training',
@@ -62,6 +62,7 @@ abstract final class MemberPrograms {
       description: 'If you are linked to a team the sessions from your coach '
           'will appear here',
       thumbnail: AppAssets.programWhatsNew,
+      route: AppRoutes.coachTraining,
     ),
   ];
 }

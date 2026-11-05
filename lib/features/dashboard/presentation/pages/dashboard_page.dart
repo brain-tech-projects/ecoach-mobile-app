@@ -41,7 +41,7 @@ class DashboardPage extends GetView<DashboardController> {
                   );
                 }
                 return MemberHeader(
-                  name: _firstName(user.displayName),
+                  name: "${user.fullName}",
                   photoUrl: user.profilePhoto,
                   unreadCount: controller.unreadCount.value,
                   onMenuTap: controller.openMenu,
@@ -60,8 +60,8 @@ class DashboardPage extends GetView<DashboardController> {
                       if (controller.isLoggedIn && user != null) {
                         return MemberBody(
                           banners: controller.banners.toList(),
-                          name: _firstName(user.displayName),
-                          subtitle: user.role,
+                          name: "${user.fullName}",
+                          subtitle: "${user.myposition}" + " . " + "${user.club}",
                           photoUrl: user.profilePhoto,
                           flag: _flag(user.countryCode),
                           stats: controller.memberStats,

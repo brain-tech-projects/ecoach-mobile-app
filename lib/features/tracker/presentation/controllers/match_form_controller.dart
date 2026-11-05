@@ -155,7 +155,12 @@ class MatchFormController extends GetxController {
       done.value = true;
     } catch (error, stackTrace) {
       AppLogger.error('Save match failed', error: error, stackTrace: stackTrace);
-      AppToast.error('Could not save your rating. Please try again.');
+      final text = error.toString().replaceFirst('Exception: ', '').trim();
+      AppToast.error(
+        text.isEmpty || text.startsWith('Instance of')
+            ? 'Could not save your rating. Please try again.'
+            : text,
+      );
     } finally {
       saving.value = false;
     }
