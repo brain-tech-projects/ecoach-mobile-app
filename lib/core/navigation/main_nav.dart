@@ -14,11 +14,13 @@ abstract final class MainNav {
   static const int skillsIndex = 1;
   static const int homeIndex = 2;
   static const int funIndex = 3;
+  static const int trackerIndex = 4;
 
   static const Set<String> _tabRoutes = <String>{
     AppRoutes.training,
     AppRoutes.skills,
     AppRoutes.fun,
+    AppRoutes.ratingTracker,
   };
 
   /// Pages inside the Fun tab: tapping the Fun tab there returns to its hub.
@@ -71,8 +73,20 @@ abstract final class MainNav {
 
     if (index == funIndex) return _openFun();
 
-    // Tracker: page is not built yet.
-    AppToast.info('Coming soon');
+    if (index == trackerIndex) return _openTracker();
+  }
+
+  /// Inside the Tracker flow (match form) the tab returns to the tracker.
+  static void _openTracker() {
+    final current = Get.currentRoute;
+    if (current == AppRoutes.ratingTracker) return;
+    if (current == AppRoutes.matchRating) {
+      Get.until(
+        (route) => route.settings.name == AppRoutes.ratingTracker || route.isFirst,
+      );
+      return;
+    }
+    _openTab(AppRoutes.ratingTracker);
   }
 
   static void _openFun() {

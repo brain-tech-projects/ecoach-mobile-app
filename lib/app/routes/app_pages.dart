@@ -1,4 +1,7 @@
 import 'package:ecoach_pro/features/stats/presentation/pages/rating_tracker_page.dart';
+import 'package:ecoach_pro/features/tracker/presentation/bindings/tracker_binding.dart';
+import 'package:ecoach_pro/features/tracker/presentation/pages/match_form_page.dart';
+import 'package:ecoach_pro/features/tracker/presentation/pages/tracker_page.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
@@ -341,8 +344,15 @@ abstract final class AppPages {
     GetPage<void>(
       name: AppRoutes.ratingTracker,
       middlewares: <GetMiddleware>[AuthMiddleware()],
-      page: () => const RatingTrackerPage(),
-      binding: StatsBinding(),
+      page: () => const TrackerPage(),
+      binding: TrackerBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.matchRating,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const MatchFormPage(),
+      binding: MatchFormBinding(),
       transition: Transition.cupertino,
     ),
     

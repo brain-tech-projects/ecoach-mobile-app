@@ -25,6 +25,8 @@ abstract final class AppRoutes {
   static const String skillList = '/skill-list';
   static const String skillDetail = '/skill-detail';
   static const String ratingTracker = '/rating-tracker';
+  /// 13-step form to add / edit a rated match (arguments: MatchEntry? to edit).
+  static const String matchRating = '/match-rating';
   /// Trophy Room: points balance + all trophies to redeem.
   static const String trophyRoom = '/trophy-room';
   /// One trophy + Redeem (arguments: Trophy).
