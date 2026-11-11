@@ -63,6 +63,13 @@ class ProfileCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                (name == null || name!.isEmpty) ?
+                Text(
+                  "user",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.programTitle.scaled(s),
+                ) :
                 Text(
                   name,
                   maxLines: 1,

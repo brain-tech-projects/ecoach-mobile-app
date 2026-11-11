@@ -3,6 +3,12 @@ import 'package:ecoach_pro/features/tracker/presentation/bindings/tracker_bindin
 import 'package:ecoach_pro/features/tracker/presentation/pages/match_form_page.dart';
 import 'package:ecoach_pro/features/tracker/presentation/pages/tracker_page.dart';
 import 'package:get/get.dart';
+import 'package:ecoach_pro/features/auth/presentation/bindings/programme_binding.dart';
+import 'package:ecoach_pro/features/auth/presentation/pages/programme_page.dart';
+import 'package:ecoach_pro/features/personal_training/presentation/bindings/personal_training_player_binding.dart';
+import 'package:ecoach_pro/features/personal_training/presentation/pages/personal_training_player_page.dart';
+import 'package:ecoach_pro/features/tour/presentation/bindings/tour_binding.dart';
+import 'package:ecoach_pro/features/tour/presentation/pages/tour_page.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/middleware/auth_middleware.dart';
@@ -108,6 +114,26 @@ abstract final class AppPages {
       name: AppRoutes.signUp,
       page: () => const SignUpPage(),
       binding: SignUpBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.programme,
+      page: () => const ProgrammePage(),
+      binding: ProgrammeBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: _fade,
+    ),
+    GetPage<void>(
+      name: AppRoutes.tour,
+      page: () => const TourPage(),
+      binding: TourBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.personalTrainingPlayer,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const PersonalTrainingPlayerPage(),
+      binding: PersonalTrainingPlayerBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<void>(

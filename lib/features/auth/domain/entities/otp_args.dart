@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/features/auth/domain/entities/programme_summary.dart';
 import 'package:flutter/foundation.dart';
 
 /// Why the OTP screen is open.
@@ -17,6 +18,7 @@ class OtpArgs {
     required this.purpose,
     this.userId,
     this.password,
+    this.programme,
   });
 
   final String email;
@@ -27,4 +29,5 @@ class OtpArgs {
 
   /// Sign-up only: used to sign the user in right after verification.
   final String? password;
+  final ProgrammeArgs? programme;
 }

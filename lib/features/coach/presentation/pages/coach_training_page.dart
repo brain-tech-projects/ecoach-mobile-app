@@ -48,14 +48,23 @@ class CoachTrainingPage extends GetView<CoachTrainingController> {
         }
 
         if (items.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.fromLTRB(hPad, 27.8 * s, hPad, 0),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: intro('Your coach has not set any skills for you yet.'),
-            ),
-          );
-        }
+  return RefreshIndicator(
+    onRefresh: controller.load,
+    child: ListView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
+      padding: EdgeInsets.fromLTRB(hPad, 27.8 * s, hPad, 24 * s),
+      children: <Widget>[
+        intro('Connect to a team or coach to see allocated training sessions.'),
+        SizedBox(height: 16 * s),
+        Center(
+          child: _AddCoachButton(scale: s, onTap: controller.openInvite),
+        ),
+      ],
+    ),
+  );
+}
 
         return RefreshIndicator(
           onRefresh: controller.load,
@@ -86,6 +95,46 @@ class CoachTrainingPage extends GetView<CoachTrainingController> {
           ),
         );
       }),
+    );
+  }
+}
+
+class _AddCoachButton extends StatelessWidget {
+  const _AddCoachButton({required this.scale, required this.onTap});
+
+  final double scale;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = scale;
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 52 * s,
+          height: 52 * s,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Color(0xFF2FD36B), Color(0xFF148A3C)],
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: const Color(0xFF22C55E).withValues(alpha: 0.35),
+                blurRadius: 12 * s,
+                offset: Offset(0, 4 * s),
+              ),
+            ],
+          ),
+          child: Icon(Icons.add, color: Colors.black, size: 28 * s),
+        ),
+      ),
     );
   }
 }

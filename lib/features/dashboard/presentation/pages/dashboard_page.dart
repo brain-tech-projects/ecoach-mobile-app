@@ -1,8 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
@@ -14,6 +11,8 @@ import 'package:ecoach_pro/features/dashboard/presentation/widgets/dashboard_bod
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/dashboard_header.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/member_body.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/widgets/member_header.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
@@ -35,10 +34,7 @@ class DashboardPage extends GetView<DashboardController> {
               Obx(() {
                 final user = controller.session.user.value;
                 if (!controller.isLoggedIn || user == null) {
-                  return DashboardHeader(
-                    onProfileTap: controller.openAuth,
-                    onMenuTap: controller.openMenu,
-                  );
+                  return DashboardHeader(onProfileTap: controller.openAuth, onMenuTap: controller.openMenu);
                 }
                 return MemberHeader(
                   name: "${user.fullName}",
@@ -50,9 +46,7 @@ class DashboardPage extends GetView<DashboardController> {
               }),
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(21 * s),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(21 * s)),
                   child: ColoredBox(
                     color: AppColors.background,
                     child: Obx(() {
@@ -61,7 +55,7 @@ class DashboardPage extends GetView<DashboardController> {
                         return MemberBody(
                           banners: controller.banners.toList(),
                           name: "${user.fullName}",
-                          subtitle: "${user.myposition}" + " . " + "${user.club}",
+                          subtitle: [user.myposition, user.club].where((e) => e != null && e.isNotEmpty).join(' . '),
                           photoUrl: user.profilePhoto,
                           flag: _flag(user.countryCode),
                           stats: controller.memberStats,
@@ -89,17 +83,9 @@ class DashboardPage extends GetView<DashboardController> {
                         );
                       }
                       if (controller.errorMessage.value != null) {
-                        return _ErrorView(
-                          message: controller.errorMessage.value!,
-                          onRetry: controller.load,
-                          scale: s,
-                        );
+                        return _ErrorView(message: controller.errorMessage.value!, onRetry: controller.load, scale: s);
                       }
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.accent,
-                        ),
-                      );
+                      return const Center(child: CircularProgressIndicator(color: AppColors.accent));
                     }),
                   ),
                 ),
@@ -115,13 +101,7 @@ class DashboardPage extends GetView<DashboardController> {
                 constraints: BoxConstraints(maxWidth: r.contentMaxWidth),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 1 * s),
-                  child: Obx(
-                    () => AppBottomNav(
-                      currentIndex: controller.selectedTab.value,
-                      onTap: controller.onNavTap,
-                      scale: s,
-                    ),
-                  ),
+                  child: Obx(() => AppBottomNav(currentIndex: controller.selectedTab.value, onTap: controller.onNavTap, scale: s)),
                 ),
               ),
             ),
@@ -136,18 +116,11 @@ class DashboardPage extends GetView<DashboardController> {
     return parts.isEmpty || parts.first.isEmpty ? full : parts.first;
   }
 
-  static String? _flag(String? code) =>
-      (code == null || code.length != 2)
-      ? null
-      : Country(code: code, name: '').flag;
+  static String? _flag(String? code) => (code == null || code.length != 2) ? null : Country(code: code, name: '').flag;
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({
-    required this.message,
-    required this.onRetry,
-    required this.scale,
-  });
+  const _ErrorView({required this.message, required this.onRetry, required this.scale});
 
   final String message;
   final VoidCallback onRetry;

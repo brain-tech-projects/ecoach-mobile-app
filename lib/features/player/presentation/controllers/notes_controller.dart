@@ -25,6 +25,9 @@ class NotesController extends GetxController {
   final RxSet<String> expanded = <String>{}.obs;
   final RxBool loading = true.obs;
   final RxnString errorMessage = RxnString();
+  void addSkillsnote() => Get.toNamed<void>(AppRoutes.skills);
+
+void exploreChallengesnote() => Get.toNamed<void>(AppRoutes.challenges);
 
   @override
   void onReady() {

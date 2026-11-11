@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:ecoach_pro/core/navigation/main_nav.dart';
@@ -11,7 +13,6 @@ import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_data.dar
 import 'package:ecoach_pro/features/dashboard/domain/entities/dashboard_stat.dart';
 import 'package:ecoach_pro/features/dashboard/domain/entities/program.dart';
 import 'package:ecoach_pro/features/dashboard/domain/repositories/dashboard_repository.dart';
-import 'package:get/get.dart';
 
 /// Home page for both states:
 ///  * signed out: static welcome content, every action opens login
@@ -107,7 +108,7 @@ class DashboardController extends GetxController {
       if (MainNav.requireLogin()) AppToast.info('Coming soon');
       return;
     }
-    MainNav.open(route);
+    MainNav.open(route, arguments: program.routeArguments);
   }
 
   void onStatTap(DashboardStat stat) {
@@ -132,7 +133,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  void onEarnPoints() => MainNav.open(AppRoutes.skills);
+  void onEarnPoints() => MainNav.open(AppRoutes.training);
   void onRedeemPoints() => MainNav.open(AppRoutes.trophyRoom);
   void onBellTap() {
     if (MainNav.requireLogin()) MainNav.open(AppRoutes.notifications);
@@ -140,7 +141,7 @@ class DashboardController extends GetxController {
 
   // Wired later.
   void onJoinNow() => MainNav.requireLogin();
-  void onTakeTour() {}
+  void onTakeTour() => MainNav.taketour();
   void onInstallApp() {}
 
   void onNavTap(int index) => MainNav.onTabSelected(index);

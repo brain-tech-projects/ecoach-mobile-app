@@ -46,4 +46,13 @@ abstract final class AppRoutes {
   static const String chats = '/chats';
   static const String chat = '/chat';
   static const String notifications = '/notifications';
+
+  /// Sign-up: "Generating your programme" -> "Programme is ready" (arguments: ProgrammeArgs).
+  static const String programme = '/programme';
+
+  /// Signed-out "Take a tour" videos.
+  static const String tour = '/tour';
+
+  /// Personal Training "Play All" queue player (arguments: PersonalTrainingPlayerArgs).
+  static const String personalTrainingPlayer = '/personal-training-player';
 }

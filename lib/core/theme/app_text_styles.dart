@@ -166,7 +166,7 @@ abstract final class AppTextStyles {
     height: 1.5,
     color: AppColors.white,
   );
-  static const TextStyle programDesc = TextStyle(
+  static const TextStyle  programDesc = TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: FontWeight.w400,

@@ -29,7 +29,8 @@ class ApiTrackerRepository implements TrackerRepository {
       final d = int.tryParse(p[1]);
       var y = int.tryParse(p[2]);
       if (m != null && d != null && y != null) {
-        if (y < 100) y += 2000;
+        // Two-digit years: 00-49 -> 20xx, 50-99 -> 19xx (same as the web).
+        if (y < 100) y += y < 50 ? 2000 : 1900;
         return DateTime(y, m, d);
       }
     }
@@ -86,12 +87,21 @@ class ApiTrackerRepository implements TrackerRepository {
       success: true,
       message: res.message,
       data: TrackerData(
-        playerName: (d['user_name'] ?? _session.user.value?.displayName ?? '').toString(),
-        photoAsset: 'assets/images/player/profile_avatar.png',
+        // Name and photo of the signed-in player (UserModel), not the
+        // nickname the tracker API sends back.
+        playerName: _playerName(),
         photoUrl: _session.user.value?.profilePhoto,
         entries: entries,
       ),
     );
+  }
+
+  /// Full name first ("Virat"), then nickname, then email.
+  String _playerName() {
+    final u = _session.user.value;
+    if (u == null) return '';
+    final full = (u.fullName ?? '').trim();
+    return full.isNotEmpty ? full : u.displayName;
   }
 
   @override

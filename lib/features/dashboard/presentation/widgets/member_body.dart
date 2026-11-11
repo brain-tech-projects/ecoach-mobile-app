@@ -83,7 +83,7 @@ class MemberBody extends StatelessWidget {
             sliver: SliverToBoxAdapter(
               child: ProfileCard(
                 name: name,
-                subtitle: subtitle,
+                subtitle: subtitle, 
                 photoUrl: photoUrl,
                 flag: flag,
                 scale: s,

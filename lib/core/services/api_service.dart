@@ -7,6 +7,7 @@ import 'package:ecoach_pro/features/dashboard/data/models/banner_model.dart';
 import 'package:ecoach_pro/features/dashboard/data/models/dashboard_details.dart';
 import 'package:ecoach_pro/features/fun/domain/entities/fun_entities.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
+import 'package:ecoach_pro/features/tour/domain/entities/tour_video.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 
 /// Every backend call of the app lives here (one method per endpoint).
@@ -280,6 +281,15 @@ class ApiService {
   }
 
   /// Full drill (video URL, points, focus, equipment, completed).
+  /// "What's New & Open Access": the free drills of every skill area.
+  Future<ApiResponse<List<Drill>>> getFreeSkillVideos() async {
+    final res = await _network.post(
+      ApiEndpoints.skillVideos,
+      body: <String, dynamic>{'is_free': true},
+    );
+    return res.map<List<Drill>>((d) => _list(d, Drill.fromJson));
+  }
+
   Future<ApiResponse<Drill>> getSkillVideoDetails(int skillVideoId) async {
     final res = await _network.post(
       ApiEndpoints.skillVideoDetails,
@@ -644,6 +654,14 @@ class ApiService {
 
   Future<ApiResponse<dynamic>> getRedeemHistory() =>
       _network.get(ApiEndpoints.redeemHistory);
+
+  // ---- Take a tour ------------------------------------------------------------
+
+  /// Public: works without a token (signed-out Home).
+  Future<ApiResponse<List<TourVideo>>> getTourVideos() async {
+    final res = await _network.get(ApiEndpoints.tourVideos, auth: false);
+    return res.map<List<TourVideo>>((d) => _list(d, TourVideo.fromJson));
+  }
 
   // ---- helpers ----------------------------------------------------------------
 

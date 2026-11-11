@@ -27,22 +27,13 @@ class AppSettingsPage extends GetView<AppSettingsController> {
       title: 'App Settings',
       body: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        padding: EdgeInsets.fromLTRB(
-          r.gutter + 24 * s,
-          28.3 * s,
-          r.gutter + 24 * s,
-          24 * s,
-        ),
+        padding: EdgeInsets.fromLTRB(r.gutter + 24 * s, 28.3 * s, r.gutter + 24 * s, 24 * s),
         child: Obx(() {
           final open = controller.open.value;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TermsAccordion(
-                expanded: open == AppSettingsController.terms,
-                onToggle: () => controller.toggle(AppSettingsController.terms),
-                scale: s,
-              ),
+              TermsAccordion(expanded: open == AppSettingsController.terms, onToggle: () => controller.toggle(AppSettingsController.terms), scale: s),
               gap,
               SettingsSection(
                 title: 'Change Password',
@@ -51,6 +42,9 @@ class AppSettingsPage extends GetView<AppSettingsController> {
                 onToggle: () => controller.toggle(AppSettingsController.password),
                 child: _PasswordForm(controller: controller, scale: s),
               ),
+              gap,
+
+              _PushRow(scale: s),
               gap,
               SettingsSection(
                 title: 'Transaction History',
@@ -75,12 +69,7 @@ class AppSettingsPage extends GetView<AppSettingsController> {
                       border: Border.all(color: AppColors.error),
                       borderRadius: BorderRadius.circular(11.5 * s),
                     ),
-                    child: Text(
-                      'Delete Account',
-                      style: AppTextStyles.termsHeader
-                          .scaled(s)
-                          .copyWith(color: AppColors.error),
-                    ),
+                    child: Text('Delete Account', style: AppTextStyles.termsHeader.scaled(s).copyWith(color: AppColors.error)),
                   ),
                 ),
               ),
@@ -102,22 +91,12 @@ class _PasswordForm extends StatelessWidget {
     onTap: onTap,
     child: Center(
       child: obscured
-          ? AppAssetIcon(
-              AppAssets.iconEyeOff,
-              width: 24 * scale,
-              height: 22 * scale,
-              color: AppColors.hint,
-            )
+          ? AppAssetIcon(AppAssets.iconEyeOff, width: 24 * scale, height: 22 * scale, color: AppColors.hint)
           : Icon(Icons.visibility_outlined, size: 24 * scale, color: AppColors.hint),
     ),
   );
 
-  Widget _field(
-    TextEditingController c,
-    String hint,
-    RxBool obscure,
-    TextInputAction action,
-  ) => Obx(
+  Widget _field(TextEditingController c, String hint, RxBool obscure, TextInputAction action) => Obx(
     () => AuthTextField(
       controller: c,
       hint: hint,
@@ -136,29 +115,16 @@ class _PasswordForm extends StatelessWidget {
     final s = scale;
     return Container(
       padding: EdgeInsets.all(14 * s),
-      decoration: BoxDecoration(
-        color: AppColors.termsContentFill,
-        borderRadius: BorderRadius.circular(11.5 * s),
-      ),
+      decoration: BoxDecoration(color: AppColors.termsContentFill, borderRadius: BorderRadius.circular(11.5 * s)),
       child: Column(
         children: <Widget>[
-          _field(controller.currentController, 'Enter Current Password',
-              controller.obscureCurrent, TextInputAction.next),
+          _field(controller.currentController, 'Enter Current Password', controller.obscureCurrent, TextInputAction.next),
           SizedBox(height: 12 * s),
-          _field(controller.newController, 'Enter New Password',
-              controller.obscureNew, TextInputAction.next),
+          _field(controller.newController, 'Enter New Password', controller.obscureNew, TextInputAction.next),
           SizedBox(height: 12 * s),
-          _field(controller.confirmController, 'Re-type New Password',
-              controller.obscureConfirm, TextInputAction.done),
+          _field(controller.confirmController, 'Re-type New Password', controller.obscureConfirm, TextInputAction.done),
           SizedBox(height: 16 * s),
-          Obx(
-            () => AppPrimaryButton(
-              label: 'Update',
-              loading: controller.savingPassword.value,
-              onPressed: controller.changePassword,
-              scale: s,
-            ),
-          ),
+          Obx(() => AppPrimaryButton(label: 'Update', loading: controller.savingPassword.value, onPressed: controller.changePassword, scale: s)),
         ],
       ),
     );
@@ -184,17 +150,12 @@ class _History extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(12 * s),
-      decoration: BoxDecoration(
-        color: AppColors.termsContentFill,
-        borderRadius: BorderRadius.circular(11.5 * s),
-      ),
+      decoration: BoxDecoration(color: AppColors.termsContentFill, borderRadius: BorderRadius.circular(11.5 * s)),
       child: Obx(() {
         if (controller.historyLoading.value) {
           return Padding(
             padding: EdgeInsets.all(16 * s),
-            child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
-            ),
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)),
           );
         }
         final error = controller.historyError.value;
@@ -213,10 +174,7 @@ class _History extends StatelessWidget {
         if (plans.isEmpty) {
           return Padding(
             padding: EdgeInsets.all(12 * s),
-            child: Text(
-              'You have no plan history yet.',
-              style: AppTextStyles.programDesc.scaled(s),
-            ),
+            child: Text('You have no plan history yet.', style: AppTextStyles.programDesc.scaled(s)),
           );
         }
 
@@ -236,8 +194,7 @@ class _History extends StatelessWidget {
             children: <TableRow>[
               TableRow(
                 children: <Widget>[
-                  for (final h in <String>['PLAN', 'AMOUNT', 'STATUS', 'START', 'END'])
-                    pad(Text(h, style: head)),
+                  for (final h in <String>['PLAN', 'AMOUNT', 'STATUS', 'START', 'END']) pad(Text(h, style: head)),
                 ],
               ),
               for (final p in plans)
@@ -251,20 +208,12 @@ class _History extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 10 * s, vertical: 4 * s),
                           decoration: BoxDecoration(
-                            color: (p.status.toLowerCase() == 'active'
-                                    ? AppColors.selectGreen
-                                    : AppColors.hint)
-                                .withValues(alpha: 0.2),
+                            color: (p.status.toLowerCase() == 'active' ? AppColors.selectGreen : AppColors.hint).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12 * s),
                           ),
                           child: Text(
                             p.status,
-                            style: cell.copyWith(
-                              color: p.status.toLowerCase() == 'active'
-                                  ? AppColors.selectGreen
-                                  : AppColors.hint,
-                              fontSize: 11 * s,
-                            ),
+                            style: cell.copyWith(color: p.status.toLowerCase() == 'active' ? AppColors.selectGreen : AppColors.hint, fontSize: 11 * s),
                           ),
                         ),
                       ),
@@ -277,6 +226,58 @@ class _History extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+}
+
+class _PushRow extends StatelessWidget {
+  const _PushRow({required this.scale});
+
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = scale;
+    return Container(
+      height: 52.7 * s,
+      padding: EdgeInsets.symmetric(horizontal: 19.3 * s),
+      decoration: BoxDecoration(
+        color: AppColors.termsContentFill,
+        border: Border.all(color: AppColors.cardBorder),
+        borderRadius: BorderRadius.circular(11.5 * s),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              'Push Notifications',
+              style: AppTextStyles.termsHeader.scaled(s),
+            ),
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {}, // static for now
+            child: Container(
+              height: 24 * s,
+              padding: EdgeInsets.symmetric(horizontal: 12 * s),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.selectGreen,
+                borderRadius: BorderRadius.circular(12 * s),
+              ),
+              child: Text(
+                'Enable',
+                style: TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 11 * s,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

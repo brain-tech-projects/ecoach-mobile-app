@@ -27,6 +27,9 @@ class MySkillsController extends GetxController {
   final RxList<Challenge> challenges = <Challenge>[].obs;
   final RxBool loading = true.obs;
   final RxnString errorMessage = RxnString();
+  void addSkills() => Get.toNamed<void>(AppRoutes.skills);
+
+void exploreChallenges() => Get.toNamed<void>(AppRoutes.challenges);
 
   @override
   void onReady() {
@@ -35,20 +38,35 @@ class MySkillsController extends GetxController {
   }
 
   Future<void> load() async {
-    loading.value = true;
-    errorMessage.value = null;
-    try {
-      skills.assignAll(await _player.fetchSavedSkills());
-      final res = await _fun.fetchChallenges();
-      if (!res.success) throw Exception(res.message);
-      challenges.assignAll((res.data ?? const <Challenge>[]).where((c) => c.isFavorite));
-    } catch (error, stackTrace) {
-      AppLogger.error('My skills load failed', error: error, stackTrace: stackTrace);
-      errorMessage.value = 'Could not load your skills.';
-    } finally {
-      loading.value = false;
-    }
+  loading.value = true;
+  errorMessage.value = null;
+
+  // Skills: a failure here is a real error for the screen.
+  try {
+    skills.assignAll(await _player.fetchSavedSkills());
+  } catch (error, stackTrace) {
+    AppLogger.error('My skills load failed', error: error, stackTrace: stackTrace);
+    errorMessage.value = 'Could not load your skills.';
+    loading.value = false;
+    return;
   }
+
+  // Challenges: gated by subscription, so don't fail the whole page.
+  try {
+    final res = await _fun.fetchChallenges();
+    if (res.success) {
+      challenges.assignAll((res.data ?? const <Challenge>[]).where((c) => c.isFavorite));
+    } else {
+      AppLogger.error('My challenges unavailable: ${res.message}');
+      challenges.clear();
+    }
+  } catch (error, stackTrace) {
+    AppLogger.error('My challenges load failed', error: error, stackTrace: stackTrace);
+    challenges.clear();
+  }
+
+  loading.value = false;
+}
 
   void openSkill(SavedSkill s) => Get.toNamed<void>(AppRoutes.skillDetail, arguments: s.drill);
 

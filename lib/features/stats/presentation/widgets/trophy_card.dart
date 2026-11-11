@@ -10,8 +10,8 @@ const Color _trophyCardBorder = Color(0xFF4F8961);
 
 TextStyle _name(double s) => const TextStyle(
       fontFamily: AppTextStyles.fontFamily,
-      fontSize: 18,
-      fontWeight: FontWeight.w500,
+      fontSize: 13,
+      fontWeight: FontWeight.bold,
       height: 1.0,
       color: AppColors.white,
     ).scaled(s);

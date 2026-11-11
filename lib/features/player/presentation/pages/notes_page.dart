@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/widgets/empty_state_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -47,16 +48,33 @@ class NotesPage extends GetView<NotesController> {
             ),
             Expanded(
               child: nodes.isEmpty
-                  ? Padding(
-                      padding: EdgeInsets.fromLTRB(hPad, 36 * s, hPad, 0),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          'You have no notes yet.',
-                          style: AppTextStyles.programDesc.scaled(s),
-                        ),
-                      ),
-                    )
+                  ? RefreshIndicator(
+          onRefresh: controller.load,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.fromLTRB(24 * s, 28 * s, 24 * s, 24 * s),
+            children: <Widget>[
+              if (tab == 0)
+                EmptyStateCard(
+                  title: 'No notes added yet',
+                  subtitle: 'Save skills to your personal list so you can practice anytime and track your progress.',
+                  actionLabel: 'Add Skills Notes',
+                  onAction: controller.addSkillsnote,
+                  scale: s,
+                )
+              else
+                EmptyStateCard(
+                  title: 'No notes added yet',
+                  subtitle: 'Add challenges to stay motivated, compete with others, and improve your performance.',
+                  actionLabel: 'Add Challenges Notes',
+                  onAction: controller.exploreChallengesnote,
+                  scale: s,
+                ),
+            ],
+          ),
+        )
                   : RefreshIndicator(
                       onRefresh: controller.load,
                       child: ListView.separated(

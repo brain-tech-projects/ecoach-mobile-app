@@ -7,6 +7,9 @@ abstract interface class SkillsRepository {
 
   Future<ApiResponse<List<Drill>>> fetchDrills(int categoryId);
 
+  /// Free drills ("What's New & Open Access").
+  Future<ApiResponse<List<Drill>>> fetchFreeDrills();
+
   /// Every drill of every skill area (the static "All Skills" tile).
   Future<ApiResponse<List<Drill>>> fetchAllDrills();
 

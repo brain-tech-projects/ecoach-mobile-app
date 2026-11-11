@@ -10,6 +10,7 @@ import 'package:ecoach_pro/features/auth/data/countries_data.dart';
 import 'package:ecoach_pro/features/auth/data/signup_content.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/country.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/otp_args.dart';
+import 'package:ecoach_pro/features/auth/domain/entities/programme_summary.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/signup_step.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/user_role.dart';
 
@@ -198,6 +199,38 @@ class SignUpController extends GetxController {
     return raw == null ? null : int.tryParse(raw);
   }
 
+  /// Display labels (keeps `×`), joined for the "programme is ready" card.
+  String _display(SignUpStepKind kind) {
+    final ids = selected(kind);
+    final question = SignUpContent.questionFor(kind);
+    if (ids.isEmpty || question == null) return '';
+    return question.options
+        .where((o) => ids.contains(o.id))
+        .map((o) => o.label)
+        .join(', ');
+  }
+
+  ProgrammeSummary _buildSummary() {
+    final age = _age;
+    return ProgrammeSummary(
+      age: age == null ? '' : (age >= 13 ? '13+ years old' : '$age years old'),
+      positions: _display(SignUpStepKind.positions),
+      level: _display(SignUpStepKind.level),
+      focus: _display(SignUpStepKind.improve),
+      goals: _display(SignUpStepKind.difference),
+      frequency: _display(SignUpStepKind.frequency),
+    );
+  }
+
+  /// Email field label: player / parent-guardian (ages 5-12) / coach.
+  String get emailLabel {
+    if (isCoach) return 'Coach Email *';
+    if (requiresOtp || selectedRole.value == UserRole.parent) {
+      return 'Parent/Guardian Email *';
+    }
+    return 'Player Email *';
+  }
+
   Future<void> submit() async {
     if (isLoading.value) return;
     _submitted = true;
@@ -231,7 +264,16 @@ class SignUpController extends GetxController {
         return;
       }
 
-      final user = res.data;
+            final user = res.data;
+
+      final programmeArgs = isCoach
+          ? null
+          : ProgrammeArgs(
+              email: email,
+              password: password,
+              summary: _buildSummary(),
+            );
+
       if (needsOtp || (user?.isInactive ?? false)) {
         // Backend mailed an OTP to the parent / guardian.
         AppToast.success(res.message);
@@ -242,12 +284,20 @@ class SignUpController extends GetxController {
             purpose: OtpPurpose.signUp,
             userId: user?.id,
             password: password,
+            programme: programmeArgs,
           ),
         );
         return;
       }
 
-      // Active account: register returns no token, so sign in right away.
+      if (programmeArgs != null) {
+        // Players / parents: programme screens, then sign in on "Unlock".
+        AppToast.success('User Registered Successfully.');
+        Get.offAllNamed<void>(AppRoutes.programme, arguments: programmeArgs);
+        return;
+      }
+
+      // Coach: register returns no token, so sign in right away.
       final login = await _api.login(email: email, password: password);
       if (login.success) {
         Get.offAllNamed<void>(AppRoutes.dashboard);

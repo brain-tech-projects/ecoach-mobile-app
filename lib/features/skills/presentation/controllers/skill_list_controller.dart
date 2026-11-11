@@ -13,7 +13,11 @@ class SkillListController extends GetxController {
 
   final SkillsRepository _repository;
 
-  final SkillCategory category = Get.arguments as SkillCategory;
+  /// The skill area to list. Opened without one (the Home "What's New &
+  /// Open Access" tile), it shows the free drills.
+  final SkillCategory category = Get.arguments is SkillCategory
+      ? Get.arguments as SkillCategory
+      : SkillCategory.openAccess;
 
   final RxList<Drill> drills = <Drill>[].obs;
   final RxBool isLoading = true.obs;
@@ -29,7 +33,9 @@ class SkillListController extends GetxController {
     isLoading.value = true;
     errorMessage.value = null;
     try {
-      final res = category.isAll
+      final res = category.isOpenAccess
+          ? await _repository.fetchFreeDrills()
+          : category.isAll
           ? await _repository.fetchAllDrills()
           : await _repository.fetchDrills(category.id);
       if (res.isSubscriptionRequired) {

@@ -91,4 +91,7 @@ abstract final class ApiEndpoints {
   // Points / trophies history
   static const String pointsHistory = '/points-history';
   static const String redeemHistory = '/redeem-history';
+
+  // Take a tour (public)
+  static const String tourVideos = '/tour-videos';
 }

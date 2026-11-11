@@ -61,7 +61,7 @@ class OtpController extends GetxController {
     Get.offNamed<void>(AppRoutes.setNewPassword, arguments: email);
   }
 
-  Future<void> _verifySignUp() async {
+    Future<void> _verifySignUp() async {
     final userId = args.userId;
     if (userId == null) {
       error.value = 'Session expired. Please sign up again.';
@@ -77,7 +77,16 @@ class OtpController extends GetxController {
       return;
     }
 
-    // Verified -> sign in with the credentials from the sign-up form.
+    // Verified -> players/parents see the programme screens first;
+    // "Unlock" there signs them in.
+    final programme = args.programme;
+    if (programme != null) {
+      AppToast.success('Email verified.');
+      Get.offAllNamed<void>(AppRoutes.programme, arguments: programme);
+      return;
+    }
+
+    // Otherwise sign in with the credentials from the sign-up form.
     final password = args.password;
     if (password != null) {
       final login = await _api.login(email: email, password: password);

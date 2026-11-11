@@ -59,7 +59,7 @@ class SkillListPage extends GetView<SkillListController> {
               padding: EdgeInsets.fromLTRB(hPad, 27.8 * s, hPad, 25.2 * s),
               sliver: SliverToBoxAdapter(
                 child: Text(
-                  controller.category.isAll
+                  (controller.category.isAll || controller.category.isOpenAccess)
                       ? 'Choose a drill to get started.'
                       : 'Get ready to ${controller.category.name} like a pro. '
                             'Choose a drill to get started.',

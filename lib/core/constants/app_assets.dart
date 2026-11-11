@@ -33,6 +33,9 @@ abstract final class AppAssets {
   static const String programWhatsNew = '$_images/program_whats_new.png';
   static const String programEcoach = '$_images/program_ecoach.png';
 
+  // Sign-up result screen hero (dummy - replace with API image later)
+  static const String programmeHero = '$_images/programme_hero.jpg';
+
   // Sign-up choice icons (44 x 44 pt canvases, white masks - tinted at runtime)
   static const String _choice = '$_icons/choice';
   static const String choiceCalendar = '$_choice/calendar.png';
@@ -58,6 +61,7 @@ abstract final class AppAssets {
   static const String choiceWinger = '$_choice/winger.png';
   static const String choiceStriker = '$_choice/striker.png';
   static const String choiceNoSetPosition = '$_choice/no_set_position.png';
+  static const String programmeRing = 'assets/images/circul.png';
 
   // Form icons (sign-up)
   static const String iconUser = '$_icons/user.png';

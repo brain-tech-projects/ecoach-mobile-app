@@ -21,18 +21,17 @@ class ShieldPhoto extends StatelessWidget {
           color: AppColors.avatarBg,
           child: Icon(Icons.person, size: 44, color: AppColors.avatarFg),
         );
-    Widget img;
-    if (data.photoAsset != null) {
-      img = Image.asset(data.photoAsset!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback());
-    } else if (data.photoUrl != null) {
-      img = Image.network(data.photoUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback());
-    } else {
-      img = fallback();
-    }
+    // The player's own photo first; the bundled one is only a fallback.
+    Widget bundled() => data.photoAsset != null
+        ? Image.asset(data.photoAsset!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback())
+        : fallback();
+    final Widget img = (data.photoUrl != null && data.photoUrl!.isNotEmpty)
+        ? Image.network(data.photoUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => bundled())
+        : bundled();
     return ExcludeSemantics(
       child: SizedBox(
-        width: 86 * s,
-        height: 103 * s,
+        width: 82 * s,
+        height: 99 * s,
         child: ClipPath(clipper: _ShieldClipper(), child: img),
       ),
     );
@@ -74,10 +73,10 @@ class TrackerSummary extends StatelessWidget {
         clipBehavior: Clip.none,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 59 * s),
+            padding: EdgeInsets.only(top: 57 * s),
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.fromLTRB(11 * s, 58 * s, 11 * s, 11 * s),
+              padding: EdgeInsets.fromLTRB(10 * s, 55 * s, 10 * s, 10 * s),
               decoration: BoxDecoration(
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(20 * s),
@@ -86,7 +85,7 @@ class TrackerSummary extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   ExcludeSemantics(child: _NameRow(name: data.playerName, scale: s)),
-                  SizedBox(height: 24 * s),
+                  SizedBox(height: 23 * s),
                   ExcludeSemantics(
                     child: Row(
                       children: <Widget>[
@@ -155,7 +154,7 @@ class _NameRow extends StatelessWidget {
             alignment: Alignment.center,
             child: Container(
               height: 2.7 * s,
-              constraints: BoxConstraints(maxWidth: 40 * s),
+              constraints: BoxConstraints(maxWidth: 37 * s),
               decoration: BoxDecoration(
                 color: AppColors.accent,
                 borderRadius: BorderRadius.circular(2 * s),
@@ -167,7 +166,7 @@ class _NameRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         line(),
-        SizedBox(width: 16 * s),
+        SizedBox(width: 15 * s),
         Flexible(
           flex: 3,
           child: Text(
@@ -176,15 +175,15 @@ class _NameRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
-              fontSize: 20 * s,
+              fontSize: 19 * s,
               fontWeight: FontWeight.w600,
-              letterSpacing: 2 * s,
+              letterSpacing: 0.8 * s,
               height: 1.5,
               color: AppColors.white,
             ),
           ),
         ),
-        SizedBox(width: 16 * s),
+        SizedBox(width: 15 * s),
         line(),
       ],
     );
@@ -206,38 +205,39 @@ class _StatTile extends StatelessWidget {
       decoration: BoxDecoration(color: _tileEdge, borderRadius: BorderRadius.circular(20 * s)),
       child: Container(
         margin: EdgeInsets.only(bottom: 3.3 * s),
-        padding: EdgeInsets.fromLTRB(4 * s, 10 * s, 4 * s, 9 * s),
+        padding: EdgeInsets.fromLTRB(4 * s, 9.4 * s, 4 * s, 12 * s),
         decoration: BoxDecoration(color: _tileFill, borderRadius: BorderRadius.circular(20 * s)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              width: 44 * s,
-              height: 44 * s,
+              width: 42 * s,
+              height: 42 * s,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AppColors.background,
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.accent, width: 1.5),
               ),
-              child: IconTheme(data: IconThemeData(size: 24 * s), child: icon),
+              child: IconTheme(data: IconThemeData(size: 22 * s), child: icon),
             ),
-            SizedBox(height: 3.3 * s),
+            SizedBox(height: 6.8 * s),
             Text(
               '$value',
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
-                fontSize: 24 * s,
+                fontSize: 16.5 * s,
                 fontWeight: FontWeight.w600,
                 height: 1.2,
                 color: AppColors.accent,
               ),
             ),
+            SizedBox(height: 1.5 * s),
             Text(
               label,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
-                fontSize: 16 * s,
+                fontSize: 13.3 * s,
                 height: 1.15,
                 color: AppColors.white,
               ),
@@ -272,7 +272,7 @@ class RatingsStrip extends StatelessWidget {
       label: 'Average ratings: ${cells.map((c) => '${c.$1} ${c.$2}').join(', ')}',
       child: ExcludeSemantics(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.3 * s),
+          padding: EdgeInsets.symmetric(vertical: 11.4 * s),
           decoration: BoxDecoration(
             color: AppColors.card,
             borderRadius: BorderRadius.circular(20 * s),
@@ -282,7 +282,7 @@ class RatingsStrip extends StatelessWidget {
             children: <Widget>[
               for (var i = 0; i < cells.length; i++) ...<Widget>[
                 if (i > 0)
-                  Container(width: 1.2, height: 40 * s, color: const Color(0xFF7C888C)),
+                  Container(width: 1.2, height: 34 * s, color: const Color(0xFF7C888C)),
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -291,17 +291,18 @@ class RatingsStrip extends StatelessWidget {
                         cells[i].$1,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 16 * s,
+                          fontSize: 12.7 * s,
                           fontWeight: FontWeight.w500,
                           height: 1.1,
                           color: AppColors.accent,
                         ),
                       ),
+                      SizedBox(height: 4.3 * s),
                       Text(
                         '${cells[i].$2}',
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 24 * s,
+                          fontSize: 15.7 * s,
                           fontWeight: FontWeight.w600,
                           height: 1.0,
                           color: AppColors.white,
@@ -359,16 +360,16 @@ class YearTabs extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: AppTextStyles.fontFamily,
-                                fontSize: 16 * s,
+                                fontSize: 12.7 * s,
                                 height: 1.5,
                                 color: y == selected ? AppColors.accent : AppColors.white,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(height: 7.3 * s),
+                        SizedBox(height: 8.8 * s),
                         Container(
-                          height: 2.7 * s,
+                          height: 2.2 * s,
                           color: y == selected ? AppColors.accent : Colors.transparent,
                         ),
                       ],

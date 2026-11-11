@@ -49,13 +49,13 @@ abstract final class MainNav {
 
   /// Any "open this page" button: login first, and pages that are not built
   /// yet show a short message instead of crashing on an unknown route.
-  static void open(String route) {
+  static void open(String route, {Object? arguments}) {
     if (!requireLogin()) return;
     if (!routeExists(route)) {
       AppToast.info('Coming soon');
       return;
     }
-    Get.toNamed<void>(route);
+    Get.toNamed<void>(route, arguments: arguments);
   }
 
   static void onTabSelected(int index) {
@@ -116,4 +116,5 @@ abstract final class MainNav {
   /// The menu itself is open to everyone; its items ask signed-out users
   /// to log in.
   static void openMenu() => Get.toNamed<void>(AppRoutes.menu);
+  static void taketour() => Get.toNamed<void>(AppRoutes.tour);
 }

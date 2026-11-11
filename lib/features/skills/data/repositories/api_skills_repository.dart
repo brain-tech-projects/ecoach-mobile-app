@@ -17,6 +17,9 @@ class ApiSkillsRepository implements SkillsRepository {
       _api.getSkillVideos(categoryId);
 
   @override
+  Future<ApiResponse<List<Drill>>> fetchFreeDrills() => _api.getFreeSkillVideos();
+
+  @override
   Future<ApiResponse<List<Drill>>> fetchAllDrills() async {
     final cats = await _api.getSkillTypes();
     if (!cats.success) {

@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/widgets/empty_state_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -44,21 +45,36 @@ class MySkillsPage extends GetView<MySkillsController> {
               ),
             ),
             Expanded(
-              child: empty
-                  ? Padding(
-                      padding: EdgeInsets.all(24 * s),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 12 * s),
-                          child: Text(
-                            tab == 0 ? 'No skills saved yet.' : 'No challenges saved yet.',
-                            style: AppTextStyles.programDesc.scaled(s),
-                          ),
-                        ),
-                      ),
-                    )
-                  : RefreshIndicator(
+  child: empty
+      ? RefreshIndicator(
+          onRefresh: controller.load,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.fromLTRB(24 * s, 28 * s, 24 * s, 24 * s),
+            children: <Widget>[
+              if (tab == 0)
+                EmptyStateCard(
+                  title: 'No skills added yet',
+                  subtitle: 'Start building your personal training library.',
+                  actionLabel: 'Add Skills',
+                  onAction: controller.addSkills,
+                  scale: s,
+                )
+              else
+                EmptyStateCard(
+                  title: 'No challenges found',
+                  subtitle: 'Join challenges to test your abilities.',
+                  actionLabel: 'Explore Challenges',
+                  onAction: controller.exploreChallenges,
+                  scale: s,
+                ),
+            ],
+          ),
+        )
+      : RefreshIndicator(
+          // ...your existing list code, unchanged
                       onRefresh: controller.load,
                       child: ListView.separated(
                         physics: const AlwaysScrollableScrollPhysics(

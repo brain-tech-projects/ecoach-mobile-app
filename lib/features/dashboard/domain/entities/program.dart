@@ -9,6 +9,7 @@ class Program {
     required this.description,
     required this.thumbnail,
     this.route,
+    this.routeArguments,
   });
 
   final String id;
@@ -20,4 +21,7 @@ class Program {
 
   /// Page opened on tap (signed-in home). Null = not built yet.
   final String? route;
+
+  /// Passed to [route] (e.g. which skill list to show).
+  final Object? routeArguments;
 }

@@ -34,7 +34,7 @@ class AccountStep extends StatelessWidget {
       children: <Widget>[
         Obx(
           () => FormFieldBlock(
-            label: isCoach ? 'Coach Email *' : 'Parent/Guardian Email *',
+            label: c.emailLabel,
             controller: c.emailController,
             hint: 'your.email@example.com',
             iconAsset: AppAssets.iconMail,

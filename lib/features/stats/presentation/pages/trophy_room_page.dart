@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/widgets/empty_state_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -52,18 +53,8 @@ class _Body extends StatelessWidget {
                     children: <Widget>[
                       Row(
                         children: <Widget>[
-                          _Tab(
-                            label: 'Points History',
-                            selected: historyTab,
-                            scale: s,
-                            onTap: () => controller.selectedTab.value = 0,
-                          ),
-                          _Tab(
-                            label: 'My Trophies',
-                            selected: !historyTab,
-                            scale: s,
-                            onTap: () => controller.selectedTab.value = 1,
-                          ),
+                          _Tab(label: 'Points History', selected: historyTab, scale: s, onTap: () => controller.selectedTab.value = 0),
+                          _Tab(label: 'My Trophies', selected: !historyTab, scale: s, onTap: () => controller.selectedTab.value = 1),
                         ],
                       ),
                       SizedBox(height: 14 * s),
@@ -73,28 +64,27 @@ class _Body extends StatelessWidget {
                 ),
               ),
               if (historyTab)
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(21 * s, 33 * s, 21 * s, 20 * s),
-                  sliver: SliverList.separated(
-                    itemCount: controller.history.length,
-                    separatorBuilder: (_, _) => SizedBox(height: 14 * s),
-                    itemBuilder: (context, index) => PointHistoryCard(
-                      entry: controller.history[index],
-                      scale: s,
+                if (controller.history.isEmpty)
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(24 * s, 33 * s, 24 * s, 20 * s),
+                    sliver: SliverToBoxAdapter(
+                      child: EmptyStateCard(title: 'No Points History Found', scale: s),
                     ),
-                  ),
-                )
+                  )
+                else
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(21 * s, 33 * s, 21 * s, 20 * s),
+                    sliver: SliverList.separated(
+                      itemCount: controller.history.length,
+                      separatorBuilder: (_, _) => SizedBox(height: 14 * s),
+                      itemBuilder: (context, index) => PointHistoryCard(entry: controller.history[index], scale: s),
+                    ),
+                  )
               else if (controller.myTrophies.isEmpty)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24 * s),
-                      child: Text(
-                        'No trophies earned yet.',
-                        style: AppTextStyles.programDesc.scaled(s),
-                      ),
-                    ),
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(24 * s, 33 * s, 24 * s, 20 * s),
+                  sliver: SliverToBoxAdapter(
+                    child: EmptyStateCard(title: 'No Trophies added yet', scale: s),
                   ),
                 )
               else
@@ -109,9 +99,7 @@ class _Body extends StatelessWidget {
                       return TrophyGridRow(
                         scale: s,
                         left: MyTrophyCard(item: list[i], scale: s),
-                        right: i + 1 < list.length
-                            ? MyTrophyCard(item: list[i + 1], scale: s)
-                            : null,
+                        right: i + 1 < list.length ? MyTrophyCard(item: list[i + 1], scale: s) : null,
                       );
                     },
                   ),
@@ -152,11 +140,7 @@ class _Tab extends StatelessWidget {
               ).scaled(s).copyWith(color: selected ? AppColors.accent : AppColors.white),
             ),
             SizedBox(height: 13 * s),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 3 * s,
-              color: selected ? AppColors.accent : Colors.transparent,
-            ),
+            AnimatedContainer(duration: const Duration(milliseconds: 180), height: 3 * s, color: selected ? AppColors.accent : Colors.transparent),
           ],
         ),
       ),

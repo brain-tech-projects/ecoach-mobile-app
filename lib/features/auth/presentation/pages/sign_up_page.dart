@@ -65,7 +65,11 @@ class SignUpPage extends GetView<SignUpController> {
     final isRole = kind == SignUpStepKind.role;
     final isAccount = kind == SignUpStepKind.account;
     final label = isAccount
-        ? (controller.isCoach ? 'Sign Up' : 'Create My Programme')
+        ? (controller.isCoach
+              ? 'Sign Up'
+              : (controller.isLoading.value
+                    ? 'Creating Your Programme...'
+                    : 'Create My Programme'))
         : 'Next';
     final afterContent = isAccount && !controller.isCoach ? 25.5 : 24.3;
 

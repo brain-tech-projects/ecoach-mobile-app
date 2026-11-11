@@ -1,6 +1,7 @@
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:ecoach_pro/features/dashboard/domain/entities/program.dart';
+import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 
 /// "Popular Programs" of the signed-in home. There is no API for this list
 /// yet. Point `thumbnail` at your own assets (or URLs) to match the design.
@@ -12,6 +13,7 @@ abstract final class MemberPrograms {
       description: 'See the latest tricks, drills and updates.',
       thumbnail: AppAssets.programWhatsNew,
       route: AppRoutes.skillList,
+      routeArguments: SkillCategory.openAccess,
     ),
     Program(
       id: 'ecoach-program',

@@ -43,6 +43,14 @@ class SkillCategory {
   final String? imageAsset;
 
   bool get isAll => id == 0;
+
+  /// "What's New & Open Access" (free drills, opened from Home).
+  static const SkillCategory openAccess = SkillCategory(
+    id: -1,
+    name: 'What\'s New & Open Access',
+  );
+
+  bool get isOpenAccess => id == -1;
 }
 
 /// A skill video ("drill"). The list API fills the first fields; the details

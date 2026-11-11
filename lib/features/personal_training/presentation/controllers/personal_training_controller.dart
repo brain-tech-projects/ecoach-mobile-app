@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/navigation/main_nav.dart';
 import 'package:ecoach_pro/core/services/api_service.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
+import 'package:ecoach_pro/features/personal_training/domain/entities/personal_training_player_args.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 
 /// "Personal Training Session": the drills the player added from Skills.
@@ -53,9 +54,13 @@ class PersonalTrainingController extends GetxController {
     load();
   }
 
-  /// Opens the first drill (a queue player is not built yet).
+  /// Plays the whole session from the first video (Previous / Next, auto-advance).
   void playAll() {
-    if (drills.isNotEmpty) openDrill(drills.first);
+    if (drills.isEmpty) return;
+    Get.toNamed<void>(
+      AppRoutes.personalTrainingPlayer,
+      arguments: PersonalTrainingPlayerArgs(drills: drills.toList()),
+    );
   }
 
   void addSkills() => MainNav.onTabSelected(MainNav.skillsIndex);
