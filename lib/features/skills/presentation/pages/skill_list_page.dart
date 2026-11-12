@@ -29,11 +29,7 @@ class SkillListPage extends GetView<SkillListController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    controller.errorMessage.value!,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.trainSubline.scaled(s),
-                  ),
+                  Text(controller.errorMessage.value!, textAlign: TextAlign.center, style: AppTextStyles.trainSubline.scaled(s)),
                   TextButton(
                     onPressed: controller.load,
                     child: Text('Retry', style: AppTextStyles.action.scaled(s)),
@@ -43,12 +39,7 @@ class SkillListPage extends GetView<SkillListController> {
             );
           }
           if (!controller.isLoading.value) {
-            return Center(
-              child: Text(
-                'No drills yet.',
-                style: AppTextStyles.trainSubline.scaled(s),
-              ),
-            );
+            return Center(child: Text('No drills yet.', style: AppTextStyles.trainSubline.scaled(s)));
           }
           return const Center(child: CircularProgressIndicator(color: AppColors.accent));
         }
@@ -60,7 +51,7 @@ class SkillListPage extends GetView<SkillListController> {
               sliver: SliverToBoxAdapter(
                 child: Text(
                   (controller.category.isAll || controller.category.isOpenAccess)
-                      ? 'Choose a drill to get started.'
+                      ? 'Choose your own skills to build your own training journey.'
                       : 'Get ready to ${controller.category.name} like a pro. '
                             'Choose a drill to get started.',
                   textAlign: TextAlign.center,

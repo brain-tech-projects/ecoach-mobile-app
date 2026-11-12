@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
@@ -35,9 +36,12 @@ class DashboardPage extends GetView<DashboardController> {
                 final user = controller.session.user.value;
                 if (!controller.isLoggedIn || user == null) {
                   return DashboardHeader(onProfileTap: controller.openAuth, onMenuTap: controller.openMenu);
+                 // return DashboardHeader(onProfileTap: controller.isLoggedIn ? AppRoutes.myProfile : null, onMenuTap: controller.openMenu);
+             
                 }
                 return MemberHeader(
                   name: "${user.fullName}",
+                  onprofiletap: controller.onprofiletap,
                   photoUrl: user.profilePhoto,
                   unreadCount: controller.unreadCount.value,
                   onMenuTap: controller.openMenu,

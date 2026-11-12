@@ -69,6 +69,7 @@ import 'package:ecoach_pro/features/stats/presentation/pages/trophy_store_page.d
 import 'package:ecoach_pro/features/training/presentation/bindings/training_binding.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_detail_page.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_page.dart';
+
 // import 'package:ecoach_pro/features/skills/presentation/bindings/skills_binding.dart';
 // import 'package:ecoach_pro/features/skills/presentation/pages/skill_detail_page.dart';
 // import 'package:ecoach_pro/features/skills/presentation/pages/skill_list_page.dart';
@@ -104,18 +105,8 @@ abstract final class AppPages {
       transition: Transition.fadeIn,
       transitionDuration: _fade,
     ),
-    GetPage<void>(
-      name: AppRoutes.signIn,
-      page: () => const SignInPage(),
-      binding: SignInBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<void>(
-      name: AppRoutes.signUp,
-      page: () => const SignUpPage(),
-      binding: SignUpBinding(),
-      transition: Transition.cupertino,
-    ),
+    GetPage<void>(name: AppRoutes.signIn, page: () => const SignInPage(), binding: SignInBinding(), transition: Transition.cupertino),
+    GetPage<void>(name: AppRoutes.signUp, page: () => const SignUpPage(), binding: SignUpBinding(), transition: Transition.cupertino),
     GetPage<void>(
       name: AppRoutes.programme,
       page: () => const ProgrammePage(),
@@ -123,12 +114,7 @@ abstract final class AppPages {
       transition: Transition.fadeIn,
       transitionDuration: _fade,
     ),
-    GetPage<void>(
-      name: AppRoutes.tour,
-      page: () => const TourPage(),
-      binding: TourBinding(),
-      transition: Transition.cupertino,
-    ),
+    GetPage<void>(name: AppRoutes.tour, page: () => const TourPage(), binding: TourBinding(), transition: Transition.cupertino),
     GetPage<void>(
       name: AppRoutes.personalTrainingPlayer,
       middlewares: <GetMiddleware>[AuthMiddleware()],
@@ -136,12 +122,7 @@ abstract final class AppPages {
       binding: PersonalTrainingPlayerBinding(),
       transition: Transition.cupertino,
     ),
-    GetPage<void>(
-      name: AppRoutes.otp,
-      page: () => const OtpPage(),
-      binding: OtpBinding(),
-      transition: Transition.cupertino,
-    ),
+    GetPage<void>(name: AppRoutes.otp, page: () => const OtpPage(), binding: OtpBinding(), transition: Transition.cupertino),
     GetPage<void>(
       name: AppRoutes.subscription,
       middlewares: <GetMiddleware>[AuthMiddleware()],
@@ -177,14 +158,15 @@ abstract final class AppPages {
     ),
     GetPage<void>(
       name: AppRoutes.appSettings,
-      middlewares: <GetMiddleware>[AuthMiddleware()],
+      // middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const AppSettingsPage(),
       binding: AppSettingsBinding(),
       transition: Transition.cupertino,
     ),
+   
     GetPage<void>(
       name: AppRoutes.contact,
-      middlewares: <GetMiddleware>[AuthMiddleware()],
+      // middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const ContactPage(),
       binding: ContactBinding(),
       transition: Transition.cupertino,
@@ -381,11 +363,5 @@ abstract final class AppPages {
       binding: MatchFormBinding(),
       transition: Transition.cupertino,
     ),
-    
-
-
-
-
-    
   ];
 }

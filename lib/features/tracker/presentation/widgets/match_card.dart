@@ -64,6 +64,16 @@ class MatchCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             _Header(entry: e, expanded: expanded, onTap: onToggle, scale: s),
+            // if (expanded) ...<Widget>[
+            //   SizedBox(height: 15.3 * s),
+            //   const Divider(height: 1, thickness: 1, color: _rowLine),
+            //   _OpponentRow(entry: e, scale: s, onEdit: onEdit, onDelete: onDelete),
+            //   for (var i = 0; i < rows.length; i++) ...<Widget>[
+            //     const Divider(height: 1, thickness: 1, color: _rowLine),
+            //     _InfoRow(label: rows[i].$1, value: rows[i].$2, scale: s),
+            //   ],
+            // ],
+
             if (expanded) ...<Widget>[
               SizedBox(height: 15.3 * s),
               const Divider(height: 1, thickness: 1, color: _rowLine),
@@ -72,6 +82,8 @@ class MatchCard extends StatelessWidget {
                 const Divider(height: 1, thickness: 1, color: _rowLine),
                 _InfoRow(label: rows[i].$1, value: rows[i].$2, scale: s),
               ],
+              const Divider(height: 1, thickness: 1, color: _rowLine),
+              _MatchPic(entry: e, scale: s),
             ],
           ],
         ),
@@ -80,19 +92,9 @@ class MatchCard extends StatelessWidget {
   }
 }
 
-TextStyle _label(double s) => TextStyle(
-      fontFamily: AppTextStyles.fontFamily,
-      fontSize: 15 * s,
-      height: 1.4,
-      color: AppColors.descGrey,
-    );
+TextStyle _label(double s) => TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 15 * s, height: 1.4, color: AppColors.descGrey);
 
-TextStyle _value(double s) => TextStyle(
-      fontFamily: AppTextStyles.fontFamily,
-      fontSize: 17 * s,
-      height: 1.4,
-      color: AppColors.white,
-    );
+TextStyle _value(double s) => TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 17 * s, height: 1.4, color: AppColors.white);
 
 class _Header extends StatelessWidget {
   const _Header({required this.entry, required this.expanded, required this.onTap, required this.scale});
@@ -140,12 +142,7 @@ class _Header extends StatelessWidget {
                         entry.longDate,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 16 * s,
-                          height: 1.2,
-                          color: AppColors.descGrey,
-                        ),
+                        style: TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 16 * s, height: 1.2, color: AppColors.descGrey),
                       ),
                     ],
                   ),
@@ -156,11 +153,7 @@ class _Header extends StatelessWidget {
                     offset: expanded ? Offset(5 * s, 5 * s) : Offset.zero,
                     child: CustomPaint(
                       size: Size(22 * s, 22 * s),
-                      painter: _ChevronPainter(
-                        up: expanded,
-                        color: expanded ? _chevronOpen : const Color(0xFFE6E6E6),
-                        width: 1.8 * s,
-                      ),
+                      painter: _ChevronPainter(up: expanded, color: expanded ? _chevronOpen : const Color(0xFFE6E6E6), width: 1.8 * s),
                     ),
                   ),
                 ),
@@ -200,8 +193,7 @@ class _ChevronPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ChevronPainter old) =>
-      old.up != up || old.color != color || old.width != width;
+  bool shouldRepaint(covariant _ChevronPainter old) => old.up != up || old.color != color || old.width != width;
 }
 
 class _Thumb extends StatelessWidget {
@@ -215,18 +207,16 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     final px = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
     Widget placeholder() => ColoredBox(
-          color: const Color(0xFFCCCCCC),
-          child: Center(
-            child: Icon(Icons.photo_library_outlined, size: size * 0.55, color: const Color(0xFF6A6D6E)),
-          ),
-        );
+      color: const Color(0xFFCCCCCC),
+      child: Center(
+        child: Icon(Icons.photo_library_outlined, size: size * 0.55, color: const Color(0xFF6A6D6E)),
+      ),
+    );
     Widget child;
     if (entry.photoPath != null) {
-      child = Image.file(File(entry.photoPath!), fit: BoxFit.cover, cacheWidth: px,
-          errorBuilder: (_, _, _) => placeholder());
+      child = Image.file(File(entry.photoPath!), fit: BoxFit.cover, cacheWidth: px, errorBuilder: (_, _, _) => placeholder());
     } else if (entry.photoUrl != null && entry.photoUrl!.isNotEmpty) {
-      child = Image.network(entry.photoUrl!, fit: BoxFit.cover, cacheWidth: px,
-          errorBuilder: (_, _, _) => placeholder());
+      child = Image.network(entry.photoUrl!, fit: BoxFit.cover, cacheWidth: px, errorBuilder: (_, _, _) => placeholder());
     } else {
       child = placeholder();
     }
@@ -249,25 +239,19 @@ class _OpponentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = scale;
-    final item = TextStyle(
-      fontFamily: AppTextStyles.fontFamily,
-      fontSize: 16 * s,
-      fontWeight: FontWeight.w500,
-      color: AppColors.white,
+    final item = TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 16 * s, fontWeight: FontWeight.w500, color: AppColors.white);
+    PopupMenuItem<_MatchAction> entryItem(_MatchAction a, IconData icon, String text) => PopupMenuItem<_MatchAction>(
+      value: a,
+      height: 41 * s,
+      padding: EdgeInsets.symmetric(horizontal: 18 * s),
+      child: Row(
+        children: <Widget>[
+          Icon(icon, size: 22 * s, color: AppColors.white),
+          SizedBox(width: 10 * s),
+          Text(text, style: item),
+        ],
+      ),
     );
-    PopupMenuItem<_MatchAction> entryItem(_MatchAction a, IconData icon, String text) =>
-        PopupMenuItem<_MatchAction>(
-          value: a,
-          height: 41 * s,
-          padding: EdgeInsets.symmetric(horizontal: 18 * s),
-          child: Row(
-            children: <Widget>[
-              Icon(icon, size: 22 * s, color: AppColors.white),
-              SizedBox(width: 10 * s),
-              Text(text, style: item),
-            ],
-          ),
-        );
 
     return SizedBox(
       height: 48 * s,
@@ -276,13 +260,7 @@ class _OpponentRow extends StatelessWidget {
         children: <Widget>[
           Expanded(child: Text('Opponent:', style: _label(s))),
           Flexible(
-            child: Text(
-              entry.opponent,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
-              style: _value(s),
-            ),
+            child: Text(entry.opponent, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right, style: _value(s)),
           ),
           PopupMenuButton<_MatchAction>(
             tooltip: 'More options',
@@ -327,7 +305,10 @@ class _InfoRow extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Flexible(flex: 3, child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: _label(s))),
+              Flexible(
+                flex: 3,
+                child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: _label(s)),
+              ),
               SizedBox(width: 8 * s),
               Flexible(
                 flex: 2,
@@ -339,6 +320,60 @@ class _InfoRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MatchPic extends StatelessWidget {
+  const _MatchPic({required this.entry, required this.scale});
+
+  final MatchEntry entry;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = scale;
+    final hasPhoto = entry.photoPath != null || (entry.photoUrl != null && entry.photoUrl!.isNotEmpty);
+    if (!hasPhoto) return const SizedBox.shrink();
+
+    final boxHeight = 229 * s;
+    final px = (boxHeight * MediaQuery.devicePixelRatioOf(context)).ceil();
+
+    Widget placeholder() => Icon(Icons.photo_library_outlined, size: 48 * s, color: const Color(0xFF6A6D6E));
+
+    Widget image;
+    if (entry.photoPath != null) {
+      image = Image.file(File(entry.photoPath!), fit: BoxFit.contain, cacheHeight: px, errorBuilder: (_, _, _) => placeholder());
+    } else {
+      image = Image.network(entry.photoUrl!, fit: BoxFit.contain, cacheHeight: px, errorBuilder: (_, _, _) => placeholder());
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(top: 14 * s, bottom: 4 * s),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 40 * s,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Match Pic:', style: _label(s)),
+            ),
+          ),
+          SizedBox(height: 8 * s),
+          Semantics(
+            image: true,
+            label: 'Match photo',
+            child: Container(
+              height: boxHeight,
+              width: double.infinity,
+              decoration: BoxDecoration(color: const Color(0xFF4E5C62), borderRadius: BorderRadius.circular(14 * s)),
+              padding: EdgeInsets.all(10 * s),
+              child: Center(child: image),
+            ),
+          ),
+        ],
       ),
     );
   }

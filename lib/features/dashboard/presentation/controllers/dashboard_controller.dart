@@ -138,9 +138,15 @@ class DashboardController extends GetxController {
   void onBellTap() {
     if (MainNav.requireLogin()) MainNav.open(AppRoutes.notifications);
   }
+  void onprofiletap() {
+    if (MainNav.requireLogin()) MainNav.open(AppRoutes.myProfile);
+  }
 
   // Wired later.
-  void onJoinNow() => MainNav.requireLogin();
+  // void onJoinNow() => MainNav.requireLogin();
+  void onJoinNow() {
+  Get.toNamed(AppRoutes.signUp);
+}
   void onTakeTour() => MainNav.taketour();
   void onInstallApp() {}
 

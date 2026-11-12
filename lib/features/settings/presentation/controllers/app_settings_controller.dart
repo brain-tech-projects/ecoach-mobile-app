@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/services/session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,18 +27,28 @@ class PlanEntry {
 
 class AppSettingsController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
+  final SessionService _login = Get.find<SessionService>();
 
   static const String terms = 'terms';
   static const String password = 'password';
   static const String history = 'history';
+  RxBool get isLoggedIn => _login.isLoggedIn;
+
+   @override
+  void onInit() {
+    super.onInit();
+    // Logged-out users only see Terms, so open it by default.
+    if (!isLoggedIn.value) open.value = terms;
+  }
 
   /// Which accordion is open (null = all closed).
   final RxnString open = RxnString();
 
   void toggle(String id) {
     open.value = open.value == id ? null : id;
-    if (open.value == history && !_historyLoaded) loadHistory();
+    if (isLoggedIn.value && open.value == history && !_historyLoaded) loadHistory();
   }
+
 
   // ---- Change password --------------------------------------------------------
 

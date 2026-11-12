@@ -30,49 +30,58 @@ class AppSettingsPage extends GetView<AppSettingsController> {
         padding: EdgeInsets.fromLTRB(r.gutter + 24 * s, 28.3 * s, r.gutter + 24 * s, 24 * s),
         child: Obx(() {
           final open = controller.open.value;
+          final loggedIn = controller.isLoggedIn;
+
+          final termsTile = TermsAccordion(
+            expanded: open == AppSettingsController.terms,
+            onToggle: () => controller.toggle(AppSettingsController.terms),
+            scale: s,
+          );
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TermsAccordion(expanded: open == AppSettingsController.terms, onToggle: () => controller.toggle(AppSettingsController.terms), scale: s),
-              gap,
-              SettingsSection(
-                title: 'Change Password',
-                scale: s,
-                expanded: open == AppSettingsController.password,
-                onToggle: () => controller.toggle(AppSettingsController.password),
-                child: _PasswordForm(controller: controller, scale: s),
-              ),
-              gap,
-
-              _PushRow(scale: s),
-              gap,
-              SettingsSection(
-                title: 'Transaction History',
-                scale: s,
-                expanded: open == AppSettingsController.history,
-                onToggle: () => controller.toggle(AppSettingsController.history),
-                child: _History(controller: controller, scale: s),
-              ),
-              SizedBox(height: 16 * s),
-              Semantics(
-                button: true,
-                label: 'Delete Account',
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: controller.deleteAccount,
-                  child: Container(
-                    height: 52.7 * s,
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: 19.3 * s),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.15),
-                      border: Border.all(color: AppColors.error),
-                      borderRadius: BorderRadius.circular(11.5 * s),
+              termsTile,
+              if (loggedIn.value) ...<Widget>[
+                gap,
+                SettingsSection(
+                  title: 'Change Password',
+                  scale: s,
+                  expanded: open == AppSettingsController.password,
+                  onToggle: () => controller.toggle(AppSettingsController.password),
+                  child: _PasswordForm(controller: controller, scale: s),
+                ),
+                gap,
+                _PushRow(scale: s),
+                gap,
+                SettingsSection(
+                  title: 'Transaction History',
+                  scale: s,
+                  expanded: open == AppSettingsController.history,
+                  onToggle: () => controller.toggle(AppSettingsController.history),
+                  child: _History(controller: controller, scale: s),
+                ),
+                SizedBox(height: 16 * s),
+                Semantics(
+                  button: true,
+                  label: 'Delete Account',
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: controller.deleteAccount,
+                    child: Container(
+                      height: 52.7 * s,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(left: 19.3 * s),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.15),
+                        border: Border.all(color: AppColors.error),
+                        borderRadius: BorderRadius.circular(11.5 * s),
+                      ),
+                      child: Text('Delete Account', style: AppTextStyles.termsHeader.scaled(s).copyWith(color: AppColors.error)),
                     ),
-                    child: Text('Delete Account', style: AppTextStyles.termsHeader.scaled(s).copyWith(color: AppColors.error)),
                   ),
                 ),
-              ),
+              ],
             ],
           );
         }),
@@ -213,7 +222,10 @@ class _History extends StatelessWidget {
                           ),
                           child: Text(
                             p.status,
-                            style: cell.copyWith(color: p.status.toLowerCase() == 'active' ? AppColors.selectGreen : AppColors.hint, fontSize: 11 * s),
+                            style: cell.copyWith(
+                              color: p.status.toLowerCase() == 'active' ? AppColors.selectGreen : AppColors.hint,
+                              fontSize: 11 * s,
+                            ),
                           ),
                         ),
                       ),
@@ -248,12 +260,7 @@ class _PushRow extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          Expanded(
-            child: Text(
-              'Push Notifications',
-              style: AppTextStyles.termsHeader.scaled(s),
-            ),
-          ),
+          Expanded(child: Text('Push Notifications', style: AppTextStyles.termsHeader.scaled(s))),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {}, // static for now
@@ -261,18 +268,10 @@ class _PushRow extends StatelessWidget {
               height: 24 * s,
               padding: EdgeInsets.symmetric(horizontal: 12 * s),
               alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.selectGreen,
-                borderRadius: BorderRadius.circular(12 * s),
-              ),
+              decoration: BoxDecoration(color: AppColors.selectGreen, borderRadius: BorderRadius.circular(12 * s)),
               child: Text(
                 'Enable',
-                style: TextStyle(
-                  fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 11 * s,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 11 * s, fontWeight: FontWeight.w700, color: Colors.black),
               ),
             ),
           ),

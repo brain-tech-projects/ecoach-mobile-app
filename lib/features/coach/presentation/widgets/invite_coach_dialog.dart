@@ -53,9 +53,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
         ),
         child: Text(
           label,
-          style: AppTextStyles.dialogBody
-              .scaled(s)
-              .copyWith(color: color, fontWeight: FontWeight.w600),
+          style: AppTextStyles.dialogBody.scaled(s).copyWith(color: color, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -70,13 +68,10 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Semantics(
-              header: true,
-              child: Text('Invite your coach', style: AppTextStyles.dialogTitle.scaled(s)),
-            ),
+            Semantics(header: true, child: Text('Invite a Coach', style: AppTextStyles.dialogTitle.scaled(s))),
             SizedBox(height: 8 * s),
             Text(
-              'We will email them an invitation to join eCoachPro.',
+              'Enter your coach\'s email address. If they\'re already registered, they\'ll receive an invitation to connect. If not, they\'ll get an email with a link to sign up.',
               style: AppTextStyles.dialogBody.scaled(s),
             ),
             SizedBox(height: 16 * s),
@@ -86,7 +81,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
               autofocus: true,
               style: AppTextStyles.dialogBody.scaled(s).copyWith(color: AppColors.white),
               decoration: InputDecoration(
-                hintText: 'Coach email address',
+                hintText: 'coach@example.com',
                 hintStyle: AppTextStyles.dialogBody.scaled(s).copyWith(color: AppColors.hint),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.08),
@@ -107,7 +102,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
               children: <Widget>[
                 action('Cancel', AppColors.selectGreen, () => Get.back<void>()),
                 SizedBox(width: 10 * s),
-                action(_busy ? '...' : 'Send', AppColors.white, _send),
+                action(_busy ? '...' : 'Send Invitation', AppColors.white, _send),
               ],
             ),
           ],

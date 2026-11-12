@@ -9,7 +9,10 @@ import 'package:ecoach_pro/core/widgets/menu_button.dart';
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key, required this.onProfileTap, this.onMenuTap});
 
-  final VoidCallback onProfileTap;
+  
+
+  //final VoidCallback onProfileTap;
+  final VoidCallback? onProfileTap;
   final VoidCallback? onMenuTap;
 
   @override

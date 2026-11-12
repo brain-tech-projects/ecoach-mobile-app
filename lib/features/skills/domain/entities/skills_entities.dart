@@ -6,34 +6,20 @@ import 'package:ecoach_pro/core/constants/app_assets.dart';
 int _int(Object? v) => v is int ? v : int.tryParse('${v ?? 0}') ?? 0;
 
 /// "Top Tip: ...\r\n\r\nFocus: ..." -> one tidy line of text.
-String _oneLine(Object? v) =>
-    (v ?? '').toString().replaceAll(RegExp(r'\s+'), ' ').trim();
+String _oneLine(Object? v) => (v ?? '').toString().replaceAll(RegExp(r'\s+'), ' ').trim();
 
-String _join(Object? v) =>
-    v is List ? v.map((e) => e.toString()).join(', ') : '';
+String _join(Object? v) => v is List ? v.map((e) => e.toString()).join(', ') : '';
 
 /// A skill area (Dribbling, Ball Mastery...) from `GET /skill-types`.
 @immutable
 class SkillCategory {
-  const SkillCategory({
-    required this.id,
-    required this.name,
-    this.imageUrl,
-    this.imageAsset,
-  });
+  const SkillCategory({required this.id, required this.name, this.imageUrl, this.imageAsset});
 
   /// Static tile at the end of the grid: every drill of every skill area.
-  static const SkillCategory all = SkillCategory(
-    id: 0,
-    name: 'All Skills',
-    imageAsset: AppAssets.skillAllSkills,
-  );
+  static const SkillCategory all = SkillCategory(id: 0, name: 'All Skills', imageAsset: AppAssets.skillAllSkills);
 
-  factory SkillCategory.fromJson(Map<String, dynamic> json) => SkillCategory(
-    id: _int(json['id']),
-    name: (json['name'] ?? '').toString(),
-    imageUrl: Env.skillMediaUrl(json['image'] as String?),
-  );
+  factory SkillCategory.fromJson(Map<String, dynamic> json) =>
+      SkillCategory(id: _int(json['id']), name: (json['name'] ?? '').toString(), imageUrl: Env.skillMediaUrl(json['image'] as String?));
 
   final int id;
   final String name;
@@ -45,10 +31,7 @@ class SkillCategory {
   bool get isAll => id == 0;
 
   /// "What's New & Open Access" (free drills, opened from Home).
-  static const SkillCategory openAccess = SkillCategory(
-    id: -1,
-    name: 'What\'s New & Open Access',
-  );
+  static const SkillCategory openAccess = SkillCategory(id: -1, name: 'My Skills');
 
   bool get isOpenAccess => id == -1;
 }
@@ -128,11 +111,7 @@ class Drill {
     thumbnailAspect: thumbnailAspect,
   );
 
-  Drill copyWith({
-    bool? completed,
-    bool? canAddToSession,
-    bool? canAddToMySkills,
-  }) => Drill(
+  Drill copyWith({bool? completed, bool? canAddToSession, bool? canAddToMySkills}) => Drill(
     id: id,
     title: title,
     description: description,
@@ -153,18 +132,12 @@ class Drill {
 /// A note the user wrote on a drill (`/get-skill-notes`).
 @immutable
 class SkillNote {
-  const SkillNote({
-    required this.id,
-    required this.text,
-    required this.createdAt,
-  });
+  const SkillNote({required this.id, required this.text, required this.createdAt});
 
   factory SkillNote.fromJson(Map<String, dynamic> json) => SkillNote(
     id: _int(json['id']),
     text: (json['note'] ?? '').toString(),
-    createdAt:
-        DateTime.tryParse('${json['created_at'] ?? ''}')?.toLocal() ??
-        DateTime.now(),
+    createdAt: DateTime.tryParse('${json['created_at'] ?? ''}')?.toLocal() ?? DateTime.now(),
   );
 
   final int id;

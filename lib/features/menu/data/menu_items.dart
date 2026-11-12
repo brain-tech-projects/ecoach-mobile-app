@@ -52,6 +52,7 @@ abstract final class MenuItems {
       iconAsset: AppAssets.menuSettings,
       route: AppRoutes.appSettings,
     ),
+   
     MenuItem(
       label: 'Contact Us',
       iconAsset: AppAssets.menuContact,
@@ -67,4 +68,5 @@ abstract final class MenuItems {
   /// Signed-out menu: same list without Logout.
   static List<MenuItem> get forGuest =>
       all.where((item) => item.action != MenuAction.logout).toList();
+    
 }

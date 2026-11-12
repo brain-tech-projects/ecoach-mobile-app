@@ -15,6 +15,7 @@ class MemberHeader extends StatelessWidget {
     this.photoUrl,
     this.onMenuTap,
     this.onBellTap,
+    this.onprofiletap,
   });
 
   final String name;
@@ -22,6 +23,7 @@ class MemberHeader extends StatelessWidget {
   final String? photoUrl;
   final VoidCallback? onMenuTap;
   final VoidCallback? onBellTap;
+  final VoidCallback? onprofiletap;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class MemberHeader extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   SizedBox(width: 12 * s),
-                  _Avatar(size: 36 * s, url: photoUrl),
+                  _Avatar(size: 36 * s, url: photoUrl, onTap: onprofiletap,),
                   SizedBox(width: 16 * s),
                   Expanded(
                     child: Padding(
@@ -78,10 +80,11 @@ class MemberHeader extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.size, this.url});
+  const _Avatar({required this.size, this.url, this.onTap});
 
   final double size;
   final String? url;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -90,21 +93,24 @@ class _Avatar extends StatelessWidget {
       size: size * 0.72,
       color: AppColors.avatarFg,
     );
-    return Container(
-      width: size,
-      height: size,
-      clipBehavior: Clip.antiAlias,
-      decoration: const BoxDecoration(
-        color: AppColors.avatarBg,
-        shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        clipBehavior: Clip.antiAlias,
+        decoration: const BoxDecoration(
+          color: AppColors.avatarBg,
+          shape: BoxShape.circle,
+        ),
+        child: (url == null || url!.isEmpty)
+            ? fallback
+            : Image.network(
+                url!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => fallback,
+              ),
       ),
-      child: (url == null || url!.isEmpty)
-          ? fallback
-          : Image.network(
-              url!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => fallback,
-            ),
     );
   }
 }

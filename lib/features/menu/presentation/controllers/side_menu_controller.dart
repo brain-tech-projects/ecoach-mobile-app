@@ -35,7 +35,7 @@ class SideMenuController extends GetxController {
   /// the menu was opened from.
   void openItem(MenuItem item) {
     // Signed out: every item asks for login first (back returns to the menu).
-    if (!MainNav.requireLogin()) return;
+    // if (!MainNav.requireLogin()) return;
 
     switch (item.action) {
       case MenuAction.logout:
