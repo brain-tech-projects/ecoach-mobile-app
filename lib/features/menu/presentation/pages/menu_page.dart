@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/features/coach_portal/presentation/widgets/coach_menu_actions.dart';
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -54,7 +56,10 @@ class MenuPage extends GetView<SideMenuController> {
                 Obx(() {
                   final user = controller.session.user.value;
                   final loggedIn = controller.isLoggedIn && user != null;
-                  final items = loggedIn ? MenuItems.all : MenuItems.forGuest;
+                  final isCoach = loggedIn && user!.isCoach;
+                  final items = isCoach
+                      ? MenuItems.coach
+                      : (loggedIn ? MenuItems.all : MenuItems.forGuest);
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,6 +73,9 @@ class MenuPage extends GetView<SideMenuController> {
                           onEditPhoto: controller.openMyProfile,
                         ),
                         SizedBox(height: 14 * s),
+                        if (isCoach)
+                          const CoachMenuActions()
+                        else
                         _QuickActions(
                           scale: s,
                           unread: controller.unreadCount.value,

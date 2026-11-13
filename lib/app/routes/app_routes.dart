@@ -63,5 +63,15 @@ abstract final class AppRoutes {
 
   /// Personal Training "Play All" queue player (arguments: PersonalTrainingPlayerArgs).
   static const String personalTrainingPlayer = '/personal-training-player';
- 
+
+  // ---- Coach portal ----
+  static const String coachTeams = '/coach-teams';
+  static const String coachTeamForm = '/coach-team-form';
+  static const String coachPlayers = '/coach-players';
+  static const String coachPlayerDetail = '/coach-player-detail';
+  static const String coachPrograms = '/coach-programs';
+  static const String coachAddTraining = '/coach-add-training';
+  static const String coachChats = '/coach-chats';
+  static const String coachSummary = '/coach-summary';
+  static const String coachInvitations = '/coach-invitations';
 }

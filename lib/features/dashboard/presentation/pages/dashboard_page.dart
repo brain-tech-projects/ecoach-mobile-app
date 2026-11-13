@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/coach_home_page.dart';
 import 'dart:math' as math;
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
@@ -20,6 +22,9 @@ class DashboardPage extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    // Coaches get their own home (role comes from the login response).
+    if (controller.session.isCoach) return const CoachHomePage();
+
     final r = Responsive.of(context);
     final s = r.scale;
     final navBottom = math.max(8.7 * s, r.safeBottom);

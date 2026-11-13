@@ -64,7 +64,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20 * s)),
       child: Padding(
         padding: EdgeInsets.fromLTRB(20 * s, 24 * s, 20 * s, 20 * s),
-        child: Column(
+        child: Column(// on my teams screen when i click on new group 
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

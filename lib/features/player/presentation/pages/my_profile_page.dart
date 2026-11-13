@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/coach_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,6 +23,9 @@ class MyProfilePage extends GetView<MyProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    // Coaches see their own profile (controller is lazy, so no player API call).
+    if (isCoachSession) return const CoachProfilePage();
+
     final r = Responsive.of(context);
     final s = r.scale;
     final c = controller;

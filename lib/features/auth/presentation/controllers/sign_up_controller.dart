@@ -297,14 +297,9 @@ class SignUpController extends GetxController {
         return;
       }
 
-      // Coach: register returns no token, so sign in right away.
-      final login = await _api.login(email: email, password: password);
-      if (login.success) {
-        Get.offAllNamed<void>(AppRoutes.dashboard);
-      } else {
-        AppToast.success('Account created. Please sign in.');
-        Get.offNamed<void>(AppRoutes.signIn);
-      }
+      // Coach: no programme screens. Go to sign in; Home opens after login.
+      AppToast.success('Account created. Please sign in.');
+      Get.offAllNamed<void>(AppRoutes.signIn);
     } finally {
       isLoading.value = false;
     }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -57,7 +58,9 @@ class _AppVideoPlayerState extends State<AppVideoPlayer>
   }
 
   void _createController() {
-    _c = VideoPlayerController.networkUrl(Uri.parse(widget.url))
+    _c = (widget.url.startsWith('http')
+        ? VideoPlayerController.networkUrl(Uri.parse(widget.url))
+        : VideoPlayerController.file(File(widget.url)))
       ..addListener(_onValue);
     _c.initialize().then((_) {
       if (!mounted) return;

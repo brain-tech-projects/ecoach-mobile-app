@@ -1,3 +1,7 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
+import 'package:ecoach_pro/core/navigation/coach_nav.dart';
+import 'package:ecoach_pro/core/widgets/coach_bottom_nav.dart';
+import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -78,11 +82,19 @@ class SubPageScaffold extends StatelessWidget {
                   constraints: BoxConstraints(maxWidth: r.contentMaxWidth),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 1 * s),
-                    child: AppBottomNav(
-                      currentIndex: navIndex,
-                      onTap: MainNav.onTabSelected,
-                      scale: s,
-                    ),
+                    child: isCoachSession
+                        ? CoachBottomNav(
+                            currentIndex: Get.currentRoute == AppRoutes.myProfile
+                                ? CoachNav.profileIndex
+                                : navIndex,
+                            onTap: CoachNav.onTabSelected,
+                            scale: s,
+                          )
+                        : AppBottomNav(
+                            currentIndex: navIndex,
+                            onTap: MainNav.onTabSelected,
+                            scale: s,
+                          ),
                   ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
@@ -63,18 +64,19 @@ class DashboardController extends GetxController {
     try {
       // Start all three requests, then wait for them.
       final bannersCall = _api.getBanners();
-      final detailsCall = _api.getDetails();
+      // Player stats are not used by the coach home.
+      final detailsCall = session.isCoach ? null : _api.getDetails();
       final unreadCall = _api.getUnreadCount();
 
       final bannersRes = await bannersCall;
-      final detailsRes = await detailsCall;
+      final detailsRes = detailsCall == null ? null : await detailsCall;
       final unreadRes = await unreadCall;
 
       if (bannersRes.success) banners.assignAll(bannersRes.data ?? const []);
-      if (detailsRes.success) details.value = detailsRes.data;
+      if (detailsRes != null && detailsRes.success) details.value = detailsRes.data;
       if (unreadRes.success) unreadCount.value = unreadRes.data ?? 0;
 
-      if (!detailsRes.success && detailsRes.statusCode != 401) {
+      if (detailsRes != null && !detailsRes.success && detailsRes.statusCode != 401) {
         AppToast.error(detailsRes.message);
       }
     } finally {

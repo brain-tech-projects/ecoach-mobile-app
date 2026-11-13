@@ -1,3 +1,14 @@
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/chats_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/summary_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/invitations_page.dart';
+import 'package:ecoach_pro/core/middleware/coach_middleware.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/bindings/coach_portal_bindings.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/add_training_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/player_detail_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/players_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/programs_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/team_form_page.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/pages/teams_page.dart';
 import 'package:ecoach_pro/features/stats/presentation/pages/rating_tracker_page.dart';
 import 'package:ecoach_pro/features/tracker/presentation/bindings/tracker_binding.dart';
 import 'package:ecoach_pro/features/tracker/presentation/pages/match_form_page.dart';
@@ -361,6 +372,69 @@ abstract final class AppPages {
       middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const MatchFormPage(),
       binding: MatchFormBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachTeams,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const TeamsPage(),
+      binding: TeamsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachTeamForm,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const TeamFormPage(),
+      binding: TeamFormBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachPlayers,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const PlayersPage(),
+      binding: PlayersBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachPlayerDetail,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const PlayerDetailPage(),
+      binding: PlayerDetailBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachPrograms,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const ProgramsPage(),
+      binding: ProgramsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachAddTraining,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const AddTrainingPage(),
+      binding: AddTrainingBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachChats,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const ChatsPage(),
+      binding: ChatsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachSummary,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const SummaryPage(),
+      binding: SummaryBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.coachInvitations,
+      middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
+      page: () => const InvitationsPage(),
+      binding: InvitationsBinding(),
       transition: Transition.cupertino,
     ),
   ];
