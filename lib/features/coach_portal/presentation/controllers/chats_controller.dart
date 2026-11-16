@@ -1,9 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
+import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/coach_portal/data/coach_portal_repository.dart';
 import 'package:ecoach_pro/features/coach_portal/domain/coach_portal_entities.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/coach_action.dart';
 
 /// Chats: player list -> conversation (same page, back arrow returns to list).
 class ChatsController extends GetxController {
@@ -48,6 +51,9 @@ class ChatsController extends GetxController {
     loadingMessages.value = true;
     try {
       messages.assignAll(await _repo.fetchMessages(p.id));
+    } catch (e, st) {
+      AppLogger.error('Chat messages failed', error: e, stackTrace: st);
+      AppToast.error(e is ApiException ? e.message : 'Could not load the messages.');
     } finally {
       loadingMessages.value = false;
     }
@@ -64,8 +70,12 @@ class ChatsController extends GetxController {
     final text = input.text.trim();
     if (p == null || text.isEmpty) return;
     input.clear();
-    messages.add(await _repo.sendMessage(p.id, text));
-    _toBottom();
+    final ok = await coachRun(() async => messages.add(await _repo.sendMessage(p.id, text)));
+    if (ok) {
+      _toBottom();
+    } else {
+      input.text = text; // keep the text so it can be sent again
+    }
   }
 
   void _toBottom() {

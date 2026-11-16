@@ -66,7 +66,7 @@ class _CoachProfilePageState extends State<CoachProfilePage> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: r.gutter + 12 * s),
-                  child: _Header(name: c.displayName.value, photoPath: c.photoPath.value, scale: s, onEditPhoto: c.changePhoto),
+                  child: _Header(name: c.displayName.value, photoPath: c.photoPath.value ?? c.photoUrl.value, scale: s, onEditPhoto: c.changePhoto),
                 ),
                 SizedBox(height: 43 * s),
                 Padding(
@@ -161,7 +161,7 @@ class _Header extends StatelessWidget {
                             decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.white, width: 2.5 * s)),
                             child: ClipOval(
                               child: ExcludeSemantics(
-                                child: photoPath == null ? fallback : Image.file(File(photoPath!), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback),
+                                child: photoPath == null ? fallback : (photoPath!.startsWith('http') ? Image.network(photoPath!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback) : Image.file(File(photoPath!), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback)),
                               ),
                             ),
                           ),

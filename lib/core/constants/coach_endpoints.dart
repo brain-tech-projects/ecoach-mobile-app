@@ -1,23 +1,35 @@
-/// Coach-portal paths (relative to Env.baseUrl). Rename here if the backend differs.
+/// Coach-only endpoints (paths relative to `Env.baseUrl`).
+/// Kept apart from [ApiEndpoints] so the player API list is never touched.
 abstract final class CoachEndpoints {
-  static const String details = '/coach/details';
+  // Home
+  static const String dashboardDetails = '/dashboard-details';
 
-  static const String teams = '/coach/teams';
-  static const String createTeam = '/coach/teams/create';
-  static const String updateTeam = '/coach/teams/update';
-  static const String deleteTeam = '/coach/teams/delete';
-  static const String createGroup = '/coach/teams/groups/create';
-  static const String deleteGroup = '/coach/teams/groups/delete';
-  static const String addTeamPlayers = '/coach/teams/add-players';
+  // Teams
+  static const String storeTeam = '/store-team';
+  static const String getTeam = '/get-team';
+  static const String detailTeam = '/detail-team';
+  static const String updateTeam = '/update-team';
+  static const String deleteTeam = '/delete-team';
+  static const String assignTeamPlayers = '/assign-team-players';
+  static const String deleteGroup = '/delete-group';
 
-  static const String players = '/coach/players';
-  static const String playerDetails = '/coach/players/details';
-  static const String invitePlayer = '/coach/players/invite';
-  static const String notifyPlayers = '/coach/players/notify';
+  // Players
+  static const String myTeam = '/my-team';
+  static const String userDetail = '/user-detail';
+  static const String coachNotification = '/coach-notification';
 
-  static const String programs = '/coach/programs';
-  static const String createProgram = '/coach/programs/create';
-  static const String updateProgram = '/coach/programs/update';
-  static const String deleteProgram = '/coach/programs/delete';
-  static const String addProgramPlayers = '/coach/programs/add-players';
+  // Programs (trainings)
+  static const String getTraining = '/get-training';
+  static const String detailTraining = '/detail-training';
+  static const String storeTraining = '/store-training';
+  static const String updateTraining = '/update-training';
+  static const String deleteTraining = '/delete-training';
+  static const String assignPlayers = '/assign-players';
+  static const String programSkillTypes = '/program-skill-types';
+  static const String programSkillVideos = '/program-skill-videos';
+
+  // Own-video upload (S3 multipart)
+  static const String videoUploadInitiate = '/video-upload/initiate';
+  static const String videoUploadPartUrls = '/video-upload/part-urls';
+  static const String videoUploadComplete = '/video-upload/complete';
 }

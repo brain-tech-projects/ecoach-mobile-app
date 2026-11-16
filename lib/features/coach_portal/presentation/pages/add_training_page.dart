@@ -127,6 +127,7 @@ class _EcoachStep extends StatelessWidget {
               hint: 'Select Training',
               searchHint: 'Search & Select Training Video',
               value: drill,
+              loading: controller.loadingDrills.value,
               items: <CoachPickItem<DrillItem>>[for (final d in controller.drills) CoachPickItem<DrillItem>(value: d, label: d.title)],
               onChanged: controller.selectDrill,
             ),

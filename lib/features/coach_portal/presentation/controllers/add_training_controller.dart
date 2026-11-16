@@ -73,11 +73,22 @@ class AddTrainingController extends GetxController {
     }
   }
 
-  void selectCategory(SkillItem picked) {
+  Future<void> selectCategory(SkillItem picked) async {
     if (picked.id == category.value?.id) return;
     category.value = picked;
     drill.value = null;
-    drills.assignAll(picked.drills);
+    drills.clear();
+    loadingDrills.value = true;
+    try {
+      final list = await _repo.fetchSkillDrills(picked.id);
+      // Ignore a late answer if another skill was picked meanwhile.
+      if (category.value?.id == picked.id) drills.assignAll(list);
+    } catch (e, st) {
+      AppLogger.error('Skill videos failed', error: e, stackTrace: st);
+      AppToast.error('Could not load the training videos.');
+    } finally {
+      loadingDrills.value = false;
+    }
   }
 
   void selectDrill(DrillItem picked) => drill.value = picked;
@@ -107,7 +118,7 @@ class AddTrainingController extends GetxController {
     progress.value = 0;
     submitting.value = true;
     final ok = await coachRun(
-      () => isEcoach ? _repo.createEcoachProgram(drill.value!.id) : _repo.createOwnProgram(
+      () => isEcoach ? _repo.createEcoachProgram(category.value!, drill.value!) : _repo.createOwnProgram(
               title: title.text.trim().isEmpty ? videoPath.value!.split('/').last : title.text.trim(),
               description: description.text.trim(),
               videoPath: videoPath.value!,

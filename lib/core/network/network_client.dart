@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import 'package:ecoach_pro/core/config/env.dart';
@@ -111,6 +113,38 @@ class NetworkClient {
     Map<String, dynamic>? body,
     bool auth = true,
   }) => _send('DELETE', path, body: body, auth: auth);
+
+  /// PUTs [bytes] to an absolute pre-signed URL (S3 multipart part).
+  /// No base URL and no Authorization header. Returns the `ETag` response
+  /// header, or null when the upload failed. Used by the coach video upload.
+  Future<String?> putBytes(
+    String url,
+    Uint8List bytes, {
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      final res = await Dio(
+        BaseOptions(
+          connectTimeout: Env.connectTimeout,
+          sendTimeout: const Duration(minutes: 10),
+          receiveTimeout: const Duration(minutes: 2),
+        ),
+      ).put<dynamic>(
+        url,
+        data: bytes,
+        onSendProgress: onProgress,
+        options: Options(
+          contentType: 'application/octet-stream',
+          headers: <String, dynamic>{Headers.contentLengthHeader: bytes.length},
+        ),
+      );
+      final ok = (res.statusCode ?? 0) >= 200 && (res.statusCode ?? 0) < 300;
+      return ok ? res.headers.value('etag') : null;
+    } catch (e, st) {
+      AppLogger.error('Part upload failed', error: e, stackTrace: st);
+      return null;
+    }
+  }
 
   // ---------------------------------------------------------------------------
 

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:ecoach_pro/core/constants/api_endpoints.dart';
+import 'package:ecoach_pro/core/constants/coach_endpoints.dart';
 import 'package:ecoach_pro/core/network/api_response.dart';
 import 'package:ecoach_pro/core/network/network_client.dart';
 import 'package:ecoach_pro/core/services/session_service.dart';
@@ -662,6 +665,191 @@ class ApiService {
     final res = await _network.get(ApiEndpoints.tourVideos, auth: false);
     return res.map<List<TourVideo>>((d) => _list(d, TourVideo.fromJson));
   }
+
+  // ---- Coach ------------------------------------------------------------------
+  // Used only by the coach portal. Player methods above are untouched.
+
+  Future<ApiResponse<dynamic>> getCoachDashboard() =>
+      _network.get(CoachEndpoints.dashboardDetails);
+
+  // Teams
+  Future<ApiResponse<dynamic>> getCoachTeams() =>
+      _network.get(CoachEndpoints.getTeam);
+
+  Future<ApiResponse<dynamic>> storeTeam({
+    required String name,
+    required String description,
+    String? imagePath,
+  }) => _network.postForm(
+    CoachEndpoints.storeTeam,
+    fields: <String, dynamic>{'team_name': name, 'description': description},
+    fileField: 'image',
+    filePath: imagePath,
+  );
+
+  Future<ApiResponse<dynamic>> updateTeam({
+    required int id,
+    required int coachId,
+    required String name,
+    required String description,
+    String? imagePath,
+  }) => _network.postForm(
+    CoachEndpoints.updateTeam,
+    fields: <String, dynamic>{
+      'id': id,
+      'coach_id': coachId,
+      'team_name': name,
+      'description': description,
+      'status': 'Active',
+    },
+    fileField: 'image',
+    filePath: imagePath,
+  );
+
+  Future<ApiResponse<dynamic>> deleteTeam(int teamId) => _network.post(
+    CoachEndpoints.deleteTeam,
+    body: <String, dynamic>{'team_id': teamId},
+  );
+
+  /// Creates the group or, when it exists, replaces its players.
+  Future<ApiResponse<dynamic>> assignTeamPlayers({
+    required int teamId,
+    required List<int> playerIds,
+    required String groupName,
+  }) => _network.post(
+    CoachEndpoints.assignTeamPlayers,
+    body: <String, dynamic>{
+      'team_id': teamId,
+      'player_ids': playerIds,
+      'group_name': groupName,
+    },
+  );
+
+  Future<ApiResponse<dynamic>> deleteTeamGroup(
+    int teamId,
+    String groupName,
+  ) => _network.post(
+    CoachEndpoints.deleteGroup,
+    body: <String, dynamic>{'team_id': teamId, 'group_name': groupName},
+  );
+
+  // Players
+  Future<ApiResponse<dynamic>> getCoachPlayers({String search = ''}) =>
+      _network.get(
+        CoachEndpoints.myTeam,
+        query: <String, dynamic>{'search': search},
+      );
+
+  /// Player detail; the counters (`sessionsCompleted`...) sit beside `data`,
+  /// so read them from [ApiResponse.body].
+  Future<ApiResponse<dynamic>> getPlayerDetail(int id) => _network.get(
+    CoachEndpoints.userDetail,
+    query: <String, dynamic>{'id': id},
+  );
+
+  Future<ApiResponse<dynamic>> notifyPlayer({
+    required int playerId,
+    required String title,
+    required String description,
+  }) => _network.post(
+    CoachEndpoints.coachNotification,
+    body: <String, dynamic>{
+      'player_id': '$playerId',
+      'title': title,
+      'description': description,
+    },
+  );
+
+  // Programs
+  Future<ApiResponse<dynamic>> getCoachTrainings() =>
+      _network.get(CoachEndpoints.getTraining);
+
+  Future<ApiResponse<dynamic>> getTrainingDetail(int id) => _network.get(
+    CoachEndpoints.detailTraining,
+    query: <String, dynamic>{'training_id': id},
+  );
+
+  Future<ApiResponse<dynamic>> getProgramSkillTypes() =>
+      _network.get(CoachEndpoints.programSkillTypes);
+
+  Future<ApiResponse<dynamic>> getProgramSkillVideos(int skillTypeId) =>
+      _network.post(
+        CoachEndpoints.programSkillVideos,
+        body: <String, dynamic>{'skill_type_id': skillTypeId},
+      );
+
+  Future<ApiResponse<dynamic>> storeTraining(Map<String, dynamic> fields) =>
+      _network.postForm(CoachEndpoints.storeTraining, fields: fields);
+
+  Future<ApiResponse<dynamic>> updateTraining(Map<String, dynamic> fields) =>
+      _network.postForm(CoachEndpoints.updateTraining, fields: fields);
+
+  Future<ApiResponse<dynamic>> deleteTraining(int id) => _network.post(
+    CoachEndpoints.deleteTraining,
+    body: <String, dynamic>{'training_id': id},
+  );
+
+  Future<ApiResponse<dynamic>> assignPlayersToTraining(
+    int programId,
+    List<int> playerIds,
+  ) => _network.post(
+    CoachEndpoints.assignPlayers,
+    body: <String, dynamic>{'program_id': programId, 'player_ids': playerIds},
+  );
+
+  // Own-video upload (initiate -> part PUTs to S3 -> complete)
+  Future<ApiResponse<dynamic>> initiateVideoUpload(String fileName) =>
+      _network.postForm(
+        CoachEndpoints.videoUploadInitiate,
+        fields: <String, dynamic>{'file_name': fileName},
+      );
+
+  Future<ApiResponse<dynamic>> getVideoPartUrls({
+    required String uploadId,
+    required String key,
+    required List<int> partNumbers,
+  }) => _network.postForm(
+    CoachEndpoints.videoUploadPartUrls,
+    fields: <String, dynamic>{
+      'upload_id': uploadId,
+      'key': key,
+      'part_numbers[]': partNumbers.map((e) => '$e').toList(),
+    },
+  );
+
+  /// [parts]: `{partNumber: etag}`.
+  Future<ApiResponse<dynamic>> completeVideoUpload({
+    required String uploadId,
+    required String key,
+    required Map<int, String> parts,
+  }) {
+    final fields = <String, dynamic>{'upload_id': uploadId, 'key': key};
+    var i = 0;
+    parts.forEach((number, etag) {
+      fields['parts[$i][PartNumber]'] = '$number';
+      fields['parts[$i][ETag]'] = etag;
+      i++;
+    });
+    return _network.postForm(CoachEndpoints.videoUploadComplete, fields: fields);
+  }
+
+  /// PUT one part to its pre-signed URL; returns the ETag (null = failed).
+  Future<String?> uploadVideoPart(
+    String url,
+    Uint8List bytes, {
+    void Function(int sent, int total)? onProgress,
+  }) => _network.putBytes(url, bytes, onProgress: onProgress);
+
+  /// Coach profile edit (multipart so a photo can go along).
+  Future<ApiResponse<dynamic>> updateCoachProfile({
+    required Map<String, dynamic> fields,
+    String? photoPath,
+  }) => _network.postForm(
+    ApiEndpoints.updateProfile,
+    fields: fields,
+    fileField: 'profile_photo',
+    filePath: photoPath,
+  );
 
   // ---- helpers ----------------------------------------------------------------
 
