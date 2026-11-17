@@ -677,9 +677,21 @@ class CoachNotifyCard extends StatelessWidget {
 }
 
 /// Network URL or local file (picked image).
-Widget coachImage(String src, Widget fallback) => src.startsWith('http')
-    ? Image.network(src, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback)
-    : Image.file(File(src), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback);
+/// Network url or local file. [altSrc] is tried when [src] fails to load.
+Widget coachImage(String src, Widget fallback, {String? altSrc}) {
+  if (!src.startsWith('http')) {
+    return Image.file(File(src), fit: BoxFit.cover, gaplessPlayback: true, errorBuilder: (_, _, _) => fallback);
+  }
+  Widget net(String url, Widget Function(BuildContext, Object, StackTrace?) onError) => Image.network(
+    url,
+    fit: BoxFit.cover,
+    gaplessPlayback: true,
+    errorBuilder: onError,
+    loadingBuilder: (_, child, p) => p == null ? child : Center(child: SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent, value: p.expectedTotalBytes == null ? null : p.cumulativeBytesLoaded / p.expectedTotalBytes!))),
+  );
+  final alt = (altSrc != null && altSrc.startsWith('http') && altSrc != src) ? altSrc : null;
+  return net(src, (_, _, _) => alt == null ? fallback : net(alt, (_, _, _) => fallback));
+}
 
 ImageProvider coachImageProvider(String src) => src.startsWith('http') ? NetworkImage(src) as ImageProvider : AssetImage(src);
 

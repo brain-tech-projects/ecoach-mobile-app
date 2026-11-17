@@ -52,6 +52,11 @@ class TeamsController extends GetxController {
     if (await CoachDialogs.assignToTeam(team)) load(silent: true);
   }
 
+  /// Tap on a group pill: edit the players of that group.
+  Future<void> editGroup(CoachTeam team, TeamGroup group) async {
+    if (await CoachDialogs.assignToTeam(team, group: group)) load(silent: true);
+  }
+
   Future<void> removeTeam(CoachTeam team) async {
     if (!await CoachDialogs.confirm('Remove Team', 'Are you sure you want to remove "${team.name}"? This cannot be undone.')) return;
     if (await coachRun(() => _repo.deleteTeam(team.id), success: 'Team removed successfully')) {

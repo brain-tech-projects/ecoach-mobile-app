@@ -4,6 +4,8 @@ abstract final class CoachEndpoints {
   // Home
   static const String dashboardDetails = '/dashboard-details';
 
+  static const String coachSummary = '/coach-summary';
+
   // Teams
   static const String storeTeam = '/store-team';
   static const String getTeam = '/get-team';

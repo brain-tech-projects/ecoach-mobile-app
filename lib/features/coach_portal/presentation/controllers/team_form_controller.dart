@@ -19,6 +19,7 @@ class TeamFormController extends GetxController {
 
   bool get isEdit => editing != null;
   String? get existingImage => editing?.imageUrl;
+  String? get existingImageAlt => editing?.imageAltUrl;
 
   @override
   void onInit() {

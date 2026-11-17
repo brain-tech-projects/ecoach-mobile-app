@@ -68,7 +68,14 @@ class _ProgramCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = Responsive.of(context).scale;
-    return CoachCard(
+    // Tap anywhere on the card -> "Assign Players To Training".
+    return Semantics(
+      button: true,
+      label: 'Assign players to ${program.title}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onAddPlayers,
+        child: CoachCard(
       padding: EdgeInsets.fromLTRB(12 * s, 8 * s, 6 * s, 14 * s),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,6 +97,8 @@ class _ProgramCard extends StatelessWidget {
           SizedBox(height: 4 * s),
           CoachPill(label: '${program.playerCount} Players', icon: Icons.people_outline),
         ],
+      ),
+        ),
       ),
     );
   }

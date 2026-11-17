@@ -23,7 +23,7 @@ class AddTrainingPage extends GetView<AddTrainingController> {
     return Obx(() {
       final step = controller.step.value;
       return SubPageScaffold(
-        title: step == 2 ? 'Add Training Videos' : 'Add New Training',
+        title: controller.isEdit ? 'Update Training' : (step == 2 ? 'Add Training Videos' : 'Add New Training'),
         navIndex: 3,
         body: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -159,7 +159,7 @@ class _OwnStep extends StatelessWidget {
     final s = scale;
     final label = AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 17 * s, fontWeight: FontWeight.w400);
     return Obx(() {
-      final path = controller.videoPath.value;
+      final path = controller.videoPath.value ?? controller.existingOwnVideo;
       final busy = controller.submitting.value;
       final pct = (controller.progress.value * 100).round();
       return Column(
@@ -245,7 +245,7 @@ class _DoneStep extends StatelessWidget {
             child: Icon(Icons.fact_check_outlined, size: 54 * s, color: AppColors.headerBg),
           ),
           SizedBox(height: 36 * s),
-          Text('Training Program Submitted Successfully', textAlign: TextAlign.center, style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 26 * s, height: 1.45)),
+          Text(controller.isEdit ? 'Training Program Updated Successfully' : 'Training Program Submitted Successfully', textAlign: TextAlign.center, style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 26 * s, height: 1.45)),
           SizedBox(height: 28 * s),
           GestureDetector(
             onTap: controller.seeAll,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,7 +20,7 @@ class TeamFormPage extends GetView<TeamFormController> {
     final label = AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 17 * s);
 
     return SubPageScaffold(
-      title: controller.isEdit ? 'Edit Team' : 'Add New Team',
+      title: controller.isEdit ? 'Update Team' : 'Add New Team',
       navIndex: 0,
       body: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -30,23 +28,37 @@ class TeamFormPage extends GetView<TeamFormController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            GestureDetector(
+              onTap: controller.pickImage,
+              child: DashedBox(
+                radius: 14 * s,
+                child: Container(
+                  height: 125 * s,
+                  width: double.infinity,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(14 * s)),
+                  child: _UploadHint(scale: s),
+                ),
+              ),
+            ),
+            // The picked (or current) image shows below the upload box.
             Obx(() {
-              final path = controller.imagePath.value;
-              final existing = controller.existingImage;
-              return GestureDetector(
-                onTap: controller.pickImage,
-                child: DashedBox(
-                  radius: 14 * s,
+              final src = controller.imagePath.value ?? controller.existingImage;
+              if (src == null) return const SizedBox.shrink();
+              return Padding(
+                padding: EdgeInsets.only(top: 14 * s),
+                child: Align(
+                  alignment: Alignment.centerLeft,
                   child: Container(
-                    height: 125 * s,
-                    width: double.infinity,
+                    width: 84 * s,
+                    height: 84 * s,
                     clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(14 * s)),
-                    child: path != null
-                        ? Image.file(File(path), fit: BoxFit.cover)
-                        : (existing != null)
-                        ? coachImage(existing, _UploadHint(scale: s))
-                        : _UploadHint(scale: s),
+                    decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(12 * s)),
+                    child: coachImage(
+                      src,
+                      Icon(Icons.photo_library_outlined, size: 32 * s, color: AppColors.white),
+                      altSrc: controller.imagePath.value == null ? controller.existingImageAlt : null,
+                    ),
                   ),
                 ),
               );

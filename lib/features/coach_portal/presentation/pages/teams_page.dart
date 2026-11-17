@@ -49,6 +49,7 @@ class TeamsPage extends GetView<TeamsController> {
                 team: team,
                 onNewGroup: () => controller.newGroup(team),
                 onAddPlayers: () => controller.addPlayers(team),
+                onEditGroup: (g) => controller.editGroup(team, g),
                 onEdit: () => controller.openEdit(team),
                 onRemove: () => controller.removeTeam(team),
                 onRemoveGroup: (g) => controller.removeGroup(team, g),
@@ -62,11 +63,12 @@ class TeamsPage extends GetView<TeamsController> {
 }
 
 class _TeamCard extends StatelessWidget {
-  const _TeamCard({required this.team, required this.onNewGroup, required this.onAddPlayers, required this.onEdit, required this.onRemove, required this.onRemoveGroup});
+  const _TeamCard({required this.team, required this.onNewGroup, required this.onAddPlayers, required this.onEditGroup, required this.onEdit, required this.onRemove, required this.onRemoveGroup});
 
   final CoachTeam team;
   final VoidCallback onNewGroup;
   final VoidCallback onAddPlayers;
+  final ValueChanged<TeamGroup> onEditGroup;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
   final ValueChanged<TeamGroup> onRemoveGroup;
@@ -76,7 +78,14 @@ class _TeamCard extends StatelessWidget {
     final s = Responsive.of(context).scale;
     final placeholder = Icon(Icons.photo_library_outlined, size: 42 * s, color: AppColors.white);
 
-    return CoachCard(
+    // Tap anywhere on the card -> "Assign Players To Team".
+    return Semantics(
+      button: true,
+      label: 'Assign players to ${team.name}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onAddPlayers,
+        child: CoachCard(
       padding: EdgeInsets.all(12 * s),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +95,7 @@ class _TeamCard extends StatelessWidget {
             height: 76 * s,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(color: const Color(0xFFCCCCCC), borderRadius: BorderRadius.circular(12 * s)),
-            child: (team.imageUrl == null) ? placeholder : coachImage(team.imageUrl!, placeholder),
+            child: (team.imageUrl == null) ? placeholder : coachImage(team.imageUrl!, placeholder, altSrc: team.imageAltUrl),
           ),
           SizedBox(width: 12 * s),
           Expanded(
@@ -114,13 +123,15 @@ class _TeamCard extends StatelessWidget {
                   runSpacing: 8 * s,
                   children: <Widget>[
                     CoachPill(label: 'New group', icon: Icons.people_outline, accent: true, onTap: onNewGroup),
-                    for (final g in team.groups) CoachPill(label: g.name, icon: Icons.people_outline, badge: g.playerCount, onRemove: () => onRemoveGroup(g)),
+                    for (final g in team.groups) CoachPill(label: g.name, icon: Icons.people_outline, badge: g.playerCount, onTap: () => onEditGroup(g), onRemove: () => onRemoveGroup(g)),
                   ],
                 ),
               ],
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

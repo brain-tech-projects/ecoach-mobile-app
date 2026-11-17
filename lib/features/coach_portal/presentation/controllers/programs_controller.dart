@@ -43,8 +43,10 @@ class ProgramsController extends GetxController {
     if (await CoachDialogs.assignToProgram(p)) load(silent: true);
   }
 
+  /// Edit opens the same screens as Add, titled "Update Training", pre-filled.
   Future<void> edit(TrainingProgram p) async {
-    if (await CoachDialogs.renameProgram(p)) load(silent: true);
+    await Get.toNamed<void>(AppRoutes.coachAddTraining, arguments: p);
+    load(silent: true);
   }
 
   Future<void> remove(TrainingProgram p) async {

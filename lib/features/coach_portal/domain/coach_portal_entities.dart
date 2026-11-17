@@ -32,13 +32,16 @@ class TeamGroup {
 }
 
 class CoachTeam {
-  const CoachTeam({required this.id, required this.name, this.description = '', this.imageUrl, this.groups = const <TeamGroup>[]});
+  const CoachTeam({required this.id, required this.name, this.description = '', this.imageUrl, this.imageAltUrl, this.groups = const <TeamGroup>[]});
   final int id;
   final String name;
   final String description;
 
   /// http(s) URL or a local file path.
   final String? imageUrl;
+
+  /// Same file on the other storage host, tried when [imageUrl] fails.
+  final String? imageAltUrl;
   final List<TeamGroup> groups;
 
   CoachTeam copyWith({String? name, String? description, String? imageUrl, List<TeamGroup>? groups}) => CoachTeam(
@@ -46,16 +49,35 @@ class CoachTeam {
     name: name ?? this.name,
     description: description ?? this.description,
     imageUrl: imageUrl ?? this.imageUrl,
+    imageAltUrl: imageAltUrl,
     groups: groups ?? this.groups,
   );
 }
 
 class TrainingProgram {
-  const TrainingProgram({required this.id, required this.title, this.playerIds = const <int>[]});
+  const TrainingProgram({
+    required this.id,
+    required this.title,
+    this.playerIds = const <int>[],
+    this.type = '',
+    this.description = '',
+    this.videoPath = '',
+    this.skillTypeId,
+    this.skillVideoId,
+  });
   final int id;
   final String title;
   final List<int> playerIds;
+
+  /// `eCoach` (library video) or `own` (uploaded by the coach).
+  final String type;
+  final String description;
+  final String videoPath;
+  final int? skillTypeId;
+  final int? skillVideoId;
   int get playerCount => playerIds.length;
+  bool get isEcoach => type.toLowerCase() == 'ecoach';
+  bool get isOwn => type.toLowerCase() == 'own';
 }
 
 class SkillItem {

@@ -31,26 +31,34 @@ abstract final class CoachDialogs {
       )) ==
       true;
 
-  /// "New group" and "Add Players" on a team (same popup, with group name).
-  static Future<bool> assignToTeam(CoachTeam team) async =>
+  /// Tap on a team (new group) or on a group pill ([group] = edit its players).
+  static Future<bool> assignToTeam(CoachTeam team, {TeamGroup? group}) async =>
       (await Get.dialog<bool>(
         _AssignDialog(
           title: 'Assign Players To Team',
           body: 'Select one or more players from your team to include in the Group.',
           askName: true,
-          onSubmit: (name, ids) => coachRun(() => _repo.createGroup(team.id, name, ids), success: 'Group created successfully'),
+          initialName: group?.name ?? '',
+          lockName: group != null,
+          initialSelected: group?.playerIds ?? const <int>[],
+          onSubmit: (name, ids) => coachRun(
+            () => _repo.createGroup(team.id, name, ids),
+            success: group == null ? 'Group created successfully' : 'Group updated successfully',
+          ),
         ),
         barrierColor: _barrier,
       )) ==
       true;
 
+  /// Tap on a training program: the players it is assigned to are pre-selected.
   static Future<bool> assignToProgram(TrainingProgram program) async =>
       (await Get.dialog<bool>(
         _AssignDialog(
-          title: 'Add Players To Program',
-          body: 'Select one or more players to receive this training.',
+          title: 'Assign Players To Training',
+          body: 'Select one or more players from your team to include in the training session.',
           askName: false,
-          onSubmit: (_, ids) => coachRun(() => _repo.addPlayersToProgram(program.id, ids), success: 'Players added successfully'),
+          initialSelected: program.playerIds,
+          onSubmit: (_, ids) => coachRun(() => _repo.addPlayersToProgram(program.id, ids), success: 'Players assigned successfully'),
         ),
         barrierColor: _barrier,
       )) ==
@@ -64,16 +72,6 @@ abstract final class CoachDialogs {
             () => _repo.notifyPlayers(playerIds: ids, title: title, description: text),
             success: 'Notification sent successfully',
           ),
-        ),
-        barrierColor: _barrier,
-      )) ==
-      true;
-
-  static Future<bool> renameProgram(TrainingProgram program) async =>
-      (await Get.dialog<bool>(
-        _RenameDialog(
-          initial: program.title,
-          onSave: (title) => coachRun(() => _repo.renameProgram(program.id, title), success: 'Program updated successfully'),
         ),
         barrierColor: _barrier,
       )) ==
@@ -162,7 +160,10 @@ class _InvitePlayerDialogState extends State<_InvitePlayerDialog> {
 }
 
 class _AssignDialog extends StatefulWidget {
-  const _AssignDialog({required this.title, required this.body, required this.askName, required this.onSubmit});
+  const _AssignDialog({required this.title, required this.body, required this.askName, required this.onSubmit, this.initialName = '', this.lockName = false, this.initialSelected = const <int>[]});
+  final String initialName;
+  final bool lockName;
+  final List<int> initialSelected;
   final String title;
   final String body;
   final bool askName;
@@ -173,7 +174,7 @@ class _AssignDialog extends StatefulWidget {
 }
 
 class _AssignDialogState extends State<_AssignDialog> {
-  final TextEditingController _name = TextEditingController();
+  late final TextEditingController _name = TextEditingController(text: widget.initialName);
   final Set<int> _selected = <int>{};
   List<CoachPlayer>? _players;
   bool _busy = false;
@@ -182,6 +183,7 @@ class _AssignDialogState extends State<_AssignDialog> {
   @override
   void initState() {
     super.initState();
+    _selected.addAll(widget.initialSelected);
     _load();
   }
 
@@ -189,7 +191,9 @@ class _AssignDialogState extends State<_AssignDialog> {
     ensureCoachPortalRepository();
     try {
       final list = await Get.find<CoachPortalRepository>().fetchPlayers(force: force);
-      if (mounted) setState(() { _players = list; _failed = false; });
+      // Players that left the team can no longer be selected.
+      final ids = list.map((p) => p.id).toSet();
+      if (mounted) setState(() { _players = list; _failed = false; _selected.retainWhere(ids.contains); });
     } catch (_) {
       if (mounted) setState(() => _failed = true);
     }
@@ -236,7 +240,10 @@ class _AssignDialogState extends State<_AssignDialog> {
       title: widget.title,
       body: widget.body,
       children: <Widget>[
-        if (widget.askName) ...<Widget>[CoachTextField(controller: _name, hint: 'Enter Group Name', light: true), SizedBox(height: 18 * s)],
+        if (widget.askName) ...<Widget>[
+          IgnorePointer(ignoring: widget.lockName, child: Opacity(opacity: widget.lockName ? 0.6 : 1, child: CoachTextField(controller: _name, hint: 'Enter Group Name', light: true))),
+          SizedBox(height: 18 * s),
+        ],
         if (_failed)
           CoachEmpty(text: 'Could not load your players.', onRetry: _load)
         else if (players == null)
@@ -381,50 +388,4 @@ class _NotifyDialogState extends State<_NotifyDialog> {
       ],
     );
   }
-}
-
-class _RenameDialog extends StatefulWidget {
-  const _RenameDialog({required this.initial, required this.onSave});
-  final String initial;
-  final Future<bool> Function(String title) onSave;
-
-  @override
-  State<_RenameDialog> createState() => _RenameDialogState();
-}
-
-class _RenameDialogState extends State<_RenameDialog> {
-  late final TextEditingController _c = TextEditingController(text: widget.initial);
-  bool _busy = false;
-
-  Future<void> _save() async {
-    final v = _c.text.trim();
-    if (v.isEmpty) {
-      AppToast.error('The Program Name field is required.');
-      return;
-    }
-    setState(() => _busy = true);
-    final ok = await widget.onSave(v);
-    if (!mounted) return;
-    if (ok) {
-      Get.back<bool>(result: true);
-    } else {
-      setState(() => _busy = false);
-    }
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => _Shell(
-    title: 'Edit Program',
-    children: <Widget>[CoachTextField(controller: _c, hint: 'Program Name', dialog: true, autofocus: true)],
-    actions: <Widget>[
-      CoachButton(label: 'Cancel', kind: CoachButtonKind.outline, onTap: () => Get.back<bool>(result: false)),
-      CoachButton(label: 'Save', loading: _busy, onTap: _save),
-    ],
-  );
 }

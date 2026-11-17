@@ -32,7 +32,20 @@ class CoachPortalRepository {
   final ApiService _api;
   final SessionService _session;
 
-  static const List<String> seasons = <String>['Season 2026/27', 'Season 2025/26', 'Season 2024/25', 'Season 2023/24', 'Season 2022/23'];
+  /// Current season first (seasons start in July), then the four before it.
+  static List<String> get seasons {
+    final now = DateTime.now();
+    final start = now.month >= 7 ? now.year : now.year - 1;
+    String label(int y) => 'Season $y/${((y + 1) % 100).toString().padLeft(2, '0')}';
+    return <String>[for (var i = 0; i < 5; i++) label(start - i)];
+  }
+
+  /// "Season 2026/27" -> (2026, 2027).
+  static ({int start, int end}) _seasonYears(String season) {
+    final m = RegExp(r'(\d{4})').firstMatch(season);
+    final start = int.tryParse(m?.group(1) ?? '') ?? DateTime.now().year;
+    return (start: start, end: start + 1);
+  }
 
   static const int _partSize = 10 * 1024 * 1024; // S3 min part = 5MB (last may be smaller)
 
@@ -70,7 +83,9 @@ class CoachPortalRepository {
           id: _int(t['id']),
           name: _str(t['team_name']),
           description: _str(t['description']),
-          imageUrl: Env.mediaUrl(t['image'] as String?),
+          // Same disk as profile photos first, the Laravel storage as backup.
+          imageUrl: Env.skillMediaUrl(t['image'] as String?),
+          imageAltUrl: Env.mediaUrl(t['image'] as String?),
           groups: <TeamGroup>[
             for (final g in _maps(t['groups']))
               () {
@@ -183,9 +198,34 @@ class CoachPortalRepository {
     seen: m['read_at'] != null,
   );
 
-  // ---- Coaches summary (TODO(api): no endpoint yet) ---------------------------
+  // ---- Coaches summary ---------------------------------------------------------
 
-  Future<List<SummaryRow>> fetchSummary(String season) async => const <SummaryRow>[];
+  Future<List<SummaryRow>> fetchSummary(String season) async {
+    final y = _seasonYears(season);
+    final res = requireSuccess(await _api.getCoachSummary(y.start, y.end));
+    int n(Map<String, dynamic> m, String k) => _int(m[k]);
+    return <SummaryRow>[
+      for (final r in _maps(res.data))
+        SummaryRow(
+          player: CoachPlayer(
+            id: _int(r['player_id']),
+            name: _str(r['full_name']).isNotEmpty ? _str(r['full_name']) : _str(r['nickname']),
+            photoUrl: Env.skillMediaUrl(r['avatar'] as String?),
+            countryCode: r['country_code'] as String?,
+          ),
+          // Skills, Sessions, Training, Quizzes, Tracker, AI Sessions (all time, last 7 days)
+          values: <int>[
+            n(r, 'skill_completed_all_time'), n(r, 'skill_completed_last_seven_days'),
+            n(r, 'session_completed_all_time'), n(r, 'session_completed_last_seven_days'),
+            n(r, 'allocated_training_all_time'), n(r, 'allocated_training_last_seven_days'),
+            n(r, 'quizzes_taken_all_time'), n(r, 'quizzes_taken_last_seven_days'),
+            n(r, 'tracker_updates_all_time'), n(r, 'tracker_updates_last_seven_days'),
+            n(r, 'ai_sessions_all_time'), n(r, 'ai_sessions_last_seven_days'),
+          ],
+          allocatedCompleted: r['is_all_training_completed'] == true,
+        ),
+    ];
+  }
 
   // ---- Programs ---------------------------------------------------------------
 
@@ -193,7 +233,16 @@ class CoachPortalRepository {
     final res = requireSuccess(await _api.getCoachTrainings());
     return <TrainingProgram>[
       for (final t in _maps(res.data))
-        TrainingProgram(id: _int(t['id']), title: _str(t['training_name']), playerIds: <int>[for (final p in _maps(t['assigned_players'])) _int(p['id'])]),
+        TrainingProgram(
+          id: _int(t['id']),
+          title: _str(t['training_name']),
+          playerIds: <int>[for (final p in _maps(t['assigned_players'])) _int(p['id'])],
+          type: _str(t['type']),
+          description: _str(t['description']),
+          videoPath: _str(t['video_path']),
+          skillTypeId: int.tryParse('${t['skill_type_id'] ?? ''}'),
+          skillVideoId: int.tryParse('${t['skill_video_id'] ?? ''}'),
+        ),
     ];
   }
 
@@ -266,16 +315,42 @@ class CoachPortalRepository {
     return url.isNotEmpty ? url : fallbackUrl;
   }
 
-  /// update-training needs the whole record, so the current one is read first.
-  Future<void> renameProgram(int id, String title) async {
-    final d = requireSuccess(await _api.getTrainingDetail(id)).data;
-    if (d is! Map) throw ApiException('Could not load the program.');
-    final fields = <String, dynamic>{};
-    for (final k in const <String>['id', 'coach_id', 'type', 'skill_type_id', 'skill_video_id', 'description', 'video_path', 'video_title', 'video_description', 'status']) {
-      if (d[k] != null) fields[k] = d[k];
-    }
-    fields['training_name'] = title;
-    requireSuccess(await _api.updateTraining(fields));
+  /// Update Training with an eCoach library video.
+  Future<void> updateEcoachProgram(TrainingProgram p, SkillItem category, DrillItem drill) async {
+    requireSuccess(
+      await _api.updateTraining(<String, dynamic>{
+        'id': p.id,
+        'coach_id': _coachId,
+        'type': 'eCoach',
+        'training_name': drill.title,
+        'description': '',
+        'video_path': drill.videoUrl,
+        'video_title': drill.title,
+        'video_description': '',
+        'skill_type_id': category.id,
+        'skill_video_id': drill.id,
+        'status': 'Active',
+      }),
+    );
+  }
+
+  /// Update Training with the coach's own video. [newVideoPath] null keeps
+  /// the video that is already stored.
+  Future<void> updateOwnProgram(TrainingProgram p, {required String title, String description = '', String? newVideoPath, void Function(double)? onProgress}) async {
+    final video = newVideoPath != null ? await _uploadVideo(newVideoPath, onProgress) : p.videoPath;
+    if (video.isEmpty) throw ApiException('Please upload a training video.');
+    requireSuccess(
+      await _api.updateTraining(<String, dynamic>{
+        'id': p.id,
+        'coach_id': _coachId,
+        'type': 'own',
+        'training_name': title,
+        'description': description,
+        'video_path': video,
+        'status': 'Active',
+      }),
+    );
+    onProgress?.call(1);
   }
 
   Future<void> deleteProgram(int id) async {

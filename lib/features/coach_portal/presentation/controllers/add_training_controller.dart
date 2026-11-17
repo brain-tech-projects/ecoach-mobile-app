@@ -14,9 +14,16 @@ import 'package:ecoach_pro/features/coach_portal/domain/coach_portal_entities.da
 
 enum TrainingSource { ecoach, own }
 
-/// Add New Training: 0 choose source -> 1 form -> 2 submitted.
+/// Add New Training / Update Training (arguments: TrainingProgram to edit):
+/// 0 choose source -> 1 form -> 2 submitted.
 class AddTrainingController extends GetxController {
   static const int _maxVideoBytes = 500 * 1024 * 1024;
+
+  final TrainingProgram? editing = Get.arguments is TrainingProgram ? Get.arguments as TrainingProgram : null;
+  bool get isEdit => editing != null;
+
+  /// Video already stored on an "own" program (shown until a new one is picked).
+  String? get existingOwnVideo => (editing?.isOwn ?? false) && editing!.videoPath.isNotEmpty ? editing!.videoPath : null;
 
   final RxInt step = 0.obs;
   final Rxn<TrainingSource> source = Rxn<TrainingSource>();
@@ -41,12 +48,21 @@ class AddTrainingController extends GetxController {
   CoachPortalRepository get _repo => Get.find<CoachPortalRepository>();
 
   bool get isEcoach => source.value == TrainingSource.ecoach;
-  bool get canSubmit => isEcoach ? (drill.value?.videoUrl.isNotEmpty ?? false) && !loadingVideo.value : (videoPath.value != null);
+  bool get canSubmit => isEcoach ? (drill.value?.videoUrl.isNotEmpty ?? false) && !loadingVideo.value : (videoPath.value != null || existingOwnVideo != null);
 
   @override
   void onInit() {
     super.onInit();
     title.addListener(() => videoPath.refresh());
+    final p = editing;
+    if (p != null) {
+      // Pre-select what the program uses now.
+      source.value = p.isOwn ? TrainingSource.own : TrainingSource.ecoach;
+      if (p.isOwn) {
+        title.text = p.title;
+        description.text = p.description;
+      }
+    }
   }
 
   void choose(TrainingSource value) => source.value = value;
@@ -54,7 +70,21 @@ class AddTrainingController extends GetxController {
   Future<void> next() async {
     if (source.value == null) return;
     step.value = 1;
-    if (isEcoach && categories.isEmpty) await _loadCategories();
+    if (isEcoach) {
+      if (categories.isEmpty) await _loadCategories();
+      await _prefillEcoach();
+    }
+  }
+
+  /// Update Training: select the skill and video the program already has.
+  Future<void> _prefillEcoach() async {
+    final p = editing;
+    if (p == null || !p.isEcoach || category.value != null || p.skillTypeId == null) return;
+    final match = categories.firstWhereOrNull((c) => c.id == p.skillTypeId);
+    if (match == null) return;
+    await selectCategory(match);
+    final d = drills.firstWhereOrNull((e) => e.id == p.skillVideoId);
+    if (d != null) drill.value = d;
   }
 
   void previous() => step.value = 0;
@@ -117,14 +147,18 @@ class AddTrainingController extends GetxController {
     FocusManager.instance.primaryFocus?.unfocus();
     progress.value = 0;
     submitting.value = true;
-    final ok = await coachRun(
-      () => isEcoach ? _repo.createEcoachProgram(category.value!, drill.value!) : _repo.createOwnProgram(
-              title: title.text.trim().isEmpty ? videoPath.value!.split('/').last : title.text.trim(),
-              description: description.text.trim(),
-              videoPath: videoPath.value!,
-              onProgress: (v) => progress.value = v,
-            ),
-    );
+    final edit = editing;
+    final ownTitle = title.text.trim().isEmpty ? (videoPath.value?.split('/').last ?? edit?.title ?? '') : title.text.trim();
+    final ok = await coachRun(() {
+      if (edit != null) {
+        return isEcoach
+            ? _repo.updateEcoachProgram(edit, category.value!, drill.value!)
+            : _repo.updateOwnProgram(edit, title: ownTitle, description: description.text.trim(), newVideoPath: videoPath.value, onProgress: (v) => progress.value = v);
+      }
+      return isEcoach
+          ? _repo.createEcoachProgram(category.value!, drill.value!)
+          : _repo.createOwnProgram(title: ownTitle, description: description.text.trim(), videoPath: videoPath.value!, onProgress: (v) => progress.value = v);
+    });
     submitting.value = false;
     if (ok) step.value = 2;
   }

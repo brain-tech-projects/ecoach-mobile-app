@@ -672,6 +672,13 @@ class ApiService {
   Future<ApiResponse<dynamic>> getCoachDashboard() =>
       _network.get(CoachEndpoints.dashboardDetails);
 
+  /// Coaches Summary for one season (e.g. 2026 -> 2027).
+  Future<ApiResponse<dynamic>> getCoachSummary(int startYear, int endYear) =>
+      _network.get(
+        CoachEndpoints.coachSummary,
+        query: <String, dynamic>{'start_year': startYear, 'end_year': endYear},
+      );
+
   // Teams
   Future<ApiResponse<dynamic>> getCoachTeams() =>
       _network.get(CoachEndpoints.getTeam);

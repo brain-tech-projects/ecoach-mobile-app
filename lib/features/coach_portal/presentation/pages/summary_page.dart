@@ -41,7 +41,12 @@ class SummaryPage extends GetView<SummaryController> {
     return SubPageScaffold(
       title: 'Coaches Summary',
       navIndex: -1,
-      body: ListView(
+      body: RefreshIndicator(
+        color: AppColors.accent,
+        backgroundColor: AppColors.card,
+        onRefresh: () => controller.load(silent: true),
+        child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 28 * s, hPad, 24 * s),
         children: <Widget>[
           LayoutBuilder(
@@ -70,10 +75,13 @@ class SummaryPage extends GetView<SummaryController> {
           SizedBox(height: 22 * s),
           Obx(() {
             if (controller.loading.value) return Padding(padding: EdgeInsets.symmetric(vertical: 60 * s), child: const AppLoader());
+            final error = controller.errorMessage.value;
+            if (error != null) return CoachEmpty(text: error, onRetry: controller.load);
             if (controller.rows.isEmpty) return const CoachEmpty(text: 'No players to summarise yet.');
             return _Table(rows: controller.rows.toList(), scale: s);
           }),
         ],
+      ),
       ),
     );
   }
@@ -231,7 +239,7 @@ class _Table extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 10 * s),
                           child: Row(
                             children: <Widget>[
-                              Container(width: 32 * s, height: 32 * s, alignment: Alignment.center, decoration: BoxDecoration(color: AppColors.accent.withValues(alpha: 0.25), shape: BoxShape.circle), child: Text(row.player.name.isEmpty ? '?' : row.player.name[0].toUpperCase(), style: AppTextStyles.programTitle.scaled(s).copyWith(color: AppColors.accent, fontWeight: FontWeight.w700))),
+                              _Avatar(player: row.player, size: 32 * s, scale: s),
                               SizedBox(width: 8 * s),
                               Expanded(
                                 child: Text.rich(
@@ -298,5 +306,27 @@ class _Table extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+/// Player photo, or the first letter when there is none (or it fails to load).
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.player, required this.size, required this.scale});
+  final CoachPlayer player;
+  final double size;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final letter = Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: AppColors.accent.withValues(alpha: 0.25), shape: BoxShape.circle),
+      child: Text(player.name.isEmpty ? '?' : player.name[0].toUpperCase(), style: AppTextStyles.programTitle.scaled(scale).copyWith(color: AppColors.accent, fontWeight: FontWeight.w700)),
+    );
+    final url = player.photoUrl;
+    if (url == null || url.isEmpty) return letter;
+    return SizedBox(width: size, height: size, child: ClipOval(child: Image.network(url, fit: BoxFit.cover, errorBuilder: (_, _, _) => letter)));
   }
 }
