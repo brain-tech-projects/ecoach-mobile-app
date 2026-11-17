@@ -1,3 +1,8 @@
+import 'package:ecoach_pro/features/ai_session/presentation/bindings/ai_session_bindings.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_home_page.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_building_page.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_result_page.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_player_page.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/chats_page.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/summary_page.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/invitations_page.dart';
@@ -435,6 +440,34 @@ abstract final class AppPages {
       middlewares: <GetMiddleware>[AuthMiddleware(), CoachMiddleware()],
       page: () => const InvitationsPage(),
       binding: InvitationsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.aiSession,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const AiHomePage(),
+      binding: AiHomeBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.aiBuilding,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const AiBuildingPage(),
+      binding: AiBuildingBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.aiResult,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const AiResultPage(),
+      binding: AiResultBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.aiPlayer,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const AiPlayerPage(),
+      binding: AiPlayerBinding(),
       transition: Transition.cupertino,
     ),
   ];

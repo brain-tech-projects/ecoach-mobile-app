@@ -74,4 +74,10 @@ abstract final class AppRoutes {
   static const String coachChats = '/coach-chats';
   static const String coachSummary = '/coach-summary';
   static const String coachInvitations = '/coach-invitations';
+
+  // ---- AI Training Session (player) ----
+  static const String aiSession = '/ai-session';
+  static const String aiBuilding = '/ai-session-building';
+  static const String aiResult = '/ai-session-result';
+  static const String aiPlayer = '/ai-session-player';
 }
