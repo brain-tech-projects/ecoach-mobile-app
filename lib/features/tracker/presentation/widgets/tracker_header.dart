@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ecoach_pro/core/theme/app_colors.dart';
@@ -91,7 +92,7 @@ class TrackerSummary extends StatelessWidget {
                       children: <Widget>[
                         Expanded(
                           child: _StatTile(
-                            icon: const Icon(Icons.track_changes, color: AppColors.accent),
+                            icon: const _StatGlyph(AppAssets.trackerGoals),
                             value: data.goals,
                             label: 'Goals',
                             scale: s,
@@ -100,7 +101,7 @@ class TrackerSummary extends StatelessWidget {
                         SizedBox(width: 8 * s),
                         Expanded(
                           child: _StatTile(
-                            icon: const Icon(Icons.volunteer_activism_outlined, color: AppColors.accent),
+                            icon: const _StatGlyph(AppAssets.trackerAssists),
                             value: data.assists,
                             label: 'Assists',
                             scale: s,
@@ -109,13 +110,7 @@ class TrackerSummary extends StatelessWidget {
                         SizedBox(width: 8 * s),
                         Expanded(
                           child: _StatTile(
-                            icon: const Stack(
-                              alignment: Alignment.center,
-                              children: <Widget>[
-                                Icon(Icons.shield_outlined, color: AppColors.accent),
-                                Icon(Icons.star_border, size: 11, color: AppColors.accent),
-                              ],
-                            ),
+                            icon: const _StatGlyph(AppAssets.trackerSaves),
                             value: data.saves,
                             label: 'Saves',
                             scale: s,
@@ -187,6 +182,19 @@ class _NameRow extends StatelessWidget {
         line(),
       ],
     );
+  }
+}
+
+/// Green line glyph (Goals / Assists / Saves) sized from the surrounding IconTheme.
+class _StatGlyph extends StatelessWidget {
+  const _StatGlyph(this.asset);
+
+  final String asset;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = (IconTheme.of(context).size ?? 22) * 1.4;
+    return ExcludeSemantics(child: Image.asset(asset, width: size, height: size, filterQuality: FilterQuality.medium));
   }
 }
 
