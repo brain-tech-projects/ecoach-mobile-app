@@ -1,4 +1,4 @@
-/// UI-only models (dummy data; replace with API models later).
+/// Models of the AI training session screens (built from `/ai/*`).
 class AiProfile {
   const AiProfile({required this.age, required this.positions, required this.levels, required this.focus});
   final String age;
@@ -25,6 +25,9 @@ class AiDrill {
     required this.videoUrl,
     this.mins = 5,
     this.points = 5,
+    this.type = 'skill_video',
+    this.completed = false,
+    this.locked = false,
   });
   final int id;
   final String title;
@@ -37,10 +40,15 @@ class AiDrill {
   final String videoUrl;
   final int mins;
   final int points;
+
+  /// `drill_type` the API wants back on complete-drill.
+  final String type;
+  final bool completed;
+  final bool locked;
 }
 
 class AiSession {
-  const AiSession({required this.id, required this.request, required this.summary, required this.tags, required this.drills});
+  const AiSession({required this.id, required this.request, required this.summary, required this.tags, required this.drills, this.completed = false});
   final int id;
   final String request;
 
@@ -48,6 +56,9 @@ class AiSession {
   final String summary;
   final List<String> tags;
   final List<AiDrill> drills;
+
+  /// Finished earlier (re-opened from "Recent sessions").
+  final bool completed;
 
   int get totalMins => drills.fold(0, (a, d) => a + d.mins);
   int get totalPoints => drills.fold(0, (a, d) => a + d.points);

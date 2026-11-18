@@ -229,7 +229,7 @@ class _PersonalisedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = scale;
-    const p = AiSessionRepository.profile;
+    final p = AiSessionRepository.profile;
 
     Widget group(String label, List<String> items) => Padding(
       padding: EdgeInsets.only(bottom: 18 * s),
@@ -251,10 +251,10 @@ class _PersonalisedCard extends StatelessWidget {
         children: <Widget>[
           Row(children: <Widget>[Icon(Icons.auto_awesome, size: 22 * s, color: AppColors.accent), SizedBox(width: 12 * s), Semantics(header: true, child: Text('Personalised for you', style: aiText(s, 21, w: FontWeight.w600)))]),
           SizedBox(height: 14 * s),
-          group('Age', <String>[p.age]),
-          group('Position', p.positions),
-          group('Level', p.levels),
-          group('Focus areas', p.focus),
+          if (p.age.isNotEmpty) group('Age', <String>[p.age]),
+          if (p.positions.isNotEmpty) group('Position', p.positions),
+          if (p.levels.isNotEmpty) group('Level', p.levels),
+          if (p.focus.isNotEmpty) group('Focus areas', p.focus),
           AiShieldNote(scale: s),
         ],
       ),

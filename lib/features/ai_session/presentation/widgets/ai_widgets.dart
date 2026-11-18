@@ -227,7 +227,7 @@ class AiDrillCard extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      ExcludeSemantics(child: Image.asset(drill.thumb, fit: BoxFit.cover, errorBuilder: (_, _, _) => const ColoredBox(color: Color(0xFF111C20)))),
+                      ExcludeSemantics(child: drill.thumb.startsWith('http') ? Image.network(drill.thumb, fit: BoxFit.cover, errorBuilder: (_, _, _) => const ColoredBox(color: Color(0xFF111C20))) : Image.asset(drill.thumb, fit: BoxFit.cover, errorBuilder: (_, _, _) => const ColoredBox(color: Color(0xFF111C20)))),
                       Center(
                         child: Container(
                           width: 25 * s,

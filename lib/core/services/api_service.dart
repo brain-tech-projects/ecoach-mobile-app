@@ -666,6 +666,86 @@ class ApiService {
     return res.map<List<TourVideo>>((d) => _list(d, TourVideo.fromJson));
   }
 
+  // ---- Subscription -----------------------------------------------------------
+
+  Future<ApiResponse<dynamic>> getPlans() => _network.get(ApiEndpoints.plans);
+
+  /// Current plan. Besides `data` (null without a plan) the body carries
+  /// `trial_eligible`, `button_text` and `subtitle_text`: read [ApiResponse.body].
+  Future<ApiResponse<dynamic>> getMyPlan() =>
+      _network.get(ApiEndpoints.myPlan);
+
+  Future<ApiResponse<dynamic>> createCheckoutSession({
+    required String plan,
+    required String successUrl,
+    required String cancelUrl,
+    required String currency,
+    required String interval,
+    required int intervalCount,
+  }) => _network.post(
+    ApiEndpoints.stripeCheckout,
+    body: <String, dynamic>{
+      'plan': plan,
+      'success_url': successUrl,
+      'cancel_url': cancelUrl,
+      'currency': currency,
+      'interval': interval,
+      'interval_count': intervalCount,
+    },
+  );
+
+  Future<ApiResponse<dynamic>> verifyStripeSession(String sessionId) =>
+      _network.post(
+        ApiEndpoints.stripeVerifySession,
+        body: <String, dynamic>{'session_id': sessionId},
+      );
+
+  Future<ApiResponse<dynamic>> cancelSubscription() => _network.post(
+    ApiEndpoints.cancelSubscription,
+    body: <String, dynamic>{},
+  );
+
+  // ---- AI training session ----------------------------------------------------
+
+  Future<ApiResponse<dynamic>> getAiSessions() =>
+      _network.get(ApiEndpoints.aiSessions);
+
+  Future<ApiResponse<dynamic>> generateAiSession(String prompt) =>
+      _network.post(
+        ApiEndpoints.aiGenerateSession,
+        body: <String, dynamic>{'prompt': prompt},
+      );
+
+  Future<ApiResponse<dynamic>> startAiSession(int sessionId) => _network.post(
+    ApiEndpoints.aiStartSession,
+    body: <String, dynamic>{'session_id': sessionId},
+  );
+
+  Future<ApiResponse<dynamic>> completeAiDrill({
+    required int sessionId,
+    required String drillType,
+    required int drillId,
+  }) => _network.post(
+    ApiEndpoints.aiCompleteDrill,
+    body: <String, dynamic>{
+      'session_id': sessionId,
+      'drill_type': drillType,
+      'drill_id': drillId,
+    },
+  );
+
+  Future<ApiResponse<dynamic>> completeAiSession(int sessionId) =>
+      _network.post(
+        ApiEndpoints.aiCompleteSession,
+        body: <String, dynamic>{'session_id': sessionId},
+      );
+
+  Future<ApiResponse<dynamic>> getAiSessionDetail(int sessionId) =>
+      _network.post(
+        ApiEndpoints.aiSessionDetail,
+        body: <String, dynamic>{'session_id': sessionId},
+      );
+
   // ---- Coach ------------------------------------------------------------------
   // Used only by the coach portal. Player methods above are untouched.
 

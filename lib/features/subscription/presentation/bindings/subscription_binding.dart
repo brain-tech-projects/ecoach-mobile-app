@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/features/subscription/data/subscription_repository.dart';
 import 'package:ecoach_pro/features/subscription/presentation/controllers/subscription_controller.dart';
 
 class SubscriptionBinding extends Bindings {
@@ -7,6 +8,7 @@ class SubscriptionBinding extends Bindings {
 
   @override
   void dependencies() {
+    Get.lazyPut<SubscriptionRepository>(SubscriptionRepository.new);
     Get.lazyPut<SubscriptionController>(SubscriptionController.new);
   }
 }

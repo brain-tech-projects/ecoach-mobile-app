@@ -82,7 +82,7 @@ class AiPlayerPage extends GetView<AiPlayerController> {
                 children: <Widget>[
                   SizedBox(width: 112 * s, child: AiOutlineButton(label: 'Previous', onTap: c.previous, scale: s, height: 50, enabled: !c.isFirst)),
                   SizedBox(width: 16 * s),
-                  Expanded(child: AppPrimaryButton(label: c.isLast ? 'Finish Session' : 'Next Drill', onPressed: c.next, scale: s)),
+                  Expanded(child: AppPrimaryButton(label: c.isLast ? 'Finish Session' : 'Next Drill', onPressed: c.next, loading: c.busy.value, scale: s)),
                 ],
               ),
               SizedBox(height: 26 * s),

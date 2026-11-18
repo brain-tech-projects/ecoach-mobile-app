@@ -107,7 +107,7 @@ class AiResultPage extends GetView<AiResultController> {
             for (var i = 0; i < session.drills.length; i++)
               Padding(padding: EdgeInsets.only(bottom: 16 * s), child: AiDrillCard(drill: session.drills[i], number: i + 1, scale: s, onTap: () => c.openDrill(i))),
             SizedBox(height: 8 * s),
-            AppPrimaryButton(label: 'Start Training', onPressed: c.start, scale: s),
+            Obx(() => AppPrimaryButton(label: 'Start Training', onPressed: c.start, loading: c.starting.value, scale: s)),
             SizedBox(height: 18 * s),
             Row(
               children: <Widget>[

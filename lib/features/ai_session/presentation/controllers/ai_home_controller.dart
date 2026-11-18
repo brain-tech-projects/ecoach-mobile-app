@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
+import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
+import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/ai_session/data/ai_session_repository.dart';
 import 'package:ecoach_pro/features/ai_session/domain/ai_session_entities.dart';
 
@@ -19,6 +21,7 @@ class AiHomeController extends GetxController {
   final RxList<AiSessionSummary> recent = <AiSessionSummary>[].obs;
   final RxBool expanded = false.obs;
   final RxBool loading = true.obs;
+  final RxnInt openingId = RxnInt();
 
   final String firstName = aiFirstName();
 
@@ -98,7 +101,21 @@ class AiHomeController extends GetxController {
     loadRecent();
   }
 
-  void open(AiSessionSummary s) => Get.toNamed<void>(AppRoutes.aiResult, arguments: _repo.sessionFor(s));
+  /// Opens a recent session (its drills come from `/ai/session-detail`).
+  Future<void> open(AiSessionSummary s) async {
+    if (openingId.value != null) return;
+    openingId.value = s.id;
+    AiSession? session;
+    try {
+      session = await _repo.fetchSession(s);
+    } catch (e, st) {
+      AppLogger.error('AI session open failed', error: e, stackTrace: st);
+      AppToast.error(e is ApiException ? e.message : 'Could not open this session. Please try again.');
+    } finally {
+      openingId.value = null;
+    }
+    if (session != null) await Get.toNamed<void>(AppRoutes.aiResult, arguments: session);
+  }
 
   @override
   void onClose() {

@@ -66,6 +66,21 @@ abstract final class ApiEndpoints {
 
   // Settings / contact
   static const String myPlanHistory = '/my-plan-history';
+
+  // Subscription (Stripe)
+  static const String plans = '/plans';
+  static const String myPlan = '/my-plan';
+  static const String stripeCheckout = '/stripe/checkout';
+  static const String stripeVerifySession = '/stripe/verify-session';
+  static const String cancelSubscription = '/cancel-subscription';
+
+  // AI training session
+  static const String aiSessions = '/ai/sessions';
+  static const String aiGenerateSession = '/ai/generate-session';
+  static const String aiStartSession = '/ai/start-session';
+  static const String aiCompleteDrill = '/ai/complete-drill';
+  static const String aiCompleteSession = '/ai/complete-session';
+  static const String aiSessionDetail = '/ai/session-detail';
   static const String changePassword = '/change-password';
   static const String contactUs = '/contact-us';
 
