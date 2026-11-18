@@ -53,7 +53,7 @@ class ProgramTile extends StatelessWidget {
                     SizedBox(height: 2 * s),
                     Text(
                       program.description,
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.programDesc.scaled(s),
                     ),

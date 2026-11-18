@@ -155,7 +155,7 @@ abstract final class AppPages {
     GetPage<void>(
       name: AppRoutes.setNewPassword,
       page: () => const SetPasswordPage(),
-      binding: SetPasswordBinding(),
+      binding: SetPasswordBinding(),  
       transition: Transition.cupertino,
     ),
     GetPage<void>(
@@ -201,7 +201,7 @@ abstract final class AppPages {
       page: () => const TrainingDetailPage(),
       binding: TrainingDetailBinding(),
       transition: Transition.cupertino,
-    ),
+    ), 
     GetPage<void>(
       name: AppRoutes.fun,
       middlewares: <GetMiddleware>[AuthMiddleware()],

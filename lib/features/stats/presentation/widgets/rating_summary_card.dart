@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ecoach_pro/core/theme/app_colors.dart';
@@ -44,11 +45,11 @@ class RatingSummaryCard extends StatelessWidget {
           SizedBox(height: 27 * s),
           Row(
             children: <Widget>[
-              _MetricCard(icon: Icons.track_changes_outlined, value: match.goals, label: 'Goals', scale: s),
+              _MetricCard(icon: AppAssets.trackerGoals, value: match.goals, label: 'Goals', scale: s),
               SizedBox(width: 7 * s),
-              _MetricCard(icon: Icons.volunteer_activism_outlined, value: match.assists, label: 'Assists', scale: s),
+              _MetricCard(icon: AppAssets.trackerAssists, value: match.assists, label: 'Assists', scale: s),
               SizedBox(width: 7 * s),
-              _MetricCard(icon: Icons.shield_outlined, value: match.saves, label: 'Saves', scale: s),
+              _MetricCard(icon: AppAssets.trackerSaves, value: match.saves, label: 'Saves', scale: s),
             ],
           ),
         ],
@@ -75,7 +76,7 @@ class _Line extends StatelessWidget {
 class _MetricCard extends StatelessWidget {
   const _MetricCard({required this.icon, required this.value, required this.label, required this.scale});
 
-  final IconData icon;
+  final String icon;
   final int value;
   final String label;
   final double scale;
@@ -104,7 +105,7 @@ class _MetricCard extends StatelessWidget {
                 color: AppColors.background,
                 border: Border.all(color: AppColors.accent, width: 1.2 * s),
               ),
-              child: Icon(icon, color: AppColors.accent, size: 23 * s),
+              child: ExcludeSemantics(child: Image.asset(icon, width: 31 * s, height: 31 * s, filterQuality: FilterQuality.medium)),
             ),
             SizedBox(height: 7 * s),
             Text('$value', style: const TextStyle(

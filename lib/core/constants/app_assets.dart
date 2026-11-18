@@ -33,6 +33,21 @@ abstract final class AppAssets {
   static const String programWhatsNew = '$_images/program_whats_new.png';
   static const String programEcoach = '$_images/program_ecoach.png';
 
+  // "Popular Programs" row icons
+  static const String programIconWhatsNew = '$_images/program_icon_whats_new.png';
+  static const String programIconEcoach = '$_images/program_icon_ecoach.png';
+  static const String programIconPersonal = '$_images/program_icon_personal_training.png';
+  static const String programIconMatchTracker = '$_images/program_icon_match_tracker.png';
+  static const String programIconSkills = '$_images/program_icon_skills.png';
+  static const String programIconFun = '$_images/program_icon_just_for_fun.png';
+  static const String programIconMySkills = '$_images/program_icon_my_skills.png';
+  static const String programIconCoaches = '$_images/program_icon_coaches_training.png';
+
+  // Rating Tracker stat glyphs (green line icons, transparent background)
+  static const String trackerGoals = '$_images/tracker/stat_goals.png';
+  static const String trackerAssists = '$_images/tracker/stat_assists.png';
+  static const String trackerSaves = '$_images/tracker/stat_saves.png';
+
   // Sign-up result screen hero (dummy - replace with API image later)
   static const String programmeHero = '$_images/programme_hero.jpg';
 
