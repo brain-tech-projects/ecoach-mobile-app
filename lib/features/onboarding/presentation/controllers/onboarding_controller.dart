@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,13 +12,15 @@ class OnboardingController extends GetxController {
 
   final LocalStorage _storage;
 
+  static const Duration _slide = Duration(milliseconds: 300);
+
   final PageController pageController = PageController();
   final RxInt currentIndex = 0.obs;
 
   /// The web app shows "Continue" instead of "Skip" on the last slide.
   /// Set to true to restore that behaviour.
   static const bool showContinueOnLastPage = false;
-     
+
   bool _isCompleting = false;
 
   List<OnboardingPageData> get pages => OnboardingContent.pages;
@@ -31,55 +32,34 @@ class OnboardingController extends GetxController {
     currentIndex.value = index;
   }
 
-  /// Android back button / back gesture:
-  /// go to the previous slide first.
+  /// Android back button / back gesture: go to the previous slide first.
   Future<void> previousPage() async {
     if (isFirstPage || !pageController.hasClients) return;
-
-    await pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic);
+    await pageController.previousPage(duration: _slide, curve: Curves.easeOutCubic);
   }
 
-
-
-
-
-  /// "Skip": slides 1-3 go to the next slide, the last slide finishes onboarding.
+  /// "Skip": slides 1-3 go to the next slide, the last slide finishes
+  /// onboarding.
   Future<void> onSkip() async {
     if (isLastPage) {
       await complete();
       return;
     }
     if (!pageController.hasClients) return;
-    await pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
-    );
+    await pageController.nextPage(duration: _slide, curve: Curves.easeOutCubic);
   }
 
-
-
-
-
-
-
-  /// Skip moves to the next slide.
-  /// On the last slide, complete onboarding and open the dashboard.
+  /// Saves the "seen" flag and opens the dashboard. Onboarding never shows
+  /// again after this (see `SplashController`).
   Future<void> complete() async {
     if (_isCompleting) return;
-
-    // On every page except the last, Skip moves forward.
-    if (!isLastPage) {
-      if (!pageController.hasClients) return;
-
-      await pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic);
-      return;
-    }
-
-    // Only complete onboarding on the last page.
     _isCompleting = true;
 
     try {
-      await _storage.setOnboardingCompleted(true);
+      final saved = await _storage.setOnboardingCompleted(true);
+      if (!saved) {
+        AppLogger.error('Onboarding flag was not saved (setBool returned false)');
+      }
     } catch (error, stackTrace) {
       // Never block the user because a preference failed to save.
       AppLogger.error('Could not persist onboarding flag', error: error, stackTrace: stackTrace);

@@ -32,11 +32,14 @@ class SplashController extends GetxController {
       );
     }
 
-    // While AppConfig.alwaysShowOnboarding is true, onboarding is shown on
-    // every launch (demo / QA). Later it is shown on first launch only.
+    // First launch  -> onboarding (shown once, flag saved when it finishes).
+    // Every launch after that -> straight to the dashboard.
+    // `AppConfig.alwaysShowOnboarding` is a QA-only override (dart-define).
     final showOnboarding =
         AppConfig.alwaysShowOnboarding || !_storage.isOnboardingCompleted;
-    final next = showOnboarding ? AppRoutes.onboarding : AppRoutes.dashboard;
-    Get.offNamed<void>(next);
+
+    Get.offNamed<void>(
+      showOnboarding ? AppRoutes.onboarding : AppRoutes.dashboard,
+    );
   }
 }
