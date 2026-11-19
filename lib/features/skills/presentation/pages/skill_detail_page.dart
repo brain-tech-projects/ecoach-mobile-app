@@ -147,8 +147,7 @@ class SkillDetailPage extends GetView<SkillDetailController> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 49 * s),
                 child: AppPrimaryButton(
-                  label: drill.completed ? 'Completed' : 'Video Complete',
-                  enabled: !drill.completed,
+                  label: 'Video Complete',
                   loading: controller.isSubmitting.value,
                   onPressed: controller.onVideoComplete,
                   scale: s,

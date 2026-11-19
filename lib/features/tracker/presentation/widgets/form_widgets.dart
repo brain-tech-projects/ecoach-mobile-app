@@ -227,6 +227,7 @@ class UploadCard extends StatelessWidget {
     super.key,
     required this.question,
     required this.photoPath,
+    this.photoUrl,
     required this.onPick,
     required this.onRemove,
     required this.scale,
@@ -234,6 +235,9 @@ class UploadCard extends StatelessWidget {
 
   final String question;
   final String? photoPath;
+
+  /// Photo already saved on the server (edit mode), shown when no new one is picked.
+  final String? photoUrl;
   final VoidCallback onPick;
   final VoidCallback onRemove;
   final double scale;
@@ -241,7 +245,9 @@ class UploadCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = scale;
-    final has = photoPath != null;
+    final hasNew = photoPath != null;
+    final hasSaved = !hasNew && photoUrl != null && photoUrl!.isNotEmpty;
+    final has = hasNew || hasSaved;
     return Container(
       padding: EdgeInsets.fromLTRB(25 * s, 25 * s, 25 * s, 30 * s),
       decoration: _cardBox(s),
@@ -267,18 +273,33 @@ class UploadCard extends StatelessWidget {
                       ? Stack(
                           fit: StackFit.expand,
                           children: <Widget>[
-                            Image.file(File(photoPath!), fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => const SizedBox.shrink()),
-                            Positioned(
-                              top: 4 * s,
-                              right: 4 * s,
-                              child: IconButton.filled(
-                                tooltip: 'Remove photo',
-                                onPressed: onRemove,
-                                style: IconButton.styleFrom(backgroundColor: const Color(0xAA000000)),
-                                icon: const Icon(Icons.close, color: AppColors.white, size: 18),
+                            if (hasNew)
+                              Image.file(File(photoPath!), fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => const SizedBox.shrink())
+                            else
+                              Image.network(
+                                photoUrl!,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (_, child, progress) => progress == null
+                                    ? child
+                                    : const Center(
+                                        child: CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2),
+                                      ),
+                                errorBuilder: (_, _, _) => const SizedBox.shrink(),
                               ),
-                            ),
+                            // Only a newly picked photo can be removed; the saved
+                            // one is replaced by tapping the box.
+                            if (hasNew)
+                              Positioned(
+                                top: 4 * s,
+                                right: 4 * s,
+                                child: IconButton.filled(
+                                  tooltip: 'Remove photo',
+                                  onPressed: onRemove,
+                                  style: IconButton.styleFrom(backgroundColor: const Color(0xAA000000)),
+                                  icon: const Icon(Icons.close, color: AppColors.white, size: 18),
+                                ),
+                              ),
                           ],
                         )
                       : ExcludeSemantics(

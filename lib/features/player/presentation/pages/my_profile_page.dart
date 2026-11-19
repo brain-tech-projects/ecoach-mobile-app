@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/coach_profile_page.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +42,7 @@ class MyProfilePage extends GetView<MyProfileController> {
           return RetryMessage(message: c.errorMessage.value!, onRetry: c.load, scale: s);
         }
         final p = c.original.value!;
+        final localPhoto = c.photoPath.value;
         final form = r.gutter + 32 * s;
 
         return GestureDetector(
@@ -55,7 +58,7 @@ class MyProfilePage extends GetView<MyProfileController> {
                 // ---------- banner + avatar ----------
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: r.gutter + 12 * s),
-                  child: _Header(profile: p, scale: s, onEditPhoto: c.onChangePhoto),
+                  child: _Header(profile: p, localPhoto: localPhoto, scale: s, onEditPhoto: c.onChangePhoto),
                 ),
                 SizedBox(height: 43 * s),
                 // ---------- form ----------
@@ -232,9 +235,10 @@ class MyProfilePage extends GetView<MyProfileController> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.profile, required this.scale, required this.onEditPhoto});
+  const _Header({required this.profile, required this.scale, required this.onEditPhoto, this.localPhoto});
 
   final PlayerProfile profile;
+  final String? localPhoto;
   final double scale;
   final VoidCallback onEditPhoto;
 
@@ -248,6 +252,9 @@ class _Header extends StatelessWidget {
             color: AppColors.avatarBg,
             child: Icon(Icons.person, color: AppColors.avatarFg, size: 40),
           );
+      if (localPhoto != null) {
+        return Image.file(File(localPhoto!), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback());
+      }
       if (profile.photoAsset != null) {
         return Image.asset(profile.photoAsset!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback());
       }

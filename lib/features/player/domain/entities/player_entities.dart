@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
-
+import 'package:ecoach_pro/features/auth/data/countries_data.dart';
 import 'package:ecoach_pro/features/auth/data/signup_content.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/signup_step.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
+import 'package:flutter/foundation.dart';
 
 /// Editable "My Profile" data.
 @immutable
@@ -24,6 +24,7 @@ class PlayerProfile {
     this.dateOfBirth,
     this.photoAsset,
     this.photoUrl,
+    this.photoPath,
   });
 
   final String profileName;
@@ -42,42 +43,30 @@ class PlayerProfile {
   final DateTime? dateOfBirth;
   final String? photoAsset;
   final String? photoUrl;
+
+  /// Newly picked local photo, uploaded on save (null = keep the current one).
+  final String? photoPath;
 }
 
 /// Choices of the profile drop-downs (replace with API lists when needed).
 abstract final class ProfileOptions {
-  static final List<String> ages =
-      List<String>.generate(45, (i) => '${i + 4}'); // 4 - 48
+  static final List<String> ages = List<String>.generate(45, (i) => '${i + 4}'); // 4 - 48
   // Same wording as the sign-up questions, because that is what the API
   // stores (e.g. "Just starting out", "2× a week").
-  static List<String> _labels(SignUpStepKind kind) => SignUpContent
-      .questionFor(kind)!
-      .options
-      .map((o) => o.label)
-      .toList();
+  static List<String> _labels(SignUpStepKind kind) => SignUpContent.questionFor(kind)!.options.map((o) => o.label).toList();
 
   static List<String> get positions => _labels(SignUpStepKind.positions);
   static List<String> get levels => _labels(SignUpStepKind.level);
   static List<String> get improve => _labels(SignUpStepKind.improve);
-  static List<String> get biggestDifference =>
-      _labels(SignUpStepKind.difference);
+  static List<String> get biggestDifference => _labels(SignUpStepKind.difference);
   static List<String> get frequency => _labels(SignUpStepKind.frequency);
-  static const Map<String, String> countries = <String, String>{
-    'AU': 'Australia', 'BR': 'Brazil', 'CA': 'Canada', 'EG': 'Egypt',
-    'FR': 'France', 'DE': 'Germany', 'GH': 'Ghana', 'IN': 'India',
-    'IE': 'Ireland', 'IT': 'Italy', 'KE': 'Kenya', 'MX': 'Mexico',
-    'NL': 'Netherlands', 'NZ': 'New Zealand', 'NG': 'Nigeria',
-    'PT': 'Portugal', 'SA': 'Saudi Arabia', 'ZA': 'South Africa',
-    'ES': 'Spain', 'AE': 'United Arab Emirates', 'GB': 'United Kingdom',
-    'US': 'United States', 'ZM': 'Zambia', 'ZW': 'Zimbabwe',
-  };
+
+  /// Every country (ISO alpha-2 code -> name), same source as the sign-up
+  /// country picker so all screens show the full list.
+  static final Map<String, String> countries = <String, String>{for (final c in Countries.all) c.code: c.name};
 
   /// "ZW" -> 🇿🇼
-  static String flag(String code) => code.length != 2
-      ? ''
-      : String.fromCharCodes(
-          code.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 0x41),
-        );
+  static String flag(String code) => code.length != 2 ? '' : String.fromCharCodes(code.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 0x41));
 }
 
 /// A drill saved to My Skills.
@@ -101,13 +90,7 @@ class NoteEntry {
 /// Notes tree: skill area > drill > notes, or challenge > notes.
 @immutable
 class NoteNode {
-  const NoteNode({
-    required this.id,
-    required this.title,
-    this.thumbnail,
-    this.notes = const <NoteEntry>[],
-    this.children = const <NoteNode>[],
-  });
+  const NoteNode({required this.id, required this.title, this.thumbnail, this.notes = const <NoteEntry>[], this.children = const <NoteNode>[]});
 
   final String id;
   final String title;
@@ -120,13 +103,7 @@ enum MessageStatus { sent, seen }
 
 @immutable
 class ChatMessage {
-  const ChatMessage({
-    required this.id,
-    required this.text,
-    required this.sentAt,
-    required this.mine,
-    this.status = MessageStatus.sent,
-  });
+  const ChatMessage({required this.id, required this.text, required this.sentAt, required this.mine, this.status = MessageStatus.sent});
 
   final String id;
   final String text;
@@ -139,13 +116,7 @@ enum NotificationKind { skillVideo, quiz, other }
 
 @immutable
 class AppNotification {
-  const AppNotification({
-    required this.id,
-    required this.kind,
-    required this.title,
-    required this.body,
-    required this.createdAt,
-  });
+  const AppNotification({required this.id, required this.kind, required this.title, required this.body, required this.createdAt});
 
   final String id;
   final NotificationKind kind;
@@ -156,10 +127,7 @@ class AppNotification {
 
 /// Date helpers shared by Notes / Chat / Notifications.
 abstract final class PlayerFormat {
-  static const List<String> _mon = <String>[
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
+  static const List<String> _mon = <String>['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   static String _two(int v) => v.toString().padLeft(2, '0');
 
   /// "03 Nov 2026"
@@ -180,8 +148,8 @@ abstract final class PlayerFormat {
     final label = diff == 0
         ? 'Today'
         : diff == 1
-            ? 'Yesterday'
-            : noteDate(d);
+        ? 'Yesterday'
+        : noteDate(d);
     return '$label ${clock(d)}';
   }
 

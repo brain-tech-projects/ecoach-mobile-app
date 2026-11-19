@@ -76,8 +76,23 @@ class SignUpPage extends GetView<SignUpController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 220),
+        // Next: the new step slides in from the right; Back: from the left.
+        ClipRect(
+          child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 280),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final incoming = child.key == ValueKey<SignUpStepKind>(kind);
+            final fromRight = controller.forward == incoming;
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(fromRight ? 1 : -1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
           child: Column(
             key: ValueKey<SignUpStepKind>(kind),
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,6 +116,7 @@ class SignUpPage extends GetView<SignUpController> {
               SizedBox(height: afterContent * s),
             ],
           ),
+        ),
         ),
         AppPrimaryButton(
           label: label,

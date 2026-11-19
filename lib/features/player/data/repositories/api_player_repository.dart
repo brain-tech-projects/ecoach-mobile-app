@@ -60,31 +60,45 @@ class ApiPlayerRepository implements PlayerRepository {
     final dob = p.dateOfBirth;
     final j = _profileJson;
 
+    final fields = <String, dynamic>{
+      'id': j['id'],
+      'nickname': p.profileName,
+      'full_name': p.fullName,
+      'email': j['email'],
+      'role': j['role'],
+      'my_club': p.club,
+      'my_position': p.favouritePosition,
+      'my_fav_club': p.favouriteTeam,
+      if (dob != null) 'dob': '${dob.year}-${two(dob.month)}-${two(dob.day)}',
+      if (p.age != null) 'age': p.age,
+      'playing_position': p.positions,
+      'skill_level': p.levels,
+      'improve_areas': p.improve,
+      'biggest_difference': <String>[
+        if (p.biggestDifference != null) p.biggestDifference!,
+      ],
+      'training_frequency': <String>[
+        if (p.frequency != null) p.frequency!,
+      ],
+      'country': ProfileOptions.countries[p.countryCode] ?? j['country'],
+      'country_code': p.countryCode,
+      'parent_guardian_email': p.parentEmail,
+    };
+
+    final photo = p.photoPath;
     final res = requireSuccess(
-      await _api.updateProfile(<String, dynamic>{
-        'id': j['id'],
-        'nickname': p.profileName,
-        'full_name': p.fullName,
-        'email': j['email'],
-        'role': j['role'],
-        'my_club': p.club,
-        'my_position': p.favouritePosition,
-        'my_fav_club': p.favouriteTeam,
-        if (dob != null) 'dob': '${dob.year}-${two(dob.month)}-${two(dob.day)}',
-        if (p.age != null) 'age': p.age,
-        'playing_position': p.positions,
-        'skill_level': p.levels,
-        'improve_areas': p.improve,
-        'biggest_difference': <String>[
-          if (p.biggestDifference != null) p.biggestDifference!,
-        ],
-        'training_frequency': <String>[
-          if (p.frequency != null) p.frequency!,
-        ],
-        'country': ProfileOptions.countries[p.countryCode] ?? j['country'],
-        'country_code': p.countryCode,
-        'parent_guardian_email': p.parentEmail,
-      }),
+      photo == null
+          // No new photo: plain JSON update (unchanged behaviour).
+          ? await _api.updateProfile(fields)
+          // New photo: multipart request carrying the same fields + the file.
+          : await _api.updateCoachProfile(
+              fields: <String, dynamic>{
+                for (final e in fields.entries)
+                  if (e.value != null && !(e.value is List && (e.value as List).isEmpty))
+                    e.key: e.value,
+              },
+              photoPath: photo,
+            ),
     );
 
     // Keep the name shown in the header / menu up to date.

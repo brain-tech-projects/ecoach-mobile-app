@@ -24,6 +24,10 @@ class SignUpController extends GetxController {
   final Rx<UserRole> selectedRole = UserRole.player.obs;
   final RxInt stepIndex = 0.obs;
 
+  /// Direction of the last step change (drives the slide animation):
+  /// true = next (new step slides in from the right).
+  bool forward = true;
+
   /// Selected option ids per step (single choice keeps exactly one id).
   final RxMap<SignUpStepKind, List<String>> answers =
       <SignUpStepKind, List<String>>{}.obs;
@@ -100,6 +104,7 @@ class SignUpController extends GetxController {
   void onBack() {
     FocusManager.instance.primaryFocus?.unfocus();
     if (stepIndex.value > 0) {
+      forward = false;
       stepIndex.value--;
     } else {
       Get.back<void>();
@@ -112,6 +117,7 @@ class SignUpController extends GetxController {
     if (isLastStep) {
       submit();
     } else {
+      forward = true;
       stepIndex.value++;
     }
   }

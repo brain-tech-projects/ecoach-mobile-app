@@ -29,6 +29,14 @@ class MatchFormController extends GetxController {
   final Rxn<DateTime> date = Rxn<DateTime>();
   final RxnString photoPath = RxnString();
 
+  /// Photo already saved on the server (edit mode); shown as the preview
+  /// until a new one is picked.
+  final RxnString existingPhotoUrl = RxnString();
+
+  /// Direction of the last step change (drives the slide animation):
+  /// true = next (new step slides in from the right).
+  bool forward = true;
+
   /// Recomputed after every change so the Next button reacts.
   final RxBool canContinue = false.obs;
 
@@ -61,6 +69,7 @@ class MatchFormController extends GetxController {
     put('saves', e?.saves);
     date.value = e?.playedOn;
     photoPath.value = e?.photoPath;
+    existingPhotoUrl.value = e?.photoUrl;
   }
 
   MatchStep get current => steps[step.value];
@@ -94,16 +103,25 @@ class MatchFormController extends GetxController {
     _recompute();
   }
 
+  /// Closes the keyboard and any copy / paste popup before the step changes,
+  /// so the step that slides out never leaves a text menu open.
+  void _closeKeyboardAndMenus() {
+    ContextMenuController.removeAny();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   void next() {
     if (!canContinue.value || step.value >= total - 1) return;
-    FocusManager.instance.primaryFocus?.unfocus();
+    _closeKeyboardAndMenus();
+    forward = true;
     step.value++;
     _recompute();
   }
 
   void previous() {
     if (step.value == 0) return;
-    FocusManager.instance.primaryFocus?.unfocus();
+    _closeKeyboardAndMenus();
+    forward = false;
     step.value--;
     _recompute();
   }
@@ -113,6 +131,7 @@ class MatchFormController extends GetxController {
     if (path != null) photoPath.value = path;
   }
 
+  /// Removes a newly picked photo (the saved one, if any, shows again).
   void removePhoto() => photoPath.value = null;
 
   MatchEntry _build() {
@@ -141,6 +160,7 @@ class MatchFormController extends GetxController {
     // Every required step must be valid (guards against a skipped step).
     for (var i = 0; i < steps.length; i++) {
       if (!_valid(steps[i])) {
+        forward = i > step.value;
         step.value = i;
         _recompute();
         AppToast.error('Please complete this step first');
@@ -170,6 +190,7 @@ class MatchFormController extends GetxController {
   void startOver() {
     _editing = null;
     _fill(null);
+    forward = true;
     step.value = 0;
     done.value = false;
     _recompute();

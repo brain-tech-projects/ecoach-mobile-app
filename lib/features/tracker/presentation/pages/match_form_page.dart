@@ -49,14 +49,36 @@ class MatchFormPage extends GetView<MatchFormController> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  child: SingleChildScrollView(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(hPad, 28 * s, hPad, 16 * s),
+                  // Each step slides in from the right (Next) or the left
+                  // (Previous); the old one slides out the opposite way.
+                  child: ClipRect(
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 160),
-                      child: KeyedSubtree(
+                      duration: const Duration(milliseconds: 280),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      layoutBuilder: (current, previous) => Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[...previous, if (current != null) current],
+                      ),
+                      transitionBuilder: (child, animation) {
+                        final incoming = child.key == ValueKey<int>(index);
+                        final fromRight = controller.forward == incoming;
+                        final slide = SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(fromRight ? 1 : -1, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        );
+                        // The step sliding out is frozen: no taps, no focus,
+                        // so only one text field is ever active at a time.
+                        return incoming ? slide : IgnorePointer(child: ExcludeFocus(child: slide));
+                      },
+                      child: SingleChildScrollView(
                         key: ValueKey<int>(index),
+                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(hPad, 28 * s, hPad, 16 * s),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
@@ -67,6 +89,7 @@ class MatchFormPage extends GetView<MatchFormController> {
                                 () => UploadCard(
                                   question: step.question,
                                   photoPath: controller.photoPath.value,
+                                  photoUrl: controller.existingPhotoUrl.value,
                                   onPick: controller.pickPhoto,
                                   onRemove: controller.removePhoto,
                                   scale: s,

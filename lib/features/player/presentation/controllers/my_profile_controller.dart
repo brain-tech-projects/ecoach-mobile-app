@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/player/domain/entities/player_entities.dart';
 import 'package:ecoach_pro/features/player/domain/repositories/player_repository.dart';
+import 'package:ecoach_pro/features/tracker/data/repositories/image_picker_photo_picker.dart';
 
 class MyProfileController extends GetxController {
   MyProfileController(this._repository);
@@ -31,6 +32,9 @@ class MyProfileController extends GetxController {
   final RxnString biggestDifference = RxnString();
   final RxnString frequency = RxnString();
   final Rxn<DateTime> dob = Rxn<DateTime>();
+
+  /// Newly picked local photo (previewed at once, uploaded on Save).
+  final RxnString photoPath = RxnString();
 
   /// Shown under the field after a failed save.
   final RxnString nameError = RxnString();
@@ -70,7 +74,12 @@ class MyProfileController extends GetxController {
     }
   }
 
-  void onChangePhoto() => AppToast.info('Photo upload coming soon');
+  Future<void> onChangePhoto() async {
+    if (saving.value) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    final path = await ImagePickerMatchPhotoPicker().pick();
+    if (path != null) photoPath.value = path;
+  }
 
   bool _validate() {
     nameError.value = profileName.text.trim().isEmpty || fullName.text.trim().isEmpty
@@ -108,11 +117,21 @@ class MyProfileController extends GetxController {
       dateOfBirth: dob.value,
       photoAsset: base.photoAsset,
       photoUrl: base.photoUrl,
+      photoPath: photoPath.value,
     );
     saving.value = true;
     try {
       await _repository.updateProfile(updated);
       original.value = updated;
+      if (photoPath.value != null) {
+        // Pick up the new photo URL from the server, then drop the local file.
+        try {
+          original.value = await _repository.fetchProfile();
+        } catch (_) {
+          // Keep showing the local preview if the refresh fails.
+        }
+        if (original.value?.photoUrl != base.photoUrl) photoPath.value = null;
+      }
       AppToast.success('Profile updated successfully');
     } catch (error, stackTrace) {
       AppLogger.error('Profile update failed', error: error, stackTrace: stackTrace);

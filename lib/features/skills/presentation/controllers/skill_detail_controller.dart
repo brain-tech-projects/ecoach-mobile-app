@@ -55,7 +55,7 @@ class SkillDetailController extends GetxController {
   }
 
   Future<void> onVideoComplete() async {
-    if (completed || isSubmitting.value) return;
+    if (isSubmitting.value) return;
     final confirmed = await Get.dialog<bool>(
       const CompleteDialog(),
       barrierColor: const Color(0xB3000000),
