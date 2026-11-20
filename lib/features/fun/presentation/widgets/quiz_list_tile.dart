@@ -46,7 +46,16 @@ class QuizListTile extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: <Widget>[
-                        ClipOval(child: FunImage(logo)),
+                        // Logo fully visible (not cropped) on a dark disc, like the design.
+                        ClipOval(
+                          child: ColoredBox(
+                            color: const Color(0xFF0A1216),
+                            child: Padding(
+                              padding: EdgeInsets.all(8 * s),
+                              child: FunImage(logo, fit: BoxFit.contain),
+                            ),
+                          ),
+                        ),
                         DecoratedBox(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,

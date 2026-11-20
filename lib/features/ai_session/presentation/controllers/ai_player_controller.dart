@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/app/routes/app_routes.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_complete_page.dart';
+
 import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
@@ -53,8 +56,8 @@ class AiPlayerController extends GetxController {
         return;
       }
       _earned += await _repo.completeSession(session.id);
-      AppToast.success(_earned > 0 ? 'Session complete! +$_earned points' : 'Session complete!');
-      Get.back<void>();
+      // Replace the player with the "Session complete!" screen.
+      Get.offNamed<void>(AppRoutes.aiComplete, arguments: AiCompleteArgs(points: _earned));
     } catch (e, st) {
       AppLogger.error('AI drill complete failed', error: e, stackTrace: st);
       AppToast.error(e is ApiException ? e.message : 'Could not save your progress. Please try again.');

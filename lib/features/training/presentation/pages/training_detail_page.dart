@@ -112,6 +112,18 @@ class TrainingDetailPage extends GetView<TrainingDetailController> {
                   ),
                 ),
               ),
+              // Shown only while the API says this video is not completed yet.
+              if (!video.locked && !video.completed) ...<Widget>[
+                SizedBox(height: 32 * s),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: hPad),
+                  child: AppPrimaryButton(
+                    label: 'Training Complete',
+                    onPressed: () => controller.openTrainingComplete(video),
+                    scale: s,
+                  ),
+                ),
+              ],
               if (video.locked) ...<Widget>[
                 SizedBox(height: 32 * s),
                 Padding(

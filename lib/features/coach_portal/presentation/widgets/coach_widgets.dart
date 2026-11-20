@@ -338,7 +338,10 @@ class CoachPlayerAvatar extends StatelessWidget {
   }
 }
 
-String? coachFlag(String? code) => (code == null || code.length != 2) ? null : Country(code: code, name: '').flag;
+String? coachFlag(String? code) {
+  final f = Country.flagOf(code);
+  return f.isEmpty ? null : f;
+}
 
 class CoachPlayerTile extends StatelessWidget {
   const CoachPlayerTile({super.key, required this.player, this.onTap, this.selected = false, this.dialog = false});

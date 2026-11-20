@@ -143,20 +143,7 @@ class MyProfilePage extends GetView<MyProfileController> {
                       gap(),
                       _multi(context, s, 'Areas to Improve', c.improve, ProfileOptions.improve),
                       gap(),
-                      SelectBox(
-                        label: 'Biggest Difference',
-                        text: c.biggestDifference.value,
-                        scale: s,
-                        onTap: () async {
-                          final v = await showSingleSheet(
-                            context,
-                            title: 'Biggest Difference',
-                            selected: c.biggestDifference.value,
-                            options: _opts(ProfileOptions.biggestDifference),
-                          );
-                          if (v != null) c.biggestDifference.value = v;
-                        },
-                      ),
+                      _multi(context, s, 'Biggest Difference', c.biggestDifference, ProfileOptions.biggestDifference),
                       gap(),
                       SelectBox(
                         label: 'Training Frequency',

@@ -49,8 +49,42 @@ class ApiCoachRepository implements CoachRepository {
           id: '${e['id']}',
           title: _firstText(<Object?>[e['training_name'], e['video_title']]),
           videoUrl: ('${e['video_path'] ?? ''}').replaceAll(' ', '%20'),
+          description: _plain(<Object?>[e['description'], e['training_description'], e['video_description'], e['notes']]),
+          topTip: _plain(<Object?>[e['top_tip'], e['tip']]),
+          instructions: _points(<Object?>[e['instructions'], e['key_points'], e['steps'], e['bullets']]),
         ),
     ];
+  }
+
+  static String _clean(Object? v) => (v is List ? v.join('\n') : (v ?? '').toString())
+      .replaceAll(RegExp(r'<\s*br\s*/?\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'</\s*(li|p|div)\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&');
+
+  /// First non-empty value as one tidy line.
+  static String _plain(List<Object?> values) {
+    for (final v in values) {
+      final t = _clean(v).replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (t.isNotEmpty) return t;
+    }
+    return '';
+  }
+
+  /// First non-empty list / multi-line text as bullet points.
+  static List<String> _points(List<Object?> values) {
+    for (final v in values) {
+      final items = v is List ? v : <Object?>[v];
+      final out = <String>[
+        for (final item in items)
+          for (final line in _clean(item).split(RegExp(r'[\r\n]+')))
+            if (line.replaceFirst(RegExp(r'^[\s•·\-\*]+'), '').trim().isNotEmpty)
+              line.replaceFirst(RegExp(r'^[\s•·\-\*]+'), '').replaceAll(RegExp(r'\s+'), ' ').trim(),
+      ];
+      if (out.isNotEmpty) return out;
+    }
+    return const <String>[];
   }
 
   static String _firstText(List<Object?> values) {

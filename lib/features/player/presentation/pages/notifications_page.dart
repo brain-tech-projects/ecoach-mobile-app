@@ -53,7 +53,11 @@ class NotificationsPage extends GetView<NotificationsController> {
               else
                 for (var i = 0; i < items.length; i++) ...<Widget>[
                   if (i > 0) SizedBox(height: 8.3 * s),
-                  NotificationCard(item: items[i], scale: s),
+                  NotificationCard(
+                    item: items[i],
+                    scale: s,
+                    onTap: items[i].kind.route == null ? null : () => controller.onTap(items[i]),
+                  ),
                 ],
             ],
           ),

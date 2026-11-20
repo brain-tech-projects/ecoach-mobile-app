@@ -2,14 +2,19 @@ import 'package:ecoach_pro/features/auth/domain/entities/country.dart';
 
 abstract final class Countries {
   static const Country india = Country(code: 'IN', name: 'India');
+  static const Country england = Country(code: 'GB-ENG', name: 'England');
+  static const Country scotland = Country(code: 'GB-SCT', name: 'Scotland');
+  static const Country wales = Country(code: 'GB-WLS', name: 'Wales');
+  static const Country northernIreland = Country(code: 'GB-NIR', name: 'Northern Ireland');
   static const Country unitedKingdom = Country(code: 'GB', name: 'United Kingdom');
 
   static const List<Country> all = <Country>[
-    // Country(code: 'EN', name: 'England'),
-    // Country(code: 'SC', name: 'Scotland'),
-    // Country(code: 'WA', name: 'Wales'),
-    // Country(code: 'NI', name: 'Northern Ireland'),
-
+    // The four UK nations first (SC / NI would clash with Seychelles /
+    // Nicaragua, so they use ISO 3166-2 style codes).
+    england,
+    scotland,
+    wales,
+    northernIreland,
     unitedKingdom,
     india,
 

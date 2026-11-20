@@ -36,12 +36,20 @@ class ApiSkillsRepository implements SkillsRepository {
 
     final all = <Drill>[];
     final seen = <int>{};
+    ApiResponse<List<Drill>>? firstFailure;
     for (final r in results) {
-      if (!r.success) return r; // includes "Subscription required"
+      if (!r.success) {
+        // "Subscription required" must reach the screen so it can open the
+        // paywall; any other single failure must not hide the other areas.
+        if (r.isSubscriptionRequired) return r;
+        firstFailure ??= r;
+        continue;
+      }
       for (final d in r.data ?? const <Drill>[]) {
         if (seen.add(d.id)) all.add(d);
       }
     }
+    if (all.isEmpty && firstFailure != null) return firstFailure;
     return ApiResponse<List<Drill>>(success: true, message: '', data: all);
   }
 

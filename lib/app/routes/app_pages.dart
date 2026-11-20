@@ -2,6 +2,7 @@ import 'package:ecoach_pro/features/ai_session/presentation/bindings/ai_session_
 import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_home_page.dart';
 import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_building_page.dart';
 import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_result_page.dart';
+import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_complete_page.dart';
 import 'package:ecoach_pro/features/ai_session/presentation/pages/ai_player_page.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/chats_page.dart';
 import 'package:ecoach_pro/features/coach_portal/presentation/pages/summary_page.dart';
@@ -83,6 +84,7 @@ import 'package:ecoach_pro/features/stats/presentation/pages/trophy_detail_page.
 import 'package:ecoach_pro/features/stats/presentation/pages/trophy_room_page.dart';
 import 'package:ecoach_pro/features/stats/presentation/pages/trophy_store_page.dart';
 import 'package:ecoach_pro/features/training/presentation/bindings/training_binding.dart';
+import 'package:ecoach_pro/features/training/presentation/pages/training_complete_page.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_detail_page.dart';
 import 'package:ecoach_pro/features/training/presentation/pages/training_page.dart';
 
@@ -201,7 +203,14 @@ abstract final class AppPages {
       page: () => const TrainingDetailPage(),
       binding: TrainingDetailBinding(),
       transition: Transition.cupertino,
-    ), 
+    ),
+    GetPage<void>(
+      name: AppRoutes.trainingComplete,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const TrainingCompletePage(),
+      binding: TrainingCompleteBinding(),
+      transition: Transition.cupertino,
+    ),
     GetPage<void>(
       name: AppRoutes.fun,
       middlewares: <GetMiddleware>[AuthMiddleware()],
@@ -468,6 +477,12 @@ abstract final class AppPages {
       middlewares: <GetMiddleware>[AuthMiddleware()],
       page: () => const AiPlayerPage(),
       binding: AiPlayerBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<void>(
+      name: AppRoutes.aiComplete,
+      middlewares: <GetMiddleware>[AuthMiddleware()],
+      page: () => const AiCompletePage(),
       transition: Transition.cupertino,
     ),
   ];

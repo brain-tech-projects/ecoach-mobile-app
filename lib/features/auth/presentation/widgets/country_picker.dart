@@ -41,11 +41,7 @@ class CountryField extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   width: 18 * s,
-                  child: Text(
-                    country.flag,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 15 * s, height: 1.2),
-                  ),
+                  child: CountryFlag(country: country, size: 15 * s),
                 ),
                 SizedBox(width: 10 * s),
                 Expanded(
@@ -104,17 +100,33 @@ class CountryPickerSheet extends StatefulWidget {
 class _CountryPickerSheetState extends State<CountryPickerSheet> {
   String _query = '';
 
+  /// Lower-case, accent-free text so "cote" finds "Côte d'Ivoire".
+  static String _fold(String v) {
+    const from = 'àáâãäåçèéêëìíîïñòóôõöùúûüýÿ';
+    const to = 'aaaaaaceeeeiiiinooooouuuuyy';
+    final b = StringBuffer();
+    for (final ch in v.toLowerCase().split('')) {
+      final k = from.indexOf(ch);
+      b.write(k == -1 ? ch : to[k]);
+    }
+    return b.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = widget.scale;
-    final q = _query.trim().toLowerCase();
+    final q = _fold(_query.trim());
     final items = Countries.all
-        .where((c) => c.name.toLowerCase().contains(q))
+        .where((c) => _fold(c.name).contains(q))
         .toList(growable: false);
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: SizedBox(
+      // SafeArea keeps the list clear of the Android 3-button / gesture bar
+      // and the iOS home indicator.
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.7,
         child: Column(
           children: <Widget>[
@@ -164,7 +176,7 @@ class _CountryPickerSheetState extends State<CountryPickerSheet> {
                   return ListTile(
                     onTap: () => Navigator.of(context).pop(c),
                     contentPadding: EdgeInsets.symmetric(horizontal: 22 * s),
-                    leading: Text(c.flag, style: TextStyle(fontSize: 22 * s)),
+                    leading: CountryFlag(country: c, size: 22 * s),
                     title: Text(
                       c.name,
                       style: AppTextStyles.countryValue.scaled(s),
@@ -178,7 +190,80 @@ class _CountryPickerSheetState extends State<CountryPickerSheet> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
+}
+
+/// Flag of a country. Flag emoji for everything, except Northern Ireland which
+/// has no emoji flag, so its banner is drawn.
+class CountryFlag extends StatelessWidget {
+  const CountryFlag({super.key, required this.country, required this.size});
+
+  final Country country;
+
+  /// Font size of the emoji (the drawn flag is scaled to match).
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    if (country == Countries.northernIreland) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: CustomPaint(
+          size: Size(size * 1.2, size * 0.85),
+          painter: const _NorthernIrelandFlagPainter(),
+        ),
+      );
+    }
+    return Text(
+      country.flag,
+      maxLines: 1,
+      style: TextStyle(fontSize: size, height: 1.2),
+    );
+  }
+}
+
+/// Simplified Ulster Banner: red cross on white, with a red-ringed centre.
+class _NorthernIrelandFlagPainter extends CustomPainter {
+  const _NorthernIrelandFlagPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      Radius.circular(size.height * 0.12),
+    );
+    canvas.save();
+    canvas.clipRRect(rect);
+    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFFFFFFFF));
+
+    final red = Paint()..color = const Color(0xFFC8102E);
+    final arm = size.height * 0.24;
+    canvas.drawRect(
+      Rect.fromLTWH(0, (size.height - arm) / 2, size.width, arm),
+      red,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH((size.width - arm) / 2, 0, arm, size.height),
+      red,
+    );
+
+    final c = size.center(Offset.zero);
+    canvas.drawCircle(c, size.height * 0.26, Paint()..color = const Color(0xFFFFFFFF));
+    canvas.drawCircle(
+      c,
+      size.height * 0.26,
+      Paint()
+        ..color = const Color(0xFFC8102E)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.height * 0.07,
+    );
+    canvas.drawCircle(c, size.height * 0.09, red);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

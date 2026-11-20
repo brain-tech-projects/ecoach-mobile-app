@@ -122,6 +122,19 @@ class SignUpController extends GetxController {
     }
   }
 
+  /// Swipe right -> left. Same rules as the Next button, but the last step
+  /// is never submitted by a swipe (only by the button).
+  void onSwipeNext() {
+    if (isLastStep || isLoading.value) return;
+    onNext();
+  }
+
+  /// Swipe left -> right: previous step only (never leaves the flow).
+  void onSwipeBack() {
+    if (stepIndex.value == 0 || isLoading.value) return;
+    onBack();
+  }
+
   void openSignIn() => Get.offNamed<void>(AppRoutes.signIn);
 
   // ---- Account form ----------------------------------------------------------

@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
 import 'package:ecoach_pro/core/widgets/sub_page_scaffold.dart';
+import 'package:ecoach_pro/core/widgets/swipe_step_detector.dart';
 import 'package:ecoach_pro/features/tracker/domain/entities/tracker_entities.dart';
 import 'package:ecoach_pro/features/tracker/presentation/controllers/match_form_controller.dart';
 import 'package:ecoach_pro/features/tracker/presentation/widgets/form_widgets.dart';
@@ -49,9 +50,13 @@ class MatchFormPage extends GetView<MatchFormController> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  // Each step slides in from the right (Next) or the left
-                  // (Previous); the old one slides out the opposite way.
-                  child: ClipRect(
+                  // Finger swipe: right -> left = Next, left -> right = Previous.
+                  child: SwipeStepDetector(
+                    onNext: controller.swipeNext,
+                    onPrevious: controller.previous,
+                    // Each step slides in from the right (Next) or the left
+                    // (Previous); the old one slides out the opposite way.
+                    child: ClipRect(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 280),
                       switchInCurve: Curves.easeOutCubic,
@@ -123,6 +128,7 @@ class MatchFormPage extends GetView<MatchFormController> {
                           ],
                         ),
                       ),
+                    ),
                     ),
                   ),
                 ),

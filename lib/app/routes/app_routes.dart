@@ -14,6 +14,7 @@ abstract final class AppRoutes {
   static const String training = '/training';
   static const String personalTraining = '/personal-training';
   static const String trainingDetail = '/training-detail';
+  static const String trainingComplete = '/training-complete';
   static const String skills = '/skills';
   static const String fun = '/fun';
   static const String challenges = '/challenges';
@@ -80,4 +81,5 @@ abstract final class AppRoutes {
   static const String aiBuilding = '/ai-session-building';
   static const String aiResult = '/ai-session-result';
   static const String aiPlayer = '/ai-session-player';
+  static const String aiComplete = '/ai-session-complete';
 }

@@ -305,6 +305,15 @@ class ApiService {
     );
   }
 
+  /// "Training Complete" on a level video (unlocks the next one after its delay).
+  Future<ApiResponse<void>> markTrainingVideoCompleted(int trainingVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.markTrainingVideoCompleted,
+      body: <String, dynamic>{'training_video_id': trainingVideoId},
+    );
+    return res.map<void>((_) => null);
+  }
+
   Future<ApiResponse<void>> markSkillVideoCompleted(int skillVideoId) async {
     final res = await _network.post(
       ApiEndpoints.markSkillVideoCompleted,

@@ -125,7 +125,10 @@ class DashboardPage extends GetView<DashboardController> {
     return parts.isEmpty || parts.first.isEmpty ? full : parts.first;
   }
 
-  static String? _flag(String? code) => (code == null || code.length != 2) ? null : Country(code: code, name: '').flag;
+  static String? _flag(String? code) {
+    final f = Country.flagOf(code);
+    return f.isEmpty ? null : f;
+  }
 }
 
 class _ErrorView extends StatelessWidget {

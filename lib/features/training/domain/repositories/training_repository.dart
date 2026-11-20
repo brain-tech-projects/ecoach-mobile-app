@@ -6,4 +6,7 @@ abstract interface class TrainingRepository {
   Future<ApiResponse<TrainingOverview>> fetchLevels();
 
   Future<ApiResponse<List<TrainingVideo>>> fetchVideos(int levelId);
+
+  /// Marks a level video as completed ("Training Complete").
+  Future<ApiResponse<void>> completeVideo(int videoId);
 }

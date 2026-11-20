@@ -56,12 +56,16 @@ class AppPrimaryButton extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 52 * scale),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: labelStyle.scaled(scale),
+                  // Shrinks a long label to fit instead of cutting it with "...".
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      softWrap: false,
+                      textAlign: TextAlign.center,
+                      style: labelStyle.scaled(scale),
+                    ),
                   ),
                 ),
                 Positioned(

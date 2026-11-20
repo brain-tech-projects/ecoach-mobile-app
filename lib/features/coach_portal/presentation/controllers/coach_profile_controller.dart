@@ -69,7 +69,7 @@ class CoachProfileController extends GetxController {
       team.text = (j['my_club'] ?? '').toString();
       position.text = (j['my_position'] ?? '').toString();
       final code = (j['country_code'] ?? '').toString();
-      if (code.length == 2) country.value = code;
+      if (code.length == 2 || code.startsWith('GB-')) country.value = code;
       dob.value = DateTime.tryParse('${j['dob'] ?? ''}');
       photoUrl.value = Env.skillMediaUrl(j['profile_photo'] as String?);
       displayName.value = fullName.text;

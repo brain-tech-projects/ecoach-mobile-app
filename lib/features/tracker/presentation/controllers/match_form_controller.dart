@@ -118,6 +118,13 @@ class MatchFormController extends GetxController {
     _recompute();
   }
 
+  /// Swipe right -> left: same rules as Next, but the last step is only
+  /// finished with the Finish button (a swipe never saves).
+  void swipeNext() {
+    if (saving.value || step.value >= total - 1) return;
+    next();
+  }
+
   void previous() {
     if (step.value == 0) return;
     _closeKeyboardAndMenus();

@@ -44,9 +44,13 @@ class SubPageScaffold extends StatelessWidget {
     final keyboardOpen =
         MediaQuery.viewInsetsOf(context).bottom > 0 || !showNav;
     final navBottom = math.max(8.7 * s, r.safeBottom);
-    final navSpace = keyboardOpen
+    final navSpace = MediaQuery.viewInsetsOf(context).bottom > 0
         ? 0.0
-        : AppBottomNav.designHeight * s + navBottom + 8 * s;
+        : !showNav
+            // No tab bar on this page: still keep content above the system
+            // navigation bar (Android 3-button / gesture, iOS home indicator).
+            ? r.safeBottom
+            : AppBottomNav.designHeight * s + navBottom + 8 * s;
 
     return Scaffold(
       backgroundColor: AppColors.headerBg,

@@ -8,6 +8,79 @@ int _int(Object? v) => v is int ? v : int.tryParse('${v ?? 0}') ?? 0;
 /// "Top Tip: ...\r\n\r\nFocus: ..." -> one tidy line of text.
 String _oneLine(Object? v) => (v ?? '').toString().replaceAll(RegExp(r'\s+'), ' ').trim();
 
+/// HTML (or plain text) -> plain text with one line break per block.
+String _stripHtml(Object? v) {
+  // A JSON list ("top_tip": ["Keep your head up"]) is joined, never printed
+  // with its square brackets.
+  var t = v is List
+      ? v.map((e) => e is Map ? (e['text'] ?? e['title'] ?? e['name'] ?? '') : e).where((e) => '$e'.trim().isNotEmpty).join('\n')
+      : (v ?? '').toString();
+  if (t.isEmpty) return '';
+  t = t
+      .replaceAll(RegExp(r'<\s*br\s*/?\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<\s*/\s*(li|p|div|ul|ol|h[1-6])\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'");
+  return t;
+}
+
+/// First non-empty value among [keys] of [json] (as plain text).
+String _firstText(Map<String, dynamic> json, List<String> keys) {
+  for (final k in keys) {
+    final t = _oneLine(_stripHtml(json[k]));
+    if (t.isNotEmpty) return t;
+  }
+  return '';
+}
+
+/// The bullet list of the detail screen: a JSON list, or one text with a
+/// line (or `<li>`) per point. Empty when the API sends none.
+List<String> _bullets(Map<String, dynamic> json, List<String> keys) {
+  for (final k in keys) {
+    final v = json[k];
+    final out = <String>[];
+    if (v is List) {
+      for (final e in v) {
+        final raw = e is Map ? (e['text'] ?? e['title'] ?? e['description'] ?? e['name'] ?? '') : e;
+        out.addAll(_splitPoints(raw));
+      }
+    } else if (v is String) {
+      out.addAll(_splitPoints(v));
+    }
+    if (out.isNotEmpty) return out;
+  }
+  // Fallback: any other field whose name says it is a list of points / steps.
+  for (final e in json.entries) {
+    final k = e.key.toLowerCase();
+    if (k.contains('reward') || k.contains('top_tip') || k.contains('categories') || k.contains('equipment')) continue;
+    if (!(k.contains('instruction') || k.contains('point') || k.contains('step') || k.contains('bullet') || k.contains('detail'))) continue;
+    if (e.value is! List && e.value is! String) continue;
+    final out = <String>[];
+    final v = e.value;
+    if (v is List) {
+      for (final x in v) {
+        out.addAll(_splitPoints(x is Map ? (x['text'] ?? x['title'] ?? x['description'] ?? '') : x));
+      }
+    } else {
+      out.addAll(_splitPoints(v));
+    }
+    if (out.isNotEmpty) return out;
+  }
+  return const <String>[];
+}
+
+List<String> _splitPoints(Object? raw) =>
+    _stripHtml(raw)
+        .split(RegExp(r'[\r\n]+'))
+        .map((l) => l.replaceFirst(RegExp(r'^[\s•·▪●◦\-\*]+'), '').replaceAll(RegExp(r'\s+'), ' ').trim())
+        .where((l) => l.isNotEmpty)
+        .toList(growable: false);
+
 String _join(Object? v) => v is List ? v.map((e) => e.toString()).join(', ') : '';
 
 /// A skill area (Dribbling, Ball Mastery...) from `GET /skill-types`.
@@ -31,7 +104,7 @@ class SkillCategory {
   bool get isAll => id == 0;
 
   /// "What's New & Open Access" (free drills, opened from Home).
-  static const SkillCategory openAccess = SkillCategory(id: -1, name: 'My Skills');
+  static const SkillCategory openAccess = SkillCategory(id: -1, name: 'All Skills');
 
   bool get isOpenAccess => id == -1;
 }
@@ -48,6 +121,9 @@ class Drill {
     this.videoUrl = '',
     this.focus = '',
     this.equipment = '',
+    this.topTip = '',
+    this.instructions = const <String>[],
+    this.categoryId = 0,
     this.views = 0,
     this.points = 0,
     this.completed = false,
@@ -60,7 +136,19 @@ class Drill {
   factory Drill.fromJson(Map<String, dynamic> json) => Drill(
     id: _int(json['id']),
     title: (json['title'] ?? '').toString(),
-    description: _oneLine(json['description']),
+    description: _oneLine(_stripHtml(json['description'])),
+    topTip: _firstText(json, const <String>['top_tip', 'toptip', 'topTip', 'tip']),
+    instructions: _bullets(json, const <String>[
+      'instructions',
+      'instruction',
+      'key_points',
+      'bullet_points',
+      'bullets',
+      'steps',
+      'how_to',
+      'details',
+    ]),
+    categoryId: _int(json['skill_type_id']),
     thumbnail: Env.skillMediaUrl(json['image'] as String?) ?? '',
     videoUrl: Env.skillMediaUrl(json['video'] as String?) ?? '',
     focus: _join(json['categories']),
@@ -81,6 +169,15 @@ class Drill {
   final String videoUrl;
   final String focus;
   final String equipment;
+
+  /// "Top Tip" chip of the detail screen ('' = none).
+  final String topTip;
+
+  /// Bullet points shown in the box under the tip (empty = no box).
+  final List<String> instructions;
+
+  /// Skill area this drill belongs to (`skill_type_id`; 0 = not sent).
+  final int categoryId;
   final int views;
   final int points;
   final bool completed;
@@ -102,6 +199,9 @@ class Drill {
     videoUrl: d.videoUrl,
     focus: d.focus,
     equipment: d.equipment,
+    topTip: d.topTip,
+    instructions: d.instructions,
+    categoryId: d.categoryId == 0 ? categoryId : d.categoryId,
     views: d.views,
     points: d.points,
     completed: d.completed,
@@ -119,6 +219,9 @@ class Drill {
     videoUrl: videoUrl,
     focus: focus,
     equipment: equipment,
+    topTip: topTip,
+    instructions: instructions,
+    categoryId: categoryId,
     views: views,
     points: points,
     completed: completed ?? this.completed,

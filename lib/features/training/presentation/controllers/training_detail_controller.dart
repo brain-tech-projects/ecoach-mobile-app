@@ -4,6 +4,7 @@ import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/features/training/domain/entities/training_entities.dart';
 import 'package:ecoach_pro/features/training/domain/repositories/training_repository.dart';
+import 'package:ecoach_pro/features/training/presentation/controllers/training_complete_controller.dart';
 
 /// One level: the player (or the locked preview) + the row of numbered
 /// videos.
@@ -60,6 +61,22 @@ class TrainingDetailController extends GetxController {
 
   /// Locked videos can be selected too: they show the lock + countdown.
   void select(int index) => currentIndex.value = index;
+
+  /// "Training Complete" button: confirm page, then reload so the next video
+  /// shows its unlock countdown.
+  Future<void> openTrainingComplete(TrainingVideo video) async {
+    final i = videos.indexWhere((v) => v.id == video.id);
+    final next = (i != -1 && i + 1 < videos.length) ? videos[i + 1].title : null;
+    final changed = await Get.toNamed<bool>(
+      AppRoutes.trainingComplete,
+      arguments: TrainingCompleteArgs(
+        levelId: level.id,
+        videoId: video.id,
+        nextTitle: next,
+      ),
+    );
+    if (changed == true) await load();
+  }
 
   /// TODO(api): no "complete video" endpoint yet. When it exists, call it
   /// here (points + unlock) and then `load()` to refresh the list.

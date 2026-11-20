@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/painting.dart' show Color;
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
@@ -8,6 +9,7 @@ import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/personal_training/domain/entities/personal_training_player_args.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 import 'package:ecoach_pro/features/skills/domain/repositories/skills_repository.dart';
+import 'package:ecoach_pro/features/skills/presentation/widgets/complete_dialog.dart';
 
 /// "Play All": plays the personal session one video after another with
 /// Previous / Next and a 3 s countdown before the next video starts.
@@ -30,6 +32,7 @@ class PersonalTrainingPlayerController extends GetxController {
   /// Seconds left before the next video (null = no popup).
   final RxnInt countdown = RxnInt();
   final RxnString errorMessage = RxnString();
+  final RxBool isSubmitting = false.obs;
 
   Timer? _timer;
 
@@ -66,6 +69,45 @@ class PersonalTrainingPlayerController extends GetxController {
       if (!isClosed && current.id == drill.id) {
         errorMessage.value = 'Could not load this video.';
       }
+    }
+  }
+
+  /// "Video Complete" for the video on screen (points are earned once).
+  Future<void> onVideoComplete() async {
+    if (isSubmitting.value) return;
+    final drill = current;
+    final confirmed = await Get.dialog<bool>(
+      const CompleteDialog(),
+      barrierColor: const Color(0xB3000000),
+    );
+    if (confirmed != true) return;
+
+    isSubmitting.value = true;
+    try {
+      final res = await _repository.markCompleted(drill.id);
+      if (res.isSubscriptionRequired) {
+        Get.toNamed<void>(AppRoutes.subscription);
+        return;
+      }
+      if (!res.success) {
+        AppToast.error(res.message);
+        return;
+      }
+      final i = drills.indexWhere((d) => d.id == drill.id);
+      if (i >= 0) drills[i] = drills[i].copyWith(completed: true);
+      AppToast.success(res.message);
+      if (drill.points > 0) {
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        AppToast.reward(
+          title: 'Skill Video Completed',
+          message: "You completed '${drill.title}' and earned ${drill.points} points!",
+        );
+      }
+    } catch (error, stackTrace) {
+      AppLogger.error('Player complete failed', error: error, stackTrace: stackTrace);
+      AppToast.error('Could not complete this video. Please try again.');
+    } finally {
+      isSubmitting.value = false;
     }
   }
 

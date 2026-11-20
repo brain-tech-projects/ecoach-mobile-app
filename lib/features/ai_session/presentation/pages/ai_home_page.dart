@@ -47,9 +47,9 @@ class AiHomePage extends GetView<AiHomeController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          AiTag(label: 'eCoach AI', icon: Icons.auto_awesome, scale: s, size: 16),
+                          AiTag(label: 'eCoach AI', icon: Icons.auto_awesome, scale: s, size: 13),
                           SizedBox(height: 10 * s),
-                          Semantics(header: true, child: Text('Hi ${c.firstName}, what do you want to work on today?', style: aiText(s, 26, w: FontWeight.w700, h: 1.3))),
+                          Semantics(header: true, label: 'Hi ${c.firstName}, what do you want to work on today?', child: ExcludeSemantics(child: AiWordByWordText(text: 'Hi ${c.firstName}, what do you want to work on today?', style: aiText(s, 20, w: FontWeight.w700, h: 1.38)))),
                         ],
                       ),
                     ),
@@ -59,10 +59,10 @@ class AiHomePage extends GetView<AiHomeController> {
               SizedBox(height: 6 * s),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPad),
-                child: Text('Tap what you want to improve or type it in your own words. eCoach builds a 4-drill session from the approved training library.', style: aiText(s, 16, c: AppColors.descGrey, h: 1.55)),
+                child: Text('Tap what you want to improve or type it in your own words. eCoach builds a 4-drill session from the approved training library.', style: aiText(s, 14.5, c: AppColors.descGrey, h: 1.5)),
               ),
               SizedBox(height: 26 * s),
-              Padding(padding: EdgeInsets.symmetric(horizontal: hPad), child: Text('What do you want to improve?', style: aiText(s, 17, w: FontWeight.w600))),
+              Padding(padding: EdgeInsets.symmetric(horizontal: hPad), child: Text('What do you want to improve?', style: aiText(s, 14, w: FontWeight.w600))),
               SizedBox(height: 12 * s),
               // ---- chips (horizontal) ----
               SizedBox(
@@ -90,7 +90,7 @@ class AiHomePage extends GetView<AiHomeController> {
                 child: Obx(() => AppPrimaryButton(label: 'Create My Training Session', onPressed: c.create, scale: s * 0.95, enabled: c.canCreate.value)),
               ),
               SizedBox(height: 22 * s),
-              Padding(padding: EdgeInsets.symmetric(horizontal: hPad), child: Text('Or try one of these:', style: aiText(s, 17, w: FontWeight.w600))),
+              Padding(padding: EdgeInsets.symmetric(horizontal: hPad), child: Text('Or try one of these:', style: aiText(s, 14, w: FontWeight.w600))),
               SizedBox(height: 12 * s),
               SizedBox(
                 height: 40 * s,
@@ -139,9 +139,9 @@ class _ImproveChip extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 22 * s),
               child: Row(
                 children: <Widget>[
-                  Text(chip.emoji, style: TextStyle(fontSize: 16 * s)),
+                  Text(chip.emoji, style: TextStyle(fontSize: 15 * s)),
                   SizedBox(width: 14 * s),
-                  Text(chip.label, style: aiText(s, 17, w: FontWeight.w500, c: selected ? AppColors.accent : AppColors.white)),
+                  Text(chip.label, style: aiText(s, 14, w: FontWeight.w500, c: selected ? AppColors.accent : AppColors.white)),
                 ],
               ),
             ),
@@ -175,17 +175,17 @@ class _RequestBox extends StatelessWidget {
             maxLength: AiHomeController.maxLength,
             textCapitalization: TextCapitalization.sentences,
             cursorColor: AppColors.accent,
-            style: aiText(s, 18, h: 1.4),
+            style: aiText(s, 16, h: 1.4),
             buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
             decoration: InputDecoration(
               isCollapsed: true,
               border: InputBorder.none,
               hintText: 'e.g. I want to work on my first touch and shooting.',
-              hintStyle: aiText(s, 18, c: const Color(0xFF8A9AA0), h: 1.4),
+              hintStyle: aiText(s, 16, c: const Color(0xFF8A9AA0), h: 1.4),
             ),
           ),
           SizedBox(height: 10 * s),
-          Align(alignment: Alignment.centerRight, child: Obx(() => Text('${controller.count.value}/${AiHomeController.maxLength}', style: aiText(s, 16, c: AppColors.descGrey)))),
+          Align(alignment: Alignment.centerRight, child: Obx(() => Text('${controller.count.value}/${AiHomeController.maxLength}', style: aiText(s, 13.5, c: AppColors.descGrey)))),
         ],
       ),
     );
@@ -213,7 +213,7 @@ class _SuggestionPill extends StatelessWidget {
             children: <Widget>[
               Icon(Icons.auto_awesome, size: 14 * s, color: AppColors.accent),
               SizedBox(width: 12 * s),
-              Text(text, style: aiText(s, 17, w: FontWeight.w400)),
+              Text(text, style: aiText(s, 14, w: FontWeight.w400)),
             ],
           ),
         ),
@@ -236,9 +236,9 @@ class _PersonalisedCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(label, style: aiText(s, 17, c: AppColors.descGrey)),
+          Text(label, style: aiText(s, 13.5, c: AppColors.descGrey)),
           SizedBox(height: 8 * s),
-          Wrap(spacing: 8 * s, runSpacing: 8 * s, children: <Widget>[for (final e in items) AiTag(label: e, scale: s, size: 17)]),
+          Wrap(spacing: 8 * s, runSpacing: 8 * s, children: <Widget>[for (final e in items) AiTag(label: e, scale: s, size: 12.5)]),
         ],
       ),
     );
@@ -249,7 +249,7 @@ class _PersonalisedCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(children: <Widget>[Icon(Icons.auto_awesome, size: 22 * s, color: AppColors.accent), SizedBox(width: 12 * s), Semantics(header: true, child: Text('Personalised for you', style: aiText(s, 21, w: FontWeight.w600)))]),
+          Row(children: <Widget>[Icon(Icons.auto_awesome, size: 22 * s, color: AppColors.accent), SizedBox(width: 12 * s), Semantics(header: true, child: Text('Personalised for you', style: aiText(s, 15, w: FontWeight.w600)))]),
           SizedBox(height: 14 * s),
           if (p.age.isNotEmpty) group('Age', <String>[p.age]),
           if (p.positions.isNotEmpty) group('Position', p.positions),
@@ -277,23 +277,23 @@ class _RecentCard extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Semantics(header: true, child: Text('Recent AI sessions', style: aiText(s, 21, w: FontWeight.w600))),
+            Semantics(header: true, child: Text('Recent AI sessions', style: aiText(s, 15, w: FontWeight.w600))),
             SizedBox(height: 16 * s),
             if (controller.loading.value)
               Padding(padding: EdgeInsets.symmetric(vertical: 24 * s), child: const Center(child: CircularProgressIndicator(color: AppColors.accent)))
             else if (items.isEmpty)
-              Text('No sessions yet. Create your first one above.', style: aiText(s, 16, c: AppColors.descGrey))
+              Text('No sessions yet. Create your first one above.', style: aiText(s, 14, c: AppColors.descGrey))
             else
               for (final e in items)
                 Padding(
                   padding: EdgeInsets.only(bottom: 16 * s),
-                  child: _RecentItem(item: e, scale: s, onOpen: () => controller.open(e), onNew: () => controller.newVersion(e)),
+                  child: _RecentItem(item: e, scale: s, opening: controller.openingId.value == e.id, onOpen: () => controller.open(e), onNew: () => controller.newVersion(e)),
                 ),
             if (controller.hiddenCount > 0)
               Center(
                 child: TextButton(
                   onPressed: controller.toggleMore,
-                  child: Text(controller.expanded.value ? 'Show less' : 'Show more (${controller.hiddenCount})', style: aiText(s, 18, w: FontWeight.w600, c: AppColors.accent)),
+                  child: Text(controller.expanded.value ? 'Show less' : 'Show more (${controller.hiddenCount})', style: aiText(s, 14, w: FontWeight.w600, c: AppColors.accent)),
                 ),
               ),
           ],
@@ -304,7 +304,8 @@ class _RecentCard extends StatelessWidget {
 }
 
 class _RecentItem extends StatelessWidget {
-  const _RecentItem({required this.item, required this.scale, required this.onOpen, required this.onNew});
+  const _RecentItem({required this.item, required this.scale, required this.onOpen, required this.onNew, this.opening = false});
+  final bool opening;
   final AiSessionSummary item;
   final double scale;
   final VoidCallback onOpen;
@@ -320,13 +321,13 @@ class _RecentItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('"${item.request}"', style: aiText(s, 19, w: FontWeight.w500, h: 1.45)),
+          Text('"${item.request}"', style: aiText(s, 14.5, w: FontWeight.w500, h: 1.45)),
           SizedBox(height: 8 * s),
-          Text('${item.when}  •  ${item.drills} drills  •  ${item.mins} mins', style: aiText(s, 17, c: AppColors.descGrey)),
+          Text('${item.when}  •  ${item.drills} drills  •  ${item.mins} mins', style: aiText(s, 14, c: AppColors.descGrey)),
           SizedBox(height: 14 * s),
           Row(
             children: <Widget>[
-              Expanded(flex: 4, child: AiFilledButton(label: 'Open', icon: Icons.play_arrow_rounded, onTap: onOpen, scale: s)),
+              Expanded(flex: 4, child: AiFilledButton(label: opening ? 'Opening...' : 'Open', icon: opening ? null : Icons.play_arrow_rounded, onTap: opening ? null : onOpen, scale: s)),
               SizedBox(width: 8 * s),
               Expanded(flex: 5, child: AiOutlineButton(label: 'New version', onTap: onNew, scale: s)),
             ],

@@ -7,11 +7,12 @@ import 'package:ecoach_pro/core/utils/responsive.dart';
 import 'package:ecoach_pro/core/widgets/app_primary_button.dart';
 import 'package:ecoach_pro/core/widgets/sub_page_scaffold.dart';
 import 'package:ecoach_pro/core/widgets/video/app_video_player.dart';
+import 'package:ecoach_pro/core/widgets/video/video_info_section.dart';
 import 'package:ecoach_pro/features/skills/presentation/controllers/skill_detail_controller.dart';
 import 'package:ecoach_pro/features/skills/presentation/widgets/drill_menu.dart';
 
-/// One drill: video (with the "⋮" menu), description, focus, equipment and
-/// "Video Complete".
+/// One drill: video (with the "⋮" menu), description, top tip, bullet box
+/// and "Video Complete" - all content comes from the API.
 class SkillDetailPage extends GetView<SkillDetailController> {
   const SkillDetailPage({super.key});
 
@@ -99,53 +100,16 @@ class SkillDetailPage extends GetView<SkillDetailController> {
                 ],
               ),
               SizedBox(height: 15.5 * s),
-              Text(drill.title, style: AppTextStyles.sectionHeading.scaled(s)),
-              if (drill.description.isNotEmpty) ...<Widget>[
-                SizedBox(height: 8.2 * s),
-                Text(drill.description, style: AppTextStyles.detailDesc.scaled(s)),
-              ],
-              if (drill.focus.isNotEmpty) ...<Widget>[
-                SizedBox(height: 29.6 * s),
-                Text.rich(
-                  TextSpan(
-                    text: 'Focus:',
-                    style: AppTextStyles.infoLabel.scaled(s),
-                    children: <InlineSpan>[
-                      TextSpan(
-                        text: '  ${drill.focus}',
-                        style: AppTextStyles.infoValue.scaled(s),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              if (drill.equipment.isNotEmpty) ...<Widget>[
-                SizedBox(height: 14 * s),
-                Container(
-                  constraints: BoxConstraints(minHeight: 68.3 * s),
-                  padding: EdgeInsets.fromLTRB(17.3 * s, 14 * s, 17.3 * s, 14 * s),
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    border: Border.all(color: AppColors.cardBorder),
-                    borderRadius: BorderRadius.circular(10.5 * s),
-                  ),
-                  child: Text.rich(
-                    TextSpan(
-                      text: 'Equipment:',
-                      style: AppTextStyles.infoLabel.scaled(s),
-                      children: <InlineSpan>[
-                        TextSpan(
-                          text: '  ${drill.equipment}',
-                          style: AppTextStyles.infoValue.scaled(s),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              VideoInfoSection(
+                title: drill.title,
+                description: drill.description,
+                topTip: drill.topTip,
+                points: drill.instructions,
+                scale: s,
+              ),
               SizedBox(height: 24.3 * s),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 49 * s),
+                padding: EdgeInsets.symmetric(horizontal: 32 * s),
                 child: AppPrimaryButton(
                   label: 'Video Complete',
                   loading: controller.isSubmitting.value,

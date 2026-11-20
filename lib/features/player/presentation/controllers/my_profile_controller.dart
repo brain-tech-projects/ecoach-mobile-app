@@ -29,7 +29,7 @@ class MyProfileController extends GetxController {
   final RxList<String> positions = <String>[].obs;
   final RxList<String> levels = <String>[].obs;
   final RxList<String> improve = <String>[].obs;
-  final RxnString biggestDifference = RxnString();
+  final RxList<String> biggestDifference = <String>[].obs;
   final RxnString frequency = RxnString();
   final Rxn<DateTime> dob = Rxn<DateTime>();
 
@@ -63,7 +63,7 @@ class MyProfileController extends GetxController {
       positions.assignAll(p.positions);
       levels.assignAll(p.levels);
       improve.assignAll(p.improve);
-      biggestDifference.value = p.biggestDifference;
+      biggestDifference.assignAll(p.biggestDifference);
       frequency.value = p.frequency;
       dob.value = p.dateOfBirth;
     } catch (error, stackTrace) {
@@ -112,7 +112,7 @@ class MyProfileController extends GetxController {
       positions: List<String>.of(positions),
       levels: List<String>.of(levels),
       improve: List<String>.of(improve),
-      biggestDifference: biggestDifference.value,
+      biggestDifference: List<String>.of(biggestDifference),
       frequency: frequency.value,
       dateOfBirth: dob.value,
       photoAsset: base.photoAsset,

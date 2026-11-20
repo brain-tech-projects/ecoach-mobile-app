@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
 import 'package:ecoach_pro/core/widgets/app_primary_button.dart';
 import 'package:ecoach_pro/core/widgets/sub_page_scaffold.dart';
 import 'package:ecoach_pro/core/widgets/video/app_video_player.dart';
+import 'package:ecoach_pro/core/widgets/video/video_info_section.dart';
 import 'package:ecoach_pro/features/coach/presentation/controllers/coach_training_detail_controller.dart';
 
 /// One coach-assigned training: video + "Video Complete".
@@ -33,10 +33,16 @@ class CoachTrainingDetailPage extends GetView<CoachTrainingDetailController> {
               scale: s,
             ),
             SizedBox(height: 15.5 * s),
-            Text(training.title, style: AppTextStyles.sectionHeading.scaled(s)),
+            VideoInfoSection(
+              title: training.title,
+              description: training.description,
+              topTip: training.topTip,
+              points: training.instructions,
+              scale: s,
+            ),
             SizedBox(height: 32.7 * s),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 49 * s),
+              padding: EdgeInsets.symmetric(horizontal: 32 * s),
               child: Obx(
                 () => AppPrimaryButton(
                   label: 'Video Complete',

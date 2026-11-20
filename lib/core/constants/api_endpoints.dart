@@ -19,6 +19,8 @@ abstract final class ApiEndpoints {
   // Training
   static const String trainingTypes = '/training-types';
   static const String trainingVideos = '/training-videos';
+  // TODO(api): confirm the real endpoint name for finishing a training video.
+  static const String markTrainingVideoCompleted = '/mark-training-video-completed';
 
   // Skills
   static const String skillTypes = '/skill-types';

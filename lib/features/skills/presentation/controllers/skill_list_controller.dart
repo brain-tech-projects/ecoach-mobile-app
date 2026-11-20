@@ -29,7 +29,13 @@ class SkillListController extends GetxController {
     load();
   }
 
+  /// Bumped on every load: an older, slower response never overwrites the
+  /// list of the skill area that is on screen.
+  int _loadToken = 0;
+  bool _opening = false;
+
   Future<void> load() async {
+    final token = ++_loadToken;
     isLoading.value = true;
     errorMessage.value = null;
     try {
@@ -38,6 +44,7 @@ class SkillListController extends GetxController {
           : category.isAll
           ? await _repository.fetchAllDrills()
           : await _repository.fetchDrills(category.id);
+      if (token != _loadToken || isClosed) return;
       if (res.isSubscriptionRequired) {
         Get.offNamed<void>(AppRoutes.subscription);
         return;
@@ -46,19 +53,36 @@ class SkillListController extends GetxController {
         errorMessage.value = res.message;
         return;
       }
-      drills.assignAll(res.data ?? const <Drill>[]);
+      drills.assignAll(_onlyThisArea(res.data ?? const <Drill>[]));
     } catch (error, stackTrace) {
+      if (token != _loadToken || isClosed) return;
       AppLogger.error('Drills load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load the drills.';
     } finally {
-      isLoading.value = false;
+      if (token == _loadToken) isLoading.value = false;
     }
   }
 
+  /// A specific skill area (Dribbling, Shooting...) only shows its own
+  /// drills. When the API tags drills with their area, any stray drill of
+  /// another area is dropped; All Skills / My Skills show everything.
+  List<Drill> _onlyThisArea(List<Drill> list) {
+    if (category.isAll || category.isOpenAccess) return list;
+    return list
+        .where((d) => d.categoryId == 0 || d.categoryId == category.id)
+        .toList(growable: false);
+  }
+
   Future<void> openDrill(Drill drill) async {
-    await Get.toNamed<void>(AppRoutes.skillDetail, arguments: drill);
+    if (_opening) return; // ignore a double tap
+    _opening = true;
+    try {
+      await Get.toNamed<void>(AppRoutes.skillDetail, arguments: drill);
+    } finally {
+      _opening = false;
+    }
     // Views / completion may have changed.
-    load();
+    if (!isClosed) load();
   }
 
   void _replace(Drill updated) {

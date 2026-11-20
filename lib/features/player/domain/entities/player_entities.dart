@@ -1,8 +1,11 @@
 import 'package:ecoach_pro/features/auth/data/countries_data.dart';
+import 'package:ecoach_pro/features/auth/domain/entities/country.dart';
 import 'package:ecoach_pro/features/auth/data/signup_content.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/signup_step.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:ecoach_pro/app/routes/app_routes.dart';
 
 /// Editable "My Profile" data.
 @immutable
@@ -19,7 +22,7 @@ class PlayerProfile {
     this.positions = const <String>[],
     this.levels = const <String>[],
     this.improve = const <String>[],
-    this.biggestDifference,
+    this.biggestDifference = const <String>[],
     this.frequency,
     this.dateOfBirth,
     this.photoAsset,
@@ -38,7 +41,7 @@ class PlayerProfile {
   final List<String> positions;
   final List<String> levels;
   final List<String> improve;
-  final String? biggestDifference;
+  final List<String> biggestDifference;
   final String? frequency;
   final DateTime? dateOfBirth;
   final String? photoAsset;
@@ -66,7 +69,7 @@ abstract final class ProfileOptions {
   static final Map<String, String> countries = <String, String>{for (final c in Countries.all) c.code: c.name};
 
   /// "ZW" -> 🇿🇼
-  static String flag(String code) => code.length != 2 ? '' : String.fromCharCodes(code.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 0x41));
+  static String flag(String code) => Country.flagOf(code);
 }
 
 /// A drill saved to My Skills.
@@ -112,17 +115,101 @@ class ChatMessage {
   final MessageStatus status;
 }
 
-enum NotificationKind { skillVideo, quiz, other }
+/// What a notification is about. Decides the icon and the screen it opens.
+enum NotificationKind {
+  trainingVideo,
+  personalTraining,
+  skillVideo,
+  quiz,
+  challenge,
+  coachTraining,
+  coachInvitation,
+  chat,
+  trophy,
+  tracker,
+  subscription,
+  other;
+
+  /// Reads the API `redirect_type` first; when it is empty or unknown the
+  /// title / description wording is used ("New skills video added" ...).
+  static NotificationKind resolve({String? redirectType, String title = '', String body = ''}) {
+    final byType = _match((redirectType ?? '').toLowerCase());
+    if (byType != NotificationKind.other) return byType;
+    return _match('${title.toLowerCase()} ${body.toLowerCase()}');
+  }
+
+  static NotificationKind _match(String t) {
+    if (t.trim().isEmpty) return NotificationKind.other;
+    bool has(List<String> words) => words.any(t.contains);
+
+    if (has(<String>['coach'])) {
+      if (has(<String>['invit', 'connect', 'request'])) return NotificationKind.coachInvitation;
+      return NotificationKind.coachTraining;
+    }
+    if (has(<String>['quiz'])) return NotificationKind.quiz;
+    if (has(<String>['challenge'])) return NotificationKind.challenge;
+    if (has(<String>['chat', 'message'])) return NotificationKind.chat;
+    if (has(<String>['trophy', 'trophies', 'point', 'reward'])) return NotificationKind.trophy;
+    if (has(<String>['rating', 'match', 'tracker'])) return NotificationKind.tracker;
+    if (has(<String>['subscription', 'plan', 'premium'])) return NotificationKind.subscription;
+    if (has(<String>['personal'])) return NotificationKind.personalTraining;
+    if (has(<String>['skill'])) return NotificationKind.skillVideo;
+    if (has(<String>['training', 'video', 'level'])) return NotificationKind.trainingVideo;
+    return NotificationKind.other;
+  }
+
+  /// Named route opened when the row is tapped (null = nothing to open).
+  String? get route {
+    switch (this) {
+      case NotificationKind.trainingVideo:
+        return AppRoutes.training; // My Training
+      case NotificationKind.personalTraining:
+        return AppRoutes.personalTraining;
+      case NotificationKind.skillVideo:
+        return AppRoutes.mySkills; // My Skills
+      case NotificationKind.quiz:
+        return AppRoutes.quizzes;
+      case NotificationKind.challenge:
+        return AppRoutes.challenges;
+      case NotificationKind.coachTraining:
+        return AppRoutes.coachTraining;
+      case NotificationKind.coachInvitation:
+        return AppRoutes.coachInvitation;
+      case NotificationKind.chat:
+        return AppRoutes.chats;
+      case NotificationKind.trophy:
+        return AppRoutes.trophyRoom;
+      case NotificationKind.tracker:
+        return AppRoutes.ratingTracker;
+      case NotificationKind.subscription:
+        return AppRoutes.subscription;
+      case NotificationKind.other:
+        return null;
+    }
+  }
+}
 
 @immutable
 class AppNotification {
-  const AppNotification({required this.id, required this.kind, required this.title, required this.body, required this.createdAt});
+  const AppNotification({
+    required this.id,
+    required this.kind,
+    required this.title,
+    required this.body,
+    required this.createdAt,
+    this.redirectType = '',
+    this.redirectId,
+  });
 
   final String id;
   final NotificationKind kind;
   final String title;
   final String body;
   final DateTime createdAt;
+
+  /// Raw API values, kept for deep links that need the id.
+  final String redirectType;
+  final String? redirectId;
 }
 
 /// Date helpers shared by Notes / Chat / Notifications.

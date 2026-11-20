@@ -47,7 +47,7 @@ class ApiPlayerRepository implements PlayerRepository {
       positions: _strings(j['playing_position']),
       levels: _strings(j['skill_level']),
       improve: _strings(j['improve_areas']),
-      biggestDifference: biggest.isEmpty ? null : biggest.first,
+      biggestDifference: biggest,
       frequency: frequency.isEmpty ? null : frequency.first,
       dateOfBirth: DateTime.tryParse('${j['dob'] ?? ''}'),
       photoUrl: Env.skillMediaUrl(j['profile_photo'] as String?),
@@ -74,9 +74,7 @@ class ApiPlayerRepository implements PlayerRepository {
       'playing_position': p.positions,
       'skill_level': p.levels,
       'improve_areas': p.improve,
-      'biggest_difference': <String>[
-        if (p.biggestDifference != null) p.biggestDifference!,
-      ],
+      'biggest_difference': p.biggestDifference,
       'training_frequency': <String>[
         if (p.frequency != null) p.frequency!,
       ],
@@ -234,23 +232,26 @@ class ApiPlayerRepository implements PlayerRepository {
     final d = res.data;
     if (d is! List) return const <AppNotification>[];
 
-    NotificationKind kind(Object? type) {
-      final t = '${type ?? ''}'.toLowerCase();
-      if (t.contains('skill')) return NotificationKind.skillVideo;
-      if (t.contains('quiz')) return NotificationKind.quiz;
-      return NotificationKind.other;
-    }
-
     return <AppNotification>[
       for (final n in d.whereType<Map>())
-        AppNotification(
-          id: '${n['id']}',
-          kind: kind(n['redirect_type']),
-          title: (n['title'] ?? '').toString(),
-          body: (n['description'] ?? '').toString(),
-          createdAt: _date(n['created_at']),
-        ),
+        _notification(Map<String, dynamic>.from(n)),
     ];
+  }
+
+  AppNotification _notification(Map<String, dynamic> n) {
+    final type = '${n['redirect_type'] ?? n['type'] ?? ''}';
+    final title = (n['title'] ?? '').toString();
+    final body = (n['description'] ?? '').toString();
+    final redirectId = n['redirect_id'] ?? n['reference_id'];
+    return AppNotification(
+      id: '${n['id']}',
+      kind: NotificationKind.resolve(redirectType: type, title: title, body: body),
+      title: title,
+      body: body,
+      createdAt: _date(n['created_at']),
+      redirectType: type,
+      redirectId: redirectId == null ? null : '$redirectId',
+    );
   }
 
   @override

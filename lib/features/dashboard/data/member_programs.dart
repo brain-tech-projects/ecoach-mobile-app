@@ -60,7 +60,8 @@ abstract final class MemberPrograms {
     Program(
       id: 'coaches-training',
       title: 'My Coaches Training',
-      description: 'If you are linked to a team the sessions from your coach '
+      description:
+          'If you are linked to a team the sessions from your coach '
           'will appear here',
       thumbnail: AppAssets.programIconCoaches,
       route: AppRoutes.coachTraining,

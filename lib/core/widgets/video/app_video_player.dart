@@ -24,6 +24,7 @@ class AppVideoPlayer extends StatefulWidget {
     required this.height,
     required this.scale,
     this.posterAsset,
+    this.posterUrl,
     this.autoPlay = false,
     this.onEnded,
   });
@@ -34,6 +35,9 @@ class AppVideoPlayer extends StatefulWidget {
   final double height;
   final double scale;
   final String? posterAsset;
+
+  /// Network poster, shown like [posterAsset] until playback starts.
+  final String? posterUrl;
   final bool autoPlay;
   final VoidCallback? onEnded;
 
@@ -236,12 +240,20 @@ class _AppVideoPlayerState extends State<AppVideoPlayer>
             final started =
                 v.isInitialized && (v.isPlaying || v.position > Duration.zero);
             final poster = widget.posterAsset;
+            final posterUrl = widget.posterUrl;
+            final hasPoster = poster != null || posterUrl != null;
             return Stack(
               fit: StackFit.expand,
               children: <Widget>[
                 if (!started && poster != null)
-                  Image.asset(poster, fit: BoxFit.cover),
-                if ((!v.isInitialized && poster == null) ||
+                  Image.asset(poster, fit: BoxFit.cover)
+                else if (!started && posterUrl != null)
+                  Image.network(
+                    posterUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
+                if ((!v.isInitialized && !hasPoster) ||
                     (v.isBuffering && started))
                   const Center(
                     child: CircularProgressIndicator(color: AppColors.accent),

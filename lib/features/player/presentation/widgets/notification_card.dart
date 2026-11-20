@@ -5,10 +5,11 @@ import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/features/player/domain/entities/player_entities.dart';
 
 class NotificationCard extends StatelessWidget {
-  const NotificationCard({super.key, required this.item, required this.scale});
+  const NotificationCard({super.key, required this.item, required this.scale, this.onTap});
 
   final AppNotification item;
   final double scale;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +17,14 @@ class NotificationCard extends StatelessWidget {
     final ago = PlayerFormat.ago(item.createdAt);
     return Semantics(
       container: true,
+      button: onTap != null,
+      onTap: onTap,
       label: '${item.title}. ${item.body}. $ago',
       child: ExcludeSemantics(
-        child: Container(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: Container(
           padding: EdgeInsets.symmetric(horizontal: 11 * s, vertical: 9.5 * s),
           decoration: BoxDecoration(
             color: const Color(0xFF183542),
@@ -76,6 +82,7 @@ class NotificationCard extends StatelessWidget {
               ),
             ],
           ),
+          ),
         ),
       ),
     );
@@ -92,6 +99,15 @@ class _KindTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = scale;
     final quiz = kind == NotificationKind.quiz;
+    final IconData icon = switch (kind) {
+      NotificationKind.quiz => Icons.chat_bubble,
+      NotificationKind.chat => Icons.forum_rounded,
+      NotificationKind.trophy => Icons.emoji_events_rounded,
+      NotificationKind.challenge => Icons.flag_rounded,
+      NotificationKind.coachInvitation => Icons.person_add_alt_1_rounded,
+      NotificationKind.tracker => Icons.insights_rounded,
+      _ => Icons.play_arrow_rounded,
+    };
     return Container(
       width: 48 * s,
       height: 48 * s,
@@ -109,7 +125,7 @@ class _KindTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(10 * s),
         ),
         child: Icon(
-          quiz ? Icons.chat_bubble : Icons.play_arrow_rounded,
+          icon,
           size: (quiz ? 20 : 24) * s,
           color: quiz ? AppColors.black : AppColors.white,
         ),

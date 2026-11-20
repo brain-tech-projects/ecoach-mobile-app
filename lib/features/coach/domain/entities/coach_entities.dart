@@ -27,9 +27,17 @@ class AssignedTraining {
     required this.id,
     required this.title,
     required this.videoUrl,
+    this.description = '',
+    this.topTip = '',
+    this.instructions = const <String>[],
   });
 
   final String id;
   final String title;
   final String videoUrl;
+
+  /// Optional extras from the API (empty = not shown).
+  final String description;
+  final String topTip;
+  final List<String> instructions;
 }

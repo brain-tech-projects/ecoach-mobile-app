@@ -49,6 +49,17 @@ class SkillsController extends GetxController {
     }
   }
 
-  void openCategory(SkillCategory category) =>
-      Get.toNamed<void>(AppRoutes.skillList, arguments: category);
+  bool _opening = false;
+
+  /// Opens the drills of exactly the tapped skill area (Dribbling opens
+  /// Dribbling, All Skills opens every drill). A double tap opens it once.
+  Future<void> openCategory(SkillCategory category) async {
+    if (_opening) return;
+    _opening = true;
+    try {
+      await Get.toNamed<void>(AppRoutes.skillList, arguments: category);
+    } finally {
+      _opening = false;
+    }
+  }
 }

@@ -36,11 +36,7 @@ class PersonalTrainingController extends GetxController {
         return;
       }
       // Everything here is in the session, so the menu offers "Remove".
-      drills.assignAll(
-        (res.data ?? const <Drill>[]).map(
-          (d) => d.copyWith(canAddToSession: false),
-        ),
-      );
+      drills.assignAll((res.data ?? const <Drill>[]).map((d) => d.copyWith(canAddToSession: false)));
     } catch (error, stackTrace) {
       AppLogger.error('Personal session load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load your session.';
@@ -57,10 +53,7 @@ class PersonalTrainingController extends GetxController {
   /// Plays the whole session from the first video (Previous / Next, auto-advance).
   void playAll() {
     if (drills.isEmpty) return;
-    Get.toNamed<void>(
-      AppRoutes.personalTrainingPlayer,
-      arguments: PersonalTrainingPlayerArgs(drills: drills.toList()),
-    );
+    Get.toNamed<void>(AppRoutes.personalTrainingPlayer, arguments: PersonalTrainingPlayerArgs(drills: drills.toList()));
   }
 
   void addSkills() => MainNav.onTabSelected(MainNav.skillsIndex);

@@ -44,26 +44,26 @@ class AiResultPage extends GetView<AiResultController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('eCoach AI', style: aiText(s, 20, w: FontWeight.w700)),
+                        Text('eCoach AI', style: aiText(s, 15.5, w: FontWeight.w700)),
                         SizedBox(height: 6 * s),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 12 * s, vertical: 6 * s),
                           decoration: BoxDecoration(color: const Color(0xFF14504A), borderRadius: BorderRadius.circular(30 * s)),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[Icon(Icons.verified_user_outlined, size: 16 * s, color: const Color(0xFF7DF58A)), SizedBox(width: 8 * s), Flexible(child: Text('Approved eCoach drills only', style: aiText(s, 15, c: const Color(0xFF7DF58A))))],
+                            children: <Widget>[Icon(Icons.verified_user_outlined, size: 16 * s, color: const Color(0xFF7DF58A)), SizedBox(width: 8 * s), Flexible(child: Text('Approved eCoach drills only', style: aiText(s, 13, c: const Color(0xFF7DF58A))))],
                           ),
                         ),
                         SizedBox(height: 6 * s),
                         Semantics(
                           header: true,
                           child: Text.rich(TextSpan(children: <InlineSpan>[
-                            TextSpan(text: "Here's your session, ", style: aiText(s, 26, w: FontWeight.w700, h: 1.3)),
-                            TextSpan(text: c.firstName, style: aiText(s, 26, w: FontWeight.w700, h: 1.3, c: const Color(0xFF55E39A))),
+                            TextSpan(text: "Here's your session, ", style: aiText(s, 20, w: FontWeight.w700, h: 1.3)),
+                            TextSpan(text: c.firstName, style: aiText(s, 20, w: FontWeight.w700, h: 1.3, c: const Color(0xFF55E39A))),
                           ])),
                         ),
                         SizedBox(height: 8 * s),
-                        Text('"${session.request}"', style: aiText(s, 17, c: AppColors.descGrey, h: 1.45, style: FontStyle.italic)),
+                        Text('"${session.request}"', style: aiText(s, 14, c: AppColors.descGrey, h: 1.45, style: FontStyle.italic)),
                         SizedBox(height: 12 * s),
                         // Typed summary: full text reserves the space, unseen words are transparent.
                         Obx(() {
@@ -74,8 +74,8 @@ class AiResultPage extends GetView<AiResultController> {
                             label: session.summary,
                             child: ExcludeSemantics(
                               child: Text.rich(TextSpan(children: <InlineSpan>[
-                                TextSpan(text: seen, style: aiText(s, 19, h: 1.5)),
-                                TextSpan(text: (n > 0 && rest.isNotEmpty ? ' ' : '') + rest, style: aiText(s, 19, h: 1.5, c: Colors.transparent)),
+                                TextSpan(text: seen, style: aiText(s, 15.5, h: 1.5)),
+                                TextSpan(text: (n > 0 && rest.isNotEmpty ? ' ' : '') + rest, style: aiText(s, 15.5, h: 1.5, c: Colors.transparent)),
                               ])),
                             ),
                           );
@@ -85,9 +85,9 @@ class AiResultPage extends GetView<AiResultController> {
                           spacing: 8 * s,
                           runSpacing: 8 * s,
                           children: <Widget>[
-                            AiTag(label: '${session.totalMins} mins', icon: Icons.schedule, scale: s, size: 17),
-                            AiTag(label: '${session.drills.length} drills', scale: s, size: 17),
-                            for (final t in session.tags) AiTag(label: t, scale: s, size: 17),
+                            AiTag(label: '${session.totalMins} mins', icon: Icons.schedule, scale: s, size: 13.5),
+                            AiTag(label: '${session.drills.length} drills', scale: s, size: 13.5),
+                            for (final t in session.tags) AiTag(label: t, scale: s, size: 13.5),
                           ],
                         ),
                       ],
@@ -99,8 +99,8 @@ class AiResultPage extends GetView<AiResultController> {
             SizedBox(height: 28 * s),
             Row(
               children: <Widget>[
-                Expanded(child: Semantics(header: true, child: Text('Your Training Session', style: aiText(s, 21, w: FontWeight.w600)))),
-                Text('Up to +${session.totalPoints} points', style: aiText(s, 17, w: FontWeight.w500, c: const Color(0xFF7DF58A))),
+                Expanded(child: Semantics(header: true, child: Text('Your Training Session', style: aiText(s, 15.5, w: FontWeight.w600)))),
+                Text('Up to +${session.totalPoints} points', style: aiText(s, 15, w: FontWeight.w500, c: const Color(0xFF7DF58A))),
               ],
             ),
             SizedBox(height: 16 * s),

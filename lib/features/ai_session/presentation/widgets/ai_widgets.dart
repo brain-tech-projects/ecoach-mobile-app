@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -118,7 +120,7 @@ class AiShieldNote extends StatelessWidget {
         children: <Widget>[
           Padding(padding: EdgeInsets.only(top: 3 * s), child: Icon(Icons.shield_outlined, size: 17 * s, color: const Color(0xFF7DF58A))),
           SizedBox(width: 12 * s),
-          Expanded(child: Text('eCoach only uses drills from its approved training library.', style: aiText(s, 15, c: const Color(0xFF7DF58A)))),
+          Expanded(child: Text('eCoach only uses drills from its approved training library.', style: aiText(s, 13, c: const Color(0xFF7DF58A)))),
         ],
       ),
     );
@@ -150,7 +152,7 @@ class AiOutlineButton extends StatelessWidget {
           child: InkWell(
             customBorder: const StadiumBorder(),
             onTap: enabled ? onTap : null,
-            child: SizedBox(height: height * s, child: Center(child: Text(label, maxLines: 1, style: aiText(s, 17, w: FontWeight.w600, c: color)))),
+            child: SizedBox(height: height * s, child: Center(child: Text(label, maxLines: 1, style: aiText(s, 15, w: FontWeight.w600, c: color)))),
           ),
         ),
       ),
@@ -162,7 +164,7 @@ class AiOutlineButton extends StatelessWidget {
 class AiFilledButton extends StatelessWidget {
   const AiFilledButton({super.key, required this.label, required this.onTap, required this.scale, this.icon, this.height = 50});
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final double scale;
   final IconData? icon;
   final double height;
@@ -186,7 +188,7 @@ class AiFilledButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   if (icon != null) ...<Widget>[Icon(icon, size: 20 * s, color: AppColors.black), SizedBox(width: 4 * s)],
-                  Text(label, style: aiText(s, 17, w: FontWeight.w600, c: AppColors.black)),
+                  Text(label, style: aiText(s, 15, w: FontWeight.w600, c: AppColors.black)),
                 ],
               ),
             ),
@@ -242,7 +244,7 @@ class AiDrillCard extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 12 * s, vertical: 4 * s),
                           decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(20 * s)),
-                          child: Text('${drill.mins} mins', style: aiText(s, 14, w: FontWeight.w600, c: AppColors.black)),
+                          child: Text('${drill.mins} mins', style: aiText(s, 12.5, w: FontWeight.w600, c: AppColors.black)),
                         ),
                       ),
                     ],
@@ -258,12 +260,12 @@ class AiDrillCard extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 14 * s, vertical: 4 * s),
                           decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(20 * s)),
-                          child: Text('Drill $number', style: aiText(s, 14, w: FontWeight.w700, c: AppColors.black)),
+                          child: Text('Drill $number', style: aiText(s, 12.5, w: FontWeight.w700, c: AppColors.black)),
                         ),
                         SizedBox(height: 6 * s),
-                        Text(drill.title, style: aiText(s, 18, w: FontWeight.w500, h: 1.3)),
+                        Text(drill.title, style: aiText(s, 16, w: FontWeight.w500, h: 1.3)),
                         SizedBox(height: 8 * s),
-                        Text('${drill.category} • ${drill.mins} mins', style: aiText(s, 15, c: AppColors.descGrey)),
+                        Text('${drill.category} • ${drill.mins} mins', style: aiText(s, 13, c: AppColors.descGrey)),
                         SizedBox(height: 6 * s),
                         AiNote(text: long ? drill.note : drill.note, scale: s, size: long ? 14 : 15),
                       ],
@@ -402,4 +404,82 @@ class _DotsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter old) => false;
+}
+
+/// Shows [text] one word at a time (typing-style intro). The space for the
+/// whole text is reserved up front, so the layout never jumps. Shows
+/// everything at once when the system asks for reduced motion.
+class AiWordByWordText extends StatefulWidget {
+  const AiWordByWordText({
+    super.key,
+    required this.text,
+    required this.style,
+    this.wordDelay = const Duration(milliseconds: 160),
+    this.startDelay = const Duration(milliseconds: 250),
+  });
+
+  final String text;
+  final TextStyle style;
+  final Duration wordDelay;
+  final Duration startDelay;
+
+  @override
+  State<AiWordByWordText> createState() => _AiWordByWordTextState();
+}
+
+class _AiWordByWordTextState extends State<AiWordByWordText> {
+  Timer? _timer;
+  int _shown = 0;
+
+  List<String> get _words => widget.text.split(' ').where((w) => w.isNotEmpty).toList();
+
+  @override
+  void initState() {
+    super.initState();
+    _start();
+  }
+
+  @override
+  void didUpdateWidget(covariant AiWordByWordText old) {
+    super.didUpdateWidget(old);
+    if (old.text != widget.text) _start();
+  }
+
+  void _start() {
+    _timer?.cancel();
+    _shown = 0;
+    _timer = Timer(widget.startDelay, () {
+      _timer = Timer.periodic(widget.wordDelay, (t) {
+        if (!mounted) return t.cancel();
+        if (_shown >= _words.length) return t.cancel();
+        setState(() => _shown++);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return Text(widget.text, style: widget.style);
+    }
+    final words = _words;
+    return Text.rich(
+      TextSpan(
+        children: <InlineSpan>[
+          for (var i = 0; i < words.length; i++)
+            TextSpan(
+              text: i == 0 ? words[i] : ' ${words[i]}',
+              style: i < _shown ? widget.style : widget.style.copyWith(color: Colors.transparent),
+            ),
+        ],
+        style: widget.style,
+      ),
+    );
+  }
 }

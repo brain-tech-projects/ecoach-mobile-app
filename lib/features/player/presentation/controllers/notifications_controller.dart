@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import 'package:ecoach_pro/features/player/domain/notification_route.dart';
+
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/features/player/domain/entities/player_entities.dart';
 import 'package:ecoach_pro/features/player/domain/repositories/player_repository.dart';
@@ -38,4 +40,13 @@ class NotificationsController extends GetxController {
   }
 
   void dismissBanner() => permissionBlocked.value = false;
+
+  /// Tap on a row: open the screen the notification is about.
+  void open(AppNotification item) {
+    final route = NotificationRoute.of(item);
+    if (route == null) return;
+    Get.toNamed<void>(route, arguments: NotificationRoute.argumentsFor(route));
+  }
+
+  void onTap(AppNotification item) {}
 }

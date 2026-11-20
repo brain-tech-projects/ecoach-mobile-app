@@ -37,7 +37,9 @@ class ChallengeDetailPage extends GetView<ChallengeDetailController> {
                 url: c.videoUrl,
                 height: 217,
                 scale: s,
-                posterAsset: c.thumbnail.startsWith('http') ? null : c.thumbnail,
+                // Preview image (network or bundled) shown before playback.
+                posterUrl: c.thumbnail.startsWith('http') ? c.thumbnail : null,
+                posterAsset: c.thumbnail.isEmpty || c.thumbnail.startsWith('http') ? null : c.thumbnail,
               ),
               SizedBox(height: 15.5 * s),
               Text(c.title, style: AppTextStyles.sectionHeading.scaled(s)),

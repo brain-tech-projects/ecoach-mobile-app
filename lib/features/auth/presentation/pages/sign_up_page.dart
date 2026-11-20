@@ -5,6 +5,7 @@ import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
 import 'package:ecoach_pro/core/widgets/app_logo_horizontal.dart';
 import 'package:ecoach_pro/core/widgets/app_primary_button.dart';
+import 'package:ecoach_pro/core/widgets/swipe_step_detector.dart';
 import 'package:ecoach_pro/features/auth/data/signup_content.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/signup_step.dart';
 import 'package:ecoach_pro/features/auth/domain/entities/user_role.dart';
@@ -53,7 +54,12 @@ class SignUpPage extends GetView<SignUpController> {
         onPopInvokedWithResult: (didPop, result) {
           if (!didPop) controller.onBack();
         },
-        child: scaffold,
+        // Finger swipe: right -> left = Next, left -> right = Back.
+        child: SwipeStepDetector(
+          onNext: controller.onSwipeNext,
+          onPrevious: controller.onSwipeBack,
+          child: scaffold,
+        ),
       ),
     );
   }
