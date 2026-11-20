@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import 'package:ecoach_pro/core/theme/app_colors.dart';
 import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:ecoach_pro/core/utils/responsive.dart';
@@ -9,6 +6,8 @@ import 'package:ecoach_pro/core/widgets/sub_page_scaffold.dart';
 import 'package:ecoach_pro/features/player/presentation/controllers/notifications_controller.dart';
 import 'package:ecoach_pro/features/player/presentation/widgets/notification_card.dart';
 import 'package:ecoach_pro/features/player/presentation/widgets/player_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NotificationsPage extends GetView<NotificationsController> {
   const NotificationsPage({super.key});
@@ -24,11 +23,7 @@ class NotificationsPage extends GetView<NotificationsController> {
       body: Obx(() {
         if (controller.loading.value) return const AppLoader();
         if (controller.errorMessage.value != null) {
-          return RetryMessage(
-            message: controller.errorMessage.value!,
-            onRetry: controller.load,
-            scale: s,
-          );
+          return RetryMessage(message: controller.errorMessage.value!, onRetry: controller.load, scale: s);
         }
         final blocked = controller.permissionBlocked.value;
         final items = controller.items;
@@ -39,25 +34,16 @@ class NotificationsPage extends GetView<NotificationsController> {
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             padding: EdgeInsets.fromLTRB(hPad, 28 * s, hPad, 24 * s),
             children: <Widget>[
-              if (blocked) ...<Widget>[
-                _BlockedBanner(scale: s, onDismiss: controller.dismissBanner),
-                SizedBox(height: 16.7 * s),
-              ],
+              if (blocked) ...<Widget>[_BlockedBanner(scale: s, onDismiss: controller.dismissBanner), SizedBox(height: 16.7 * s)],
               if (items.isEmpty)
                 Padding(
                   padding: EdgeInsets.only(top: 12 * s),
-                  child: Center(
-                    child: Text('No notifications yet.', style: AppTextStyles.programDesc.scaled(s)),
-                  ),
+                  child: Center(child: Text('No notifications yet.', style: AppTextStyles.programDesc.scaled(s))),
                 )
               else
                 for (var i = 0; i < items.length; i++) ...<Widget>[
                   if (i > 0) SizedBox(height: 8.3 * s),
-                  NotificationCard(
-                    item: items[i],
-                    scale: s,
-                    onTap: items[i].kind.route == null ? null : () => controller.onTap(items[i]),
-                  ),
+                  NotificationCard(item: items[i], scale: s, onTap: items[i].kind.route == null ? null : () => controller.open(items[i])),
                 ],
             ],
           ),
@@ -89,12 +75,7 @@ class _BlockedBanner extends StatelessWidget {
           Text(
             'Notifications are blocked. Enable notifications for eCoach in your '
             'device settings to get updates.',
-            style: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 16 * s,
-              height: 1.3,
-              color: AppColors.white,
-            ),
+            style: TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 16 * s, height: 1.3, color: AppColors.white),
           ),
           SizedBox(height: 20 * s),
           Align(
@@ -103,11 +84,7 @@ class _BlockedBanner extends StatelessWidget {
               onPressed: onDismiss,
               child: Text(
                 'Dismiss',
-                style: TextStyle(
-                  fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 16 * s,
-                  color: AppColors.descGrey,
-                ),
+                style: TextStyle(fontFamily: AppTextStyles.fontFamily, fontSize: 16 * s, color: AppColors.descGrey),
               ),
             ),
           ),

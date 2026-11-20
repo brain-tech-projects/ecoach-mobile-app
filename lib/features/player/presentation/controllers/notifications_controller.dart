@@ -48,5 +48,5 @@ class NotificationsController extends GetxController {
     Get.toNamed<void>(route, arguments: NotificationRoute.argumentsFor(route));
   }
 
-  void onTap(AppNotification item) {}
+
 }
