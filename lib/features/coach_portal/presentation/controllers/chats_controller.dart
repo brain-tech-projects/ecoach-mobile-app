@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/core/network/api_guard.dart';
+import 'package:ecoach_pro/core/services/push_service.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/coach_portal/data/coach_portal_repository.dart';
@@ -9,7 +12,7 @@ import 'package:ecoach_pro/features/coach_portal/domain/coach_portal_entities.da
 import 'package:ecoach_pro/features/coach_portal/presentation/coach_action.dart';
 
 /// Chats: player list -> conversation (same page, back arrow returns to list).
-class ChatsController extends GetxController {
+class ChatsController extends GetxController with WidgetsBindingObserver {
   final RxList<CoachPlayer> players = <CoachPlayer>[].obs;
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   final Rxn<CoachPlayer> selected = Rxn<CoachPlayer>();
@@ -22,10 +25,29 @@ class ChatsController extends GetxController {
 
   CoachPortalRepository get _repo => Get.find<CoachPortalRepository>();
 
+  static const Duration _pollEvery = Duration(seconds: 5);
+  Timer? _poll;
+  StreamSubscription<Map<String, dynamic>>? _push;
+  bool _fetching = false;
+  bool _sending = false;
+
   @override
   void onInit() {
     super.onInit();
     input.addListener(() => canSend.value = input.text.trim().isNotEmpty);
+    WidgetsBinding.instance.addObserver(this);
+    _poll = Timer.periodic(_pollEvery, (_) => _refreshOpen());
+    if (Get.isRegistered<PushService>()) {
+      final push = Get.find<PushService>();
+      _push = push.messages.listen((_) => _refreshOpen());
+      // The open conversation shows the message itself: no banner for it.
+      push.suppressBanner = (data) {
+        final open = selected.value;
+        if (open == null) return false;
+        final from = '${data['sender_id'] ?? data['from_id'] ?? data['user_id'] ?? ''}';
+        return from.isEmpty || from == '${open.id}';
+      };
+    }
   }
 
   @override
@@ -37,7 +59,8 @@ class ChatsController extends GetxController {
   Future<void> loadPlayers() async {
     loading.value = true;
     try {
-      players.assignAll(await _repo.fetchPlayers());
+      // Only connected players can be messaged.
+      players.assignAll(await _repo.fetchConnectedPlayers());
     } catch (e, st) {
       AppLogger.error('Chat players failed', error: e, stackTrace: st);
     } finally {
@@ -62,15 +85,54 @@ class ChatsController extends GetxController {
 
   void close() {
     selected.value = null;
+    messages.clear();
     input.clear();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshOpen();
+      _poll?.cancel();
+      _poll = Timer.periodic(_pollEvery, (_) => _refreshOpen());
+    } else {
+      _poll?.cancel();
+    }
+  }
+
+  /// Quiet re-check of the open conversation (new messages, "Seen").
+  Future<void> _refreshOpen() async {
+    final p = selected.value;
+    if (p == null || _fetching || _sending || loadingMessages.value) return;
+    _fetching = true;
+    try {
+      final fresh = await _repo.fetchMessages(p.id);
+      if (selected.value?.id != p.id) return; // user switched chats meanwhile
+      final changed = fresh.length != messages.length ||
+          (fresh.isNotEmpty && messages.isNotEmpty && (fresh.last.id != messages.last.id || fresh.last.seen != messages.last.seen));
+      if (!changed) return;
+      final near = !scroll.hasClients || scroll.position.maxScrollExtent - scroll.position.pixels < 120;
+      final grew = fresh.length > messages.length;
+      messages.assignAll(fresh);
+      if (grew && near) _toBottom();
+    } catch (e, st) {
+      AppLogger.error('Chat refresh failed', error: e, stackTrace: st);
+    } finally {
+      _fetching = false;
+    }
   }
 
   Future<void> send() async {
     final p = selected.value;
     final text = input.text.trim();
-    if (p == null || text.isEmpty) return;
+    if (p == null || text.isEmpty || _sending) return;
+    _sending = true;
     input.clear();
-    final ok = await coachRun(() async => messages.add(await _repo.sendMessage(p.id, text)));
+    final ok = await coachRun(() async {
+      final sent = await _repo.sendMessage(p.id, text);
+      if (selected.value?.id == p.id && !messages.any((m) => m.id == sent.id)) messages.add(sent);
+    });
+    _sending = false;
     if (ok) {
       _toBottom();
     } else {
@@ -86,6 +148,10 @@ class ChatsController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _poll?.cancel();
+    _push?.cancel();
+    if (Get.isRegistered<PushService>()) Get.find<PushService>().suppressBanner = null;
     input.dispose();
     scroll.dispose();
     super.onClose();

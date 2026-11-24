@@ -78,7 +78,7 @@ class ChatPage extends GetView<ChatController> {
                       padding: EdgeInsets.fromLTRB(16 * s, 6.7 * s, 16 * s, 26.7 * s),
                       itemCount: list.length,
                       separatorBuilder: (_, _) => SizedBox(height: 10.5 * s),
-                      itemBuilder: (_, i) => ChatBubble(message: list[i], scale: s),
+                      itemBuilder: (_, i) => ChatBubble(message: list[i], scale: s, onRetry: () => controller.retry(list[i])),
                     );
                   }),
                 ),

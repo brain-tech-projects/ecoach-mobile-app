@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/network/network_client.dart';
 import 'package:ecoach_pro/core/services/api_service.dart';
+import 'package:ecoach_pro/core/services/push_service.dart';
 import 'package:ecoach_pro/core/services/session_service.dart';
 import 'package:ecoach_pro/core/storage/local_storage.dart';
 import 'package:ecoach_pro/core/storage/token_storage.dart';
@@ -38,6 +39,8 @@ class InitialBinding extends Bindings {
       ),
       permanent: true,
     );
-    Get.put<ApiService>(ApiService(network, session), permanent: true);
+    final api = Get.put<ApiService>(ApiService(network, session), permanent: true);
+    // Push notifications (init is async and never throws).
+    Get.put<PushService>(PushService(session, api), permanent: true).init();
   }
 }

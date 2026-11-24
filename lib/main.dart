@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:ecoach_pro/app/app.dart';
+import 'package:ecoach_pro/core/services/push_service.dart';
 import 'package:ecoach_pro/core/storage/local_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 
 Future<void> main() async {
@@ -39,6 +42,14 @@ Future<void> main() async {
   ]);
 
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  // Push: must be registered before runApp (runs when the app is closed).
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(pushBackgroundHandler);
+  } catch (error, stackTrace) {
+    AppLogger.error('Firebase init failed', error: error, stackTrace: stackTrace);
+  }
 
   final storage = await LocalStorage.create();
 

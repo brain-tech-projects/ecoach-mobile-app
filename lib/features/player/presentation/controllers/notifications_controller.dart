@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:ecoach_pro/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:get/get.dart';
+
+import 'package:ecoach_pro/core/services/push_service.dart';
 
 import 'package:ecoach_pro/features/player/domain/notification_route.dart';
 
@@ -31,7 +35,7 @@ class NotificationsController extends GetxController {
 
   Future<void> load() async {
     // Coach: pull-to-refresh keeps the current list on screen instead of a full loader.
-    final keepList = isCoachSession && items.isNotEmpty;
+    final keepList = items.isNotEmpty;
     if (!keepList) loading.value = true;
     errorMessage.value = null;
     try {
@@ -51,6 +55,26 @@ class NotificationsController extends GetxController {
   }
 
   void dismissBanner() => permissionBlocked.value = false;
+
+  StreamSubscription<Map<String, dynamic>>? _push;
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (Get.isRegistered<PushService>()) {
+      final push = Get.find<PushService>();
+      permissionBlocked.value = push.permissionDenied.value;
+      ever<bool>(push.permissionDenied, (v) => permissionBlocked.value = v);
+      // A new push arrived while this list is open: reload it quietly.
+      _push = push.messages.listen((_) => load());
+    }
+  }
+
+  @override
+  void onClose() {
+    _push?.cancel();
+    super.onClose();
+  }
 
   /// Tap on a row: open the screen the notification is about.
   void open(AppNotification item) {

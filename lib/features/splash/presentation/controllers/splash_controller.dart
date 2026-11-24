@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/constants/app_config.dart';
+import 'package:ecoach_pro/core/services/push_service.dart';
 import 'package:ecoach_pro/core/storage/local_storage.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 
@@ -41,5 +42,10 @@ class SplashController extends GetxController {
     Get.offNamed<void>(
       showOnboarding ? AppRoutes.onboarding : AppRoutes.dashboard,
     );
+
+    // App opened from a notification: go to its screen now.
+    Future<void>.delayed(const Duration(milliseconds: 600), () {
+      if (Get.isRegistered<PushService>()) Get.find<PushService>().flushPending();
+    });
   }
 }

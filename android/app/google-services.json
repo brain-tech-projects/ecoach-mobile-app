@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "513742833534",
+    "firebase_url": "https://ecoach2-default-rtdb.firebaseio.com",
+    "project_id": "ecoach2",
+    "storage_bucket": "ecoach2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513742833534:android:04e6323f6d8852e7b3d52f",
+        "android_client_info": {
+          "package_name": "com.c7e0521567ff.www"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZqLfhmENlRm063eKZcvmmtXLkdUGJs7A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

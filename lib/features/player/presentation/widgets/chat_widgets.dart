@@ -75,9 +75,12 @@ class CoachAvatar extends StatelessWidget {
 }
 
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({super.key, required this.message, required this.scale});
+  const ChatBubble({super.key, required this.message, required this.scale, this.onRetry});
 
   final ChatMessage message;
+
+  /// Tap on a message that failed to send.
+  final VoidCallback? onRetry;
   final double scale;
 
   @override
@@ -86,9 +89,14 @@ class ChatBubble extends StatelessWidget {
     final mine = message.mine;
     final r = Radius.circular(20 * s);
     final time = PlayerFormat.chatTime(message.sentAt);
-    final status = mine
-        ? (message.status == MessageStatus.seen ? 'Seen' : 'Sent')
-        : null;
+    final status = !mine
+        ? null
+        : switch (message.status) {
+            MessageStatus.sending => 'Sending...',
+            MessageStatus.failed => 'Not sent - tap to retry',
+            MessageStatus.seen => 'Seen',
+            MessageStatus.sent => 'Sent',
+          };
     final small = TextStyle(
       fontFamily: AppTextStyles.fontFamily,
       fontSize: 14 * s,
@@ -98,7 +106,10 @@ class ChatBubble extends StatelessWidget {
 
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
-      child: ConstrainedBox(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: message.status == MessageStatus.failed ? onRetry : null,
+        child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: 270 * s),
         child: Semantics(
           label: '${mine ? 'You' : 'Coach'}: ${message.text}. $time${status != null ? ', $status' : ''}',
@@ -135,7 +146,7 @@ class ChatBubble extends StatelessWidget {
                       Flexible(child: Text(time, style: small)),
                       if (status != null) ...<Widget>[
                         SizedBox(width: 12 * s),
-                        Text(status, style: small),
+                        Text(status, style: message.status == MessageStatus.failed ? small.copyWith(color: const Color(0xFFFF8A80)) : small),
                       ],
                     ],
                   ),
@@ -143,6 +154,7 @@ class ChatBubble extends StatelessWidget {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

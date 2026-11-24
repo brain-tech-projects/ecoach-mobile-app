@@ -100,6 +100,8 @@ abstract final class ApiEndpoints {
   static const String updateProfile = '/update-profile';
   static const String sendMessage = '/send-message';
   static const String openChat = '/open-chat';
+  static const String deviceToken = '/device-token';
+  static const String removeDeviceToken = '/device-token/remove';
 
   // Rating tracker
   static const String ratingTrackerList = '/rating-tracker-list';

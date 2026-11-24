@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/core/services/push_service.dart';
+import 'package:get/get.dart';
 import 'dart:typed_data';
 
 import 'package:ecoach_pro/core/constants/api_endpoints.dart';
@@ -144,7 +146,24 @@ class ApiService {
     );
   }
 
-  Future<void> logout() => _session.clear();
+  /// Stops pushes for this device, then drops the session.
+  Future<void> logout() async {
+    if (Get.isRegistered<PushService>()) {
+      await Get.find<PushService>().unregister();
+    }
+    await _session.clear();
+  }
+
+  /// Registers this phone for push notifications.
+  Future<ApiResponse<dynamic>> registerDeviceToken(String token, String platform) => _network.post(
+    ApiEndpoints.deviceToken,
+    body: <String, dynamic>{'token': token, 'platform': platform},
+  );
+
+  Future<ApiResponse<dynamic>> removeDeviceToken(String token) => _network.post(
+    ApiEndpoints.removeDeviceToken,
+    body: <String, dynamic>{'token': token},
+  );
 
   // ---- Password reset ---------------------------------------------------------
 

@@ -102,7 +102,8 @@ class NoteNode {
   final List<NoteNode> children;
 }
 
-enum MessageStatus { sent, seen }
+/// `sending` / `failed` only exist on this phone (before the server confirms).
+enum MessageStatus { sending, failed, sent, seen }
 
 @immutable
 class ChatMessage {
@@ -113,6 +114,17 @@ class ChatMessage {
   final DateTime sentAt;
   final bool mine;
   final MessageStatus status;
+
+  /// Created on this phone, not confirmed by the server yet.
+  bool get isLocal => id.startsWith('local-');
+
+  ChatMessage copyWith({MessageStatus? status}) => ChatMessage(
+    id: id,
+    text: text,
+    sentAt: sentAt,
+    mine: mine,
+    status: status ?? this.status,
+  );
 }
 
 /// What a notification is about. Decides the icon and the screen it opens.

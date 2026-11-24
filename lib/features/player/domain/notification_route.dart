@@ -9,9 +9,12 @@ import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart'
 /// notification's title / text is used. Returns null when there is nowhere
 /// sensible to go (the tap then does nothing).
 abstract final class NotificationRoute {
-  static String? of(AppNotification n) => isCoachSession
-      ? (_coach(n.redirectType) ?? _coach('${n.title} ${n.body}'))
-      : (_classify(n.redirectType) ?? _classify('${n.title} ${n.body}'));
+  static String? of(AppNotification n) => resolve(redirectType: n.redirectType, text: '${n.title} ${n.body}');
+
+  /// Same lookup for a raw push payload (player or coach map, by signed-in role).
+  static String? resolve({String redirectType = '', String text = ''}) => isCoachSession
+      ? (_coach(redirectType) ?? _coach(text))
+      : (_classify(redirectType) ?? _classify(text));
 
   /// Coach side destinations.
   static String? _coach(String raw) {
