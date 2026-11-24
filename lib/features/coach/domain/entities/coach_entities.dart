@@ -41,3 +41,20 @@ class AssignedTraining {
   final String topTip;
   final List<String> instructions;
 }
+
+/// A pending invitation a coach sent to this player.
+class CoachInvite {
+  const CoachInvite({
+    required this.id,
+    required this.name,
+    this.subtitle = '',
+    this.avatarUrl,
+  });
+
+  final int id;
+  final String name;
+
+  /// "position . club" (parts that exist).
+  final String subtitle;
+  final String? avatarUrl;
+}

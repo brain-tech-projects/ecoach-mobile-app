@@ -72,7 +72,6 @@ abstract final class MenuItems {
 
   /// Coach side menu (shown instead of [all] when the signed-in role is Coach).
   static const List<MenuItem> coach = <MenuItem>[
-    MenuItem(label: 'Install App', icon: Icons.install_mobile_outlined, action: MenuAction.installApp),
     MenuItem(label: 'Player Invitation', iconAsset: AppAssets.menuInvitation, route: AppRoutes.coachInvitations),
     MenuItem(label: 'Coaches Summary', iconAsset: AppAssets.menuCoaches, route: AppRoutes.coachSummary),
     MenuItem(label: 'App Settings', iconAsset: AppAssets.menuSettings, route: AppRoutes.appSettings),

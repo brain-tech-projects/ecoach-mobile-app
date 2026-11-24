@@ -78,14 +78,8 @@ class _TeamCard extends StatelessWidget {
     final s = Responsive.of(context).scale;
     final placeholder = Icon(Icons.photo_library_outlined, size: 42 * s, color: AppColors.white);
 
-    // Tap anywhere on the card -> "Assign Players To Team".
-    return Semantics(
-      button: true,
-      label: 'Assign players to ${team.name}',
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onAddPlayers,
-        child: CoachCard(
+    // Only the menu (3 dots) and "New group" are clickable; the rest of the card is inert.
+    return CoachCard(
       padding: EdgeInsets.all(12 * s),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,8 +124,6 @@ class _TeamCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-        ),
       ),
     );
   }

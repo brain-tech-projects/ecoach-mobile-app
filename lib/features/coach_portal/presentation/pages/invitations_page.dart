@@ -84,6 +84,7 @@ class InvitationsPage extends GetView<InvitationsController> {
   }
 }
 
+/// One pending request: avatar, name, "position . club", accept / reject.
 class _InviteCard extends StatelessWidget {
   const _InviteCard({required this.invitation, required this.controller});
   final PlayerInvitation invitation;
@@ -92,18 +93,77 @@ class _InviteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = Responsive.of(context).scale;
+    final p = invitation.player;
     return Padding(
       padding: EdgeInsets.only(bottom: 12 * s),
       child: CoachCard(
-        child: Column(
+        padding: EdgeInsets.all(11 * s),
+        child: Row(
           children: <Widget>[
-            Row(children: <Widget>[CoachPlayerAvatar(url: invitation.player.photoUrl, size: 48 * s), SizedBox(width: 12 * s), Expanded(child: Text(invitation.player.name, style: AppTextStyles.programTitle.scaled(s).copyWith(fontWeight: FontWeight.w600)))]),
-            SizedBox(height: 12 * s),
-            CoachButtonRow(children: <Widget>[
-              CoachButton(label: 'Reject', kind: CoachButtonKind.outline, onTap: () => controller.respond(invitation, accept: false)),
-              CoachButton(label: 'Accept', onTap: () => controller.respond(invitation, accept: true)),
-            ]),
+            CoachPlayerAvatar(url: p.photoUrl, size: 54 * s),
+            SizedBox(width: 14 * s),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.programTitle.scaled(s).copyWith(fontSize: 16 * s, fontWeight: FontWeight.w600)),
+                  if (p.subtitle.isNotEmpty) Text(p.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.programDesc.scaled(s)),
+                ],
+              ),
+            ),
+            SizedBox(width: 8 * s),
+            if (invitation.incoming)
+              Obx(() {
+                if (controller.respondingId.value == invitation.id) {
+                  return SizedBox(
+                    width: 38 * s,
+                    height: 38 * s,
+                    child: Padding(
+                      padding: EdgeInsets.all(8 * s),
+                      child: const CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.accent),
+                    ),
+                  );
+                }
+                final locked = controller.respondingId.value != null;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _RoundAction(icon: Icons.check, color: const Color(0xFF3DC46B), label: 'Accept invitation', scale: s, onTap: locked ? null : () => controller.respond(invitation, accept: true)),
+                    SizedBox(width: 10 * s),
+                    _RoundAction(icon: Icons.close, color: const Color(0xFFE24B4B), label: 'Reject invitation', scale: s, onTap: locked ? null : () => controller.respond(invitation, accept: false)),
+                  ],
+                );
+              })
+            else
+              CoachPill(label: 'Waiting for response', icon: Icons.schedule),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundAction extends StatelessWidget {
+  const _RoundAction({required this.icon, required this.color, required this.label, required this.scale, required this.onTap});
+  final IconData icon;
+  final Color color;
+  final String label;
+  final double scale;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Container(
+          width: 38 * scale,
+          height: 38 * scale,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          child: Icon(icon, color: Colors.white, size: 22 * scale),
         ),
       ),
     );

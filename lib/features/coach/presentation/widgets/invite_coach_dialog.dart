@@ -22,6 +22,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
 
   Future<void> _send() async {
     if (_busy) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _busy = true);
     final ok = await widget.onSend(_email.text);
     if (!mounted) return;
@@ -102,7 +103,7 @@ class _InviteCoachDialogState extends State<InviteCoachDialog> {
               children: <Widget>[
                 action('Cancel', AppColors.selectGreen, () => Get.back<void>()),
                 SizedBox(width: 10 * s),
-                action(_busy ? '...' : 'Send Invitation', AppColors.white, _send),
+                action(_busy ? 'Sending...' : 'Send Invitation', AppColors.white, _send),
               ],
             ),
           ],

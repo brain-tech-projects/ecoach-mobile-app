@@ -6,7 +6,7 @@ import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/services/api_service.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
-import 'package:ecoach_pro/features/skills/presentation/widgets/complete_dialog.dart';
+import 'package:ecoach_pro/features/settings/presentation/widgets/delete_account_dialog.dart';
 
 /// One row of "Transaction History".
 class PlanEntry {
@@ -152,18 +152,30 @@ class AppSettingsController extends GetxController {
 
   // ---- Delete account ---------------------------------------------------------
 
-  Future<void> deleteAccount() async {
-    final yes = await Get.dialog<bool>(
-      const CompleteDialog(
-        title: 'Delete Account',
-        message: 'Are you sure you want to delete your account? This cannot '
-            'be undone.',
-      ),
-      barrierColor: const Color(0xB3000000),
-    );
-    if (yes != true) return;
-    // TODO(api): no delete-account endpoint has been provided yet.
-    AppToast.info('Account deletion is coming soon');
+  /// Opens the "type CONFIRM" dialog; the dialog calls [_performDelete].
+  Future<void> deleteAccount() => Get.dialog<void>(
+    DeleteAccountDialog(onDelete: _performDelete),
+    barrierColor: const Color(0xB3000000),
+    barrierDismissible: false,
+  );
+
+  /// Calls the API and signs out. true = deleted (navigation closes the dialog).
+  Future<bool> _performDelete() async {
+    try {
+      final res = await _api.deleteAccount();
+      if (!res.success) {
+        AppToast.error(res.message.isEmpty ? 'Could not delete your account. Please try again.' : res.message);
+        return false;
+      }
+      AppToast.success(res.message.isEmpty ? 'Account deleted successfully.' : res.message);
+      await _api.logout();
+      Get.offAllNamed<void>(AppRoutes.dashboard);
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error('Delete account failed', error: error, stackTrace: stackTrace);
+      AppToast.error('Could not delete your account. Please check your connection and try again.');
+      return false;
+    }
   }
 
   @override

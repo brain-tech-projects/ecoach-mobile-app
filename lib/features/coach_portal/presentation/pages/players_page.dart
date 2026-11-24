@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -40,7 +41,7 @@ class PlayersPage extends GetView<PlayersController> {
                 child: list.isEmpty
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        children: <Widget>[CoachEmpty(text: controller.players.isEmpty ? 'No players yet. Tap + to invite your first player.' : 'No players match your search.')],
+                        children: <Widget>[_NoPlayers(scale: s)],
                       )
                     : ListView.separated(
                         physics: const AlwaysScrollableScrollPhysics(),
@@ -52,6 +53,27 @@ class PlayersPage extends GetView<PlayersController> {
               );
             }),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "No Players Found" empty state (search without results / no players yet).
+class _NoPlayers extends StatelessWidget {
+  const _NoPlayers({required this.scale});
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = scale;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(24 * s, 4 * s, 24 * s, 24 * s),
+      child: Column(
+        children: <Widget>[
+          Semantics(header: true, child: Text('No Players Found', textAlign: TextAlign.center, style: AppTextStyles.programTitle.scaled(s).copyWith(fontSize: 15 * s, fontWeight: FontWeight.w600))),
+          SizedBox(height: 8 * s),
+          Text('Please invite a player using the plus (+) button and their email address.', textAlign: TextAlign.center, style: AppTextStyles.programTitle.scaled(s).copyWith(fontSize: 12 * s, fontWeight: FontWeight.w400, height: 1.5)),
         ],
       ),
     );

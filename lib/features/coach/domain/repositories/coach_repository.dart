@@ -13,6 +13,12 @@ abstract interface class CoachRepository {
   /// Marks an assigned training as completed. Throws on failure.
   Future<void> completeTraining(String trainingId);
 
+  /// Pending invitations coaches sent to this player.
+  Future<List<CoachInvite>> fetchPendingInvitations();
+
+  /// Accept / reject a coach's invitation; returns the server's message.
+  Future<String> respondInvitation(int invitationId, {required bool accept});
+
   /// Emails an invitation to a coach; returns the server's message.
   Future<String> inviteCoach(String email);
 }

@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/features/coach_portal/data/coach_sync.dart';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -123,21 +124,43 @@ class CoachPortalRepository {
 
   // ---- Players ----------------------------------------------------------------
 
-  Future<List<CoachPlayer>> fetchPlayers({bool force = false}) async {
+  List<Map<String, dynamic>>? _teamRows;
+  DateTime? _teamRowsAt;
+  int _teamRowsRevision = -1;
+
+  /// One `my-team` call shared by Players + Invitations (8 s cache, dropped on any coach change).
+  Future<List<Map<String, dynamic>>> _myTeamRows({bool force = false}) async {
+    final fresh = !force &&
+        _teamRows != null &&
+        _teamRowsAt != null &&
+        _teamRowsRevision == CoachSync.revision.value &&
+        DateTime.now().difference(_teamRowsAt!) < const Duration(seconds: 8);
+    if (fresh) return _teamRows!;
     final res = requireSuccess(await _api.getCoachPlayers());
     final d = res.data;
-    final list = d is Map ? _maps(d['players']) : <Map<String, dynamic>>[];
-    return <CoachPlayer>[
-      for (final p in list)
-        if (_isConnected(p))
-          CoachPlayer(
-            id: _int(p['id']),
-            name: _str(p['full_name']).isNotEmpty ? _str(p['full_name']) : _str(p['nickname']),
-            subtitle: <String>[_str(p['my_position']), _str(p['my_club'])].where((e) => e.isNotEmpty).join(' . '),
-            photoUrl: Env.skillMediaUrl(p['profile_photo'] as String?),
-            countryCode: p['country_code'] as String?,
-          ),
-    ];
+    _teamRows = d is Map ? _maps(d['players']) : <Map<String, dynamic>>[];
+    _teamRowsAt = DateTime.now();
+    _teamRowsRevision = CoachSync.revision.value;
+    return _teamRows!;
+  }
+
+  CoachPlayer _player(Map<String, dynamic> p) => CoachPlayer(
+    id: _int(p['id']),
+    name: _str(p['full_name']).isNotEmpty ? _str(p['full_name']) : _str(p['nickname']),
+    subtitle: <String>[_str(p['my_position']), _str(p['my_club'])].where((e) => e.isNotEmpty).join(' . '),
+    photoUrl: Env.skillMediaUrl(p['profile_photo'] as String?),
+    countryCode: p['country_code'] as String?,
+    email: _str(p['email']),
+  );
+
+  Future<List<CoachPlayer>> fetchPlayers({bool force = false}) async {
+    final rows = await _myTeamRows(force: force);
+    return <CoachPlayer>[for (final p in rows) if (_isConnected(p)) _player(p)];
+  }
+
+  static String _invStatus(Map<String, dynamic> p) {
+    final inv = p['invitation'];
+    return inv is Map ? _str(inv['status']).toLowerCase() : '';
   }
 
   /// Accepted and not left. Players without invitation data are kept.
@@ -164,15 +187,60 @@ class CoachPortalRepository {
   }
 
   // TODO(api): invite player / disconnect player endpoints are not in the list yet.
-  Future<void> invitePlayer(String email) async => throw ApiException('Inviting players is not available yet.');
+  /// Coach invites a player by e-mail. Duplicates (already on the team / invitation
+  /// pending) are rejected before calling the API.
+  Future<void> invitePlayer(String email) async {
+    final e = email.trim().toLowerCase();
+    final rows = await _myTeamRows(force: true);
+    for (final p in rows) {
+      if (_str(p['email']).toLowerCase() != e) continue;
+      if (_isConnected(p) && p['invitation'] is Map) throw ApiException('This player is already on your team.');
+      if (_invStatus(p) == 'pending') throw ApiException('An invitation to this player is already pending.');
+    }
+    requireSuccess(await _api.invitePlayer(e));
+    _teamRows = null;
+  }
 
-  Future<void> disconnectPlayer(int playerId) async => throw ApiException('Disconnecting players is not available yet.');
+  Future<void> disconnectPlayer(int playerId) async {
+    requireSuccess(await _api.disconnectPlayer(playerId));
+    _teamRows = null;
+  }
 
-  // ---- Invitations (TODO(api): no endpoints yet) ------------------------------
+  // ---- Invitations (pending rows of `my-team`) ----------------------------------
 
-  Future<List<PlayerInvitation>> fetchInvitations() async => const <PlayerInvitation>[];
+  /// Players currently connected to this coach (`my-connected-players`).
+  Future<List<CoachPlayer>> fetchConnectedPlayers() async {
+    final res = requireSuccess(await _api.getMyConnectedPlayers());
+    final d = res.data;
+    return <CoachPlayer>[
+      for (final p in _maps(d is Map ? d['connections'] : null))
+        CoachPlayer(
+          id: _int(p['player_id']),
+          name: _str(p['full_name']),
+          subtitle: <String>[_str(p['my_position']), _str(p['my_club'])].where((e) => e.isNotEmpty).join(' . '),
+          photoUrl: Env.skillMediaUrl(p['profile_photo'] as String?),
+        ),
+    ];
+  }
 
-  Future<void> respondInvitation(int id, {required bool accept}) async => throw ApiException('Not available yet.');
+  /// Pending requests players sent to this coach (`my-invitations-coach`).
+  Future<List<PlayerInvitation>> fetchInvitations() async {
+    final res = requireSuccess(await _api.getMyInvitationsCoach());
+    final d = res.data;
+    return <PlayerInvitation>[
+      for (final i in _maps(d is Map ? d['invitations'] : null))
+        if (_str(i['status']).toLowerCase() == 'pending' && i['player'] is Map)
+          PlayerInvitation(
+            id: _int(i['id']),
+            player: _player(Map<String, dynamic>.from(i['player'] as Map)),
+          ),
+    ];
+  }
+
+  Future<void> respondInvitation(int id, {required bool accept}) async {
+    requireSuccess(await _api.respondPlayerInvitation(id, accept: accept));
+    _teamRows = null;
+  }
 
   // ---- Chats (same chat endpoints the player app uses; sender = signed-in coach)
 

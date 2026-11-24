@@ -1,3 +1,5 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
+import 'package:ecoach_pro/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/features/player/domain/notification_route.dart';
@@ -24,16 +26,25 @@ class NotificationsController extends GetxController {
     load();
   }
 
+  /// Whether a tap on [item] goes somewhere (coach and player have different maps).
+  bool canOpen(AppNotification item) => isCoachSession ? NotificationRoute.of(item) != null : item.kind.route != null;
+
   Future<void> load() async {
-    loading.value = true;
+    // Coach: pull-to-refresh keeps the current list on screen instead of a full loader.
+    final keepList = isCoachSession && items.isNotEmpty;
+    if (!keepList) loading.value = true;
     errorMessage.value = null;
     try {
       items.assignAll(await _repository.fetchNotifications());
       // Opening the screen counts as reading them (best effort).
-      _repository.markAllNotificationsRead().catchError((Object _) {});
+      _repository.markAllNotificationsRead().then((_) {
+        if (isCoachSession && Get.isRegistered<DashboardController>()) {
+          Get.find<DashboardController>().unreadCount.value = 0; // header bell badge
+        }
+      }).catchError((Object _) {});
     } catch (error, stackTrace) {
       AppLogger.error('Notifications load failed', error: error, stackTrace: stackTrace);
-      errorMessage.value = 'Could not load notifications.';
+      if (!keepList) errorMessage.value = 'Could not load notifications.';
     } finally {
       loading.value = false;
     }

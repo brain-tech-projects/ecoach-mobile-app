@@ -50,7 +50,7 @@ class _ChooseStep extends StatelessWidget {
     Widget option(String letter, String label, TrainingSource value) {
       final selected = controller.source.value == value;
       return Padding(
-        padding: EdgeInsets.only(bottom: 14 * s),
+        padding: EdgeInsets.only(bottom: 12 * s),
         child: Material(
           color: selected ? AppColors.selectedFill : AppColors.card,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14 * s), side: BorderSide(color: selected ? AppColors.selectGreen : AppColors.cardBorder, width: selected ? 1.5 : 1)),
@@ -58,7 +58,7 @@ class _ChooseStep extends StatelessWidget {
             borderRadius: BorderRadius.circular(14 * s),
             onTap: () => controller.choose(value),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14 * s, vertical: 14 * s),
+              padding: EdgeInsets.symmetric(horizontal: 14 * s, vertical: 10.5 * s),
               child: Row(
                 children: <Widget>[
                   Container(
@@ -69,7 +69,7 @@ class _ChooseStep extends StatelessWidget {
                     child: Text(letter, style: AppTextStyles.programTitle.scaled(s).copyWith(color: selected ? AppColors.black : AppColors.white, fontWeight: FontWeight.w600)),
                   ),
                   SizedBox(width: 18 * s),
-                  Expanded(child: Text(label, style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 17 * s, fontWeight: FontWeight.w400))),
+                  Expanded(child: Text(label, style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 14.5 * s, fontWeight: FontWeight.w400))),
                 ],
               ),
             ),
@@ -82,15 +82,15 @@ class _ChooseStep extends StatelessWidget {
       () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Would you like to upload your own training session, or use an eCoach training video?', style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 21 * s, fontWeight: FontWeight.w400)),
+          Text('Would you like to upload your own training session, or use an eCoach training video?', style: AppTextStyles.sectionTitle.scaled(s).copyWith(fontSize: 16 * s, fontWeight: FontWeight.w400, height: 1.6)),
           SizedBox(height: 22 * s),
           option('A', 'Use an eCoach training video', TrainingSource.ecoach),
           option('B', 'Upload my own training video', TrainingSource.own),
           SizedBox(height: 4 * s),
           CoachButtonRow(
             children: <Widget>[
-              CoachButton(label: 'Cancel', kind: CoachButtonKind.outline, minWidth: 130, onTap: controller.cancel),
-              CoachButton(label: 'Save & Next', minWidth: 130, enabled: controller.source.value != null, onTap: controller.next),
+              CoachButton(label: 'Cancel', kind: CoachButtonKind.outline, minWidth: 103, onTap: controller.cancel),
+              CoachButton(label: 'Save & Next', minWidth: 141, enabled: controller.source.value != null, onTap: controller.next),
             ],
           ),
         ],

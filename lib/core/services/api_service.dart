@@ -530,6 +530,25 @@ class ApiService {
   Future<ApiResponse<dynamic>> checkCoachConnection() =>
       _network.get(ApiEndpoints.checkCoachConnection);
 
+  /// Player: invitations sent to this player by coaches.
+  Future<ApiResponse<dynamic>> getMyInvitations() => _network.get(ApiEndpoints.myInvitations);
+
+  /// Player: accept / reject a coach's invitation.
+  Future<ApiResponse<dynamic>> respondCoachInvitation(int invitationId, {required bool accept}) => _network.post(
+    ApiEndpoints.respondInvitation,
+    body: <String, dynamic>{'invitation_id': invitationId, 'action': accept ? 'accept' : 'reject'},
+  );
+
+  /// Permanently deletes the signed-in account (player or coach).
+  Future<ApiResponse<dynamic>> deleteAccount() async {
+    final res = await _network.get(ApiEndpoints.deleteAccount);
+    // Some backends only allow POST for this route.
+    if (!res.success && res.message.toLowerCase().contains('method')) {
+      return _network.post(ApiEndpoints.deleteAccount, body: <String, dynamic>{});
+    }
+    return res;
+  }
+
   Future<ApiResponse<dynamic>> getConnectedCoaches() =>
       _network.get(ApiEndpoints.myConnectedCoaches);
 
@@ -854,6 +873,28 @@ class ApiService {
       'title': title,
       'description': description,
     },
+  );
+
+  Future<ApiResponse<dynamic>> invitePlayer(String email) => _network.post(
+    CoachEndpoints.invitePlayer,
+    body: <String, dynamic>{'email': email},
+  );
+
+  /// Coach: accept / reject a player's request.
+  Future<ApiResponse<dynamic>> respondPlayerInvitation(int invitationId, {required bool accept}) => _network.post(
+    CoachEndpoints.respondInvitationCoach,
+    body: <String, dynamic>{'invitation_id': invitationId, 'action': accept ? 'accept' : 'reject'},
+  );
+
+  /// Coach: pending / past requests sent to this coach by players.
+  Future<ApiResponse<dynamic>> getMyInvitationsCoach() => _network.get(CoachEndpoints.myInvitationsCoach);
+
+  /// Coach: players connected to this coach.
+  Future<ApiResponse<dynamic>> getMyConnectedPlayers() => _network.get(CoachEndpoints.myConnectedPlayers);
+
+  Future<ApiResponse<dynamic>> disconnectPlayer(int playerId) => _network.post(
+    CoachEndpoints.disconnectPlayer,
+    body: <String, dynamic>{'player_id': playerId},
   );
 
   // Programs

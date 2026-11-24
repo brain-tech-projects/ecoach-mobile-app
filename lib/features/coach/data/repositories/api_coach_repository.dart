@@ -33,6 +33,34 @@ class ApiCoachRepository implements CoachRepository {
   }
 
   @override
+  Future<List<CoachInvite>> fetchPendingInvitations() async {
+    final res = requireSuccess(await _api.getMyInvitations());
+    final body = res.data;
+    final list = body is Map ? body['invitations'] : null;
+    if (list is! List) return const <CoachInvite>[];
+    return <CoachInvite>[
+      for (final e in list.whereType<Map>())
+        if ('${e['status'] ?? ''}'.toLowerCase() == 'pending' && e['coach'] is Map)
+          CoachInvite(
+            id: int.tryParse('${e['id']}') ?? 0,
+            name: ('${(e['coach'] as Map)['full_name'] ?? ''}').trim(),
+            subtitle: <String>[
+              '${(e['coach'] as Map)['my_position'] ?? ''}',
+              '${(e['coach'] as Map)['my_club'] ?? ''}',
+            ].map((v) => v.trim()).where((v) => v.isNotEmpty).join(' . '),
+            avatarUrl: Env.skillMediaUrl((e['coach'] as Map)['profile_photo'] as String?),
+          ),
+    ];
+  }
+
+  @override
+  Future<String> respondInvitation(int invitationId, {required bool accept}) async {
+    final res = requireSuccess(await _api.respondCoachInvitation(invitationId, accept: accept));
+    if (res.message.isNotEmpty) return res.message;
+    return accept ? 'Invitation accepted.' : 'Invitation rejected.';
+  }
+
+  @override
   Future<void> disconnect(String coachId) async {
     requireSuccess(await _api.disconnectCoach(_id(coachId)));
   }

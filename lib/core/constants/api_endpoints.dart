@@ -61,6 +61,10 @@ abstract final class ApiEndpoints {
   static const String myConnectedCoaches = '/my-connected-coaches';
   static const String disconnectCoach = '/disconnect-coach';
   static const String sendInvitationToCoach = '/send-invitation-to-coach';
+  static const String myInvitations = '/my-invitations';
+  // TODO(api): confirm - the player's accept / reject call was not in the shared list.
+  static const String respondInvitation = '/respond-invitation';
+  static const String deleteAccount = '/delete-account';
 
   // Trophies
   static const String trophies = '/trophies';

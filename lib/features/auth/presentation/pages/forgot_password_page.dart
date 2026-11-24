@@ -16,21 +16,25 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
   @override
   Widget build(BuildContext context) {
     final s = Responsive.of(context).scale;
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return AuthScaffold(
       onBack: () => Get.back<void>(),
-      footer: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 22 * s),
-        child: AppPrimaryButton(
-          label: 'Sign Up For Free',
-          onPressed: controller.openSignUp,
-          scale: s,
-        ),
-      ),
+      // Hidden while the keyboard is open so it never covers the form.
+      footer: keyboardOpen
+          ? null
+          : Padding(
+              padding: EdgeInsets.symmetric(horizontal: 22 * s),
+              child: AppPrimaryButton(
+                label: 'Sign Up For Free',
+                onPressed: controller.openSignUp,
+                scale: s,
+              ),
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SizedBox(height: 120 * s),
+          SizedBox(height: (keyboardOpen ? 24 : 215) * s),
           Center(child: AppLogoHorizontal(scale: s)),
           SizedBox(height: 45.6 * s),
           Semantics(
@@ -41,12 +45,12 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
               style: AppTextStyles.otpTitle.scaled(s),
             ),
           ),
-          SizedBox(height: 7 * s),
+          SizedBox(height: 4.6 * s),
           Text(
-            'Don’t worry! Resetting your password is easy. '
-            'Just type in the email you registered.',
+            'Don’t Worry! Reseting your password is easy. '
+            'Just type in the email your registered.',
             textAlign: TextAlign.center,
-            style: AppTextStyles.otpBody.scaled(s),
+            style: AppTextStyles.otpBody.scaled(s).copyWith(height: 1.5),
           ),
           SizedBox(height: 24 * s),
           AuthTextField(
@@ -59,6 +63,7 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
             textInputAction: TextInputAction.done,
             autofillHints: const <String>[AutofillHints.email],
             onChanged: controller.onEmailChanged,
+            onSubmitted: (_) => controller.send(),
             scale: s,
           ),
           Obx(() {
@@ -70,12 +75,15 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
             );
           }),
           SizedBox(height: 24 * s),
-          Obx(
-            () => AppPrimaryButton(
-              label: 'Send',
-              onPressed: controller.send,
-              loading: controller.isLoading.value,
-              scale: s,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24 * s),
+            child: Obx(
+              () => AppPrimaryButton(
+                label: 'Send',
+                onPressed: controller.send,
+                loading: controller.isLoading.value,
+                scale: s,
+              ),
             ),
           ),
         ],

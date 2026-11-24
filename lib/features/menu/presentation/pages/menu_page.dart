@@ -34,9 +34,13 @@ class MenuPage extends GetView<SideMenuController> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
+      body: _PinnedClose(
+        pinned: isCoachSession,
+        scale: s,
+        onClose: controller.close,
+        child: SingleChildScrollView(
         padding: EdgeInsets.only(
-          top: topShift,
+          top: isCoachSession ? 0 : topShift,
           bottom: math.max(r.safeBottom, 24 * s),
         ),
         child: Center(
@@ -45,14 +49,16 @@ class MenuPage extends GetView<SideMenuController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                SizedBox(height: 10 * s),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 16 * s),
-                    child: _CloseButton(scale: s, onTap: controller.close),
+                if (!isCoachSession) ...<Widget>[
+                  SizedBox(height: 10 * s),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 16 * s),
+                      child: _CloseButton(scale: s, onTap: controller.close),
+                    ),
                   ),
-                ),
+                ],
                 Obx(() {
                   final user = controller.session.user.value;
                   final loggedIn = controller.isLoggedIn && user != null;
@@ -106,6 +112,33 @@ class MenuPage extends GetView<SideMenuController> {
           ),
         ),
       ),
+      ),
+    );
+  }
+}
+
+/// Coach menu: the close button stays fixed below the status bar / notch while
+/// the menu scrolls underneath (never overlaps system UI on iOS or Android).
+class _PinnedClose extends StatelessWidget {
+  const _PinnedClose({required this.pinned, required this.scale, required this.onClose, required this.child});
+
+  final bool pinned;
+  final double scale;
+  final VoidCallback onClose;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!pinned) return child;
+    final r = Responsive.of(context);
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, math.max(r.safeTop, 12 * scale) + 6 * scale, 16 * scale + r.gutter, 6 * scale),
+          child: Align(alignment: Alignment.centerRight, child: _CloseButton(scale: scale, onTap: onClose)),
+        ),
+        Expanded(child: child),
+      ],
     );
   }
 }

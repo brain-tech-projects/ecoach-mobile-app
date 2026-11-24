@@ -23,6 +23,7 @@ class AuthTextField extends StatelessWidget {
     this.multiline = false,
     this.borderColor = AppColors.fieldBorder,
     this.onChanged,
+    this.onSubmitted,
     this.scale = 1.0,
   });
 
@@ -42,6 +43,7 @@ class AuthTextField extends StatelessWidget {
   final bool multiline;
   final Color borderColor;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final double scale;
 
   @override
@@ -87,6 +89,7 @@ class AuthTextField extends StatelessWidget {
                 textInputAction: textInputAction,
                 autofillHints: autofillHints,
                 onChanged: onChanged,
+                onSubmitted: onSubmitted,
                 autocorrect: false,
                 enableSuggestions: !obscureText,
                 cursorColor: AppColors.accent,

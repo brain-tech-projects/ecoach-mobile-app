@@ -1,3 +1,30 @@
+// import 'package:ecoach_pro/core/network/api_guard.dart';
+// import 'package:ecoach_pro/core/utils/logger.dart';
+// import 'package:ecoach_pro/core/widgets/app_toast.dart';
+
+// /// Runs a repository call, toasts [success] or the server error. true = worked.
+// Future<bool> coachRun(
+//   Future<void> Function() action, {
+//   String? success,
+//   String fallback = 'Something went wrong. Please try again.',
+// }) async {
+//   try {
+//     await action();
+//     if (success != null) AppToast.success(success);
+//     return true;
+//   } on ApiException catch (e) {
+//     AppToast.error(e.message);
+//   } catch (e, st) {
+//     AppLogger.error('Coach action failed', error: e, stackTrace: st);
+//     AppToast.error(fallback);
+//   }
+//   return false;
+// }
+
+
+
+
+import 'package:ecoach_pro/features/coach_portal/data/coach_sync.dart';
 import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
@@ -6,10 +33,12 @@ import 'package:ecoach_pro/core/widgets/app_toast.dart';
 Future<bool> coachRun(
   Future<void> Function() action, {
   String? success,
+  bool sync = true,
   String fallback = 'Something went wrong. Please try again.',
 }) async {
   try {
     await action();
+    if (sync) CoachSync.bump();
     if (success != null) AppToast.success(success);
     return true;
   } on ApiException catch (e) {

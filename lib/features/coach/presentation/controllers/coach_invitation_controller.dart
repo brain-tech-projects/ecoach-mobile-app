@@ -18,6 +18,12 @@ class CoachInvitationController extends GetxController {
   final Rxn<Coach> coach = Rxn<Coach>();
   final RxBool loading = true.obs;
   final RxBool disconnecting = false.obs;
+
+  /// Pending invitations coaches sent to this player.
+  final RxList<CoachInvite> invitations = <CoachInvite>[].obs;
+
+  /// Invitation being answered right now.
+  final RxnInt respondingId = RxnInt();
   final RxnString errorMessage = RxnString();
 
   @override
@@ -31,11 +37,48 @@ class CoachInvitationController extends GetxController {
     errorMessage.value = null;
     try {
       coach.value = await _repository.fetchConnectedCoach();
+      await _loadInvitations();
     } catch (error, stackTrace) {
       AppLogger.error('Coach load failed', error: error, stackTrace: stackTrace);
       errorMessage.value = 'Could not load your coach.';
     } finally {
       loading.value = false;
+    }
+  }
+
+  /// A failure here must not hide the connected coach, so it is swallowed.
+  Future<void> _loadInvitations() async {
+    try {
+      invitations.assignAll(await _repository.fetchPendingInvitations());
+    } catch (error, stackTrace) {
+      AppLogger.error('Invitations load failed', error: error, stackTrace: stackTrace);
+    }
+  }
+
+  /// Pull-to-refresh: reload without the full-screen loader.
+  Future<void> refreshAll() async {
+    try {
+      coach.value = await _repository.fetchConnectedCoach();
+    } catch (error, stackTrace) {
+      AppLogger.error('Coach refresh failed', error: error, stackTrace: stackTrace);
+    }
+    await _loadInvitations();
+  }
+
+  Future<void> respond(CoachInvite invite, {required bool accept}) async {
+    if (respondingId.value != null) return;
+    respondingId.value = invite.id;
+    try {
+      final message = await _repository.respondInvitation(invite.id, accept: accept);
+      AppToast.success(message);
+      await refreshAll();
+    } catch (error, stackTrace) {
+      AppLogger.error('Respond failed', error: error, stackTrace: stackTrace);
+      AppToast.error(
+        error is ApiException ? error.message : 'Could not update the invitation. Please try again.',
+      );
+    } finally {
+      respondingId.value = null;
     }
   }
 

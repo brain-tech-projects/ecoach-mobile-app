@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -53,14 +54,16 @@ class AppSettingsPage extends GetView<AppSettingsController> {
                 ),
                 gap,
                 _PushRow(scale: s),
-                gap,
-                SettingsSection(
-                  title: 'Transaction History',
-                  scale: s,
-                  expanded: open == AppSettingsController.history,
-                  onToggle: () => controller.toggle(AppSettingsController.history),
-                  child: _History(controller: controller, scale: s),
-                ),
+                if (!isCoachSession) ...<Widget>[
+                  gap,
+                  SettingsSection(
+                    title: 'Transaction History',
+                    scale: s,
+                    expanded: open == AppSettingsController.history,
+                    onToggle: () => controller.toggle(AppSettingsController.history),
+                    child: _History(controller: controller, scale: s),
+                  ),
+                ],
                 SizedBox(height: 16 * s),
                 Semantics(
                   button: true,

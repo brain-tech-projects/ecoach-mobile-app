@@ -34,4 +34,11 @@ abstract final class CoachEndpoints {
   static const String videoUploadInitiate = '/video-upload/initiate';
   static const String videoUploadPartUrls = '/video-upload/part-urls';
   static const String videoUploadComplete = '/video-upload/complete';
+
+  // Coach <-> player invitations.
+  static const String invitePlayer = '/send-email-invitation';
+  static const String myInvitationsCoach = '/my-invitations-coach';
+  static const String myConnectedPlayers = '/my-connected-players';
+  static const String respondInvitationCoach = '/respond-invitation-coach';
+  static const String disconnectPlayer = '/disconnect-player';
 }

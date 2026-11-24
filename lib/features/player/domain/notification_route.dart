@@ -1,3 +1,4 @@
+import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/features/player/domain/entities/player_entities.dart';
 import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart';
@@ -8,8 +9,23 @@ import 'package:ecoach_pro/features/skills/domain/entities/skills_entities.dart'
 /// notification's title / text is used. Returns null when there is nowhere
 /// sensible to go (the tap then does nothing).
 abstract final class NotificationRoute {
-  static String? of(AppNotification n) =>
-      _classify(n.redirectType) ?? _classify('${n.title} ${n.body}');
+  static String? of(AppNotification n) => isCoachSession
+      ? (_coach(n.redirectType) ?? _coach('${n.title} ${n.body}'))
+      : (_classify(n.redirectType) ?? _classify('${n.title} ${n.body}'));
+
+  /// Coach side destinations.
+  static String? _coach(String raw) {
+    final t = raw.toLowerCase().replaceAll(RegExp(r'[_\-]+'), ' ').trim();
+    if (t.isEmpty) return null;
+    bool has(List<String> words) => words.any(t.contains);
+    if (has(<String>['invitation', 'invite', 'request', 'disconnect'])) return AppRoutes.coachInvitations;
+    if (has(<String>['chat', 'message'])) return AppRoutes.coachChats;
+    if (has(<String>['team', 'group'])) return AppRoutes.coachTeams;
+    if (has(<String>['summary', 'progress'])) return AppRoutes.coachSummary;
+    if (has(<String>['train', 'program', 'video', 'session', 'complete'])) return AppRoutes.coachPrograms;
+    if (has(<String>['player'])) return AppRoutes.coachPlayers;
+    return null;
+  }
 
   /// Arguments the target route needs.
   static Object? argumentsFor(String route) =>

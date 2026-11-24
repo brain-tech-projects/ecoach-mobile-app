@@ -7,12 +7,13 @@ class CoachHomeStats {
 }
 
 class CoachPlayer {
-  const CoachPlayer({required this.id, required this.name, this.subtitle = '', this.photoUrl, this.countryCode});
+  const CoachPlayer({required this.id, required this.name, this.subtitle = '', this.photoUrl, this.countryCode, this.email = ''});
   final int id;
   final String name;
   final String subtitle;
   final String? photoUrl;
   final String? countryCode;
+  final String email;
 }
 
 class PlayerStats {
@@ -113,9 +114,12 @@ String formatChatTime(DateTime t) {
 }
 
 class PlayerInvitation {
-  const PlayerInvitation({required this.id, required this.player});
+  const PlayerInvitation({required this.id, required this.player, this.incoming = true});
   final int id;
   final CoachPlayer player;
+
+  /// true = the player asked to join (accept / reject); false = sent by this coach (waiting).
+  final bool incoming;
 }
 
 /// One row of the Coaches Summary table.
