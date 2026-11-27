@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/services/push_service.dart';
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/core/widgets/app_toast.dart';
 import 'package:ecoach_pro/features/coach_portal/data/coach_portal_repository.dart';
@@ -28,6 +29,8 @@ class ChatsController extends GetxController with WidgetsBindingObserver {
   static const Duration _pollEvery = Duration(seconds: 5);
   Timer? _poll;
   StreamSubscription<Map<String, dynamic>>? _push;
+  StreamSubscription<void>? _live;
+  DateTime _lastRefresh = DateTime.fromMillisecondsSinceEpoch(0);
   bool _fetching = false;
   bool _sending = false;
 
@@ -36,7 +39,14 @@ class ChatsController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     input.addListener(() => canSend.value = input.text.trim().isNotEmpty);
     WidgetsBinding.instance.addObserver(this);
-    _poll = Timer.periodic(_pollEvery, (_) => _refreshOpen());
+    _poll = Timer.periodic(_pollEvery, (_) {
+      final live = Get.isRegistered<RealtimeService>() && Get.find<RealtimeService>().connected.value;
+      if (live && DateTime.now().difference(_lastRefresh) < const Duration(seconds: 30)) return;
+      _refreshOpen();
+    });
+    if (Get.isRegistered<RealtimeService>()) {
+      _live = Get.find<RealtimeService>().chatChanged.listen((_) => _refreshOpen());
+    }
     if (Get.isRegistered<PushService>()) {
       final push = Get.find<PushService>();
       _push = push.messages.listen((_) => _refreshOpen());
@@ -105,6 +115,7 @@ class ChatsController extends GetxController with WidgetsBindingObserver {
     final p = selected.value;
     if (p == null || _fetching || _sending || loadingMessages.value) return;
     _fetching = true;
+    _lastRefresh = DateTime.now();
     try {
       final fresh = await _repo.fetchMessages(p.id);
       if (selected.value?.id != p.id) return; // user switched chats meanwhile
@@ -151,6 +162,7 @@ class ChatsController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _poll?.cancel();
     _push?.cancel();
+    _live?.cancel();
     if (Get.isRegistered<PushService>()) Get.find<PushService>().suppressBanner = null;
     input.dispose();
     scroll.dispose();

@@ -4,6 +4,7 @@ import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/network/network_client.dart';
 import 'package:ecoach_pro/core/services/api_service.dart';
 import 'package:ecoach_pro/core/services/push_service.dart';
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 import 'package:ecoach_pro/core/services/session_service.dart';
 import 'package:ecoach_pro/core/storage/local_storage.dart';
 import 'package:ecoach_pro/core/storage/token_storage.dart';
@@ -42,5 +43,7 @@ class InitialBinding extends Bindings {
     final api = Get.put<ApiService>(ApiService(network, session), permanent: true);
     // Push notifications (init is async and never throws).
     Get.put<PushService>(PushService(session, api), permanent: true).init();
+    // Live updates for chat / notifications (Firebase Realtime Database).
+    Get.put<RealtimeService>(RealtimeService(session, api), permanent: true).init();
   }
 }

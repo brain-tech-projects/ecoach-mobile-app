@@ -1,4 +1,5 @@
 import 'package:ecoach_pro/core/services/push_service.dart';
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 import 'package:get/get.dart';
 import 'dart:typed_data';
 
@@ -151,8 +152,14 @@ class ApiService {
     if (Get.isRegistered<PushService>()) {
       await Get.find<PushService>().unregister();
     }
+    if (Get.isRegistered<RealtimeService>()) {
+      await Get.find<RealtimeService>().stop();
+    }
     await _session.clear();
   }
+
+  /// Custom token for Firebase sign-in (live chat / notification signals).
+  Future<ApiResponse<dynamic>> getFirebaseToken() => _network.get(ApiEndpoints.firebaseToken);
 
   /// Registers this phone for push notifications.
   Future<ApiResponse<dynamic>> registerDeviceToken(String token, String platform) => _network.post(

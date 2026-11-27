@@ -13,8 +13,8 @@ abstract final class Env {
   /// (`training-types/abc.webp`); this is the folder they live in.
   static const String mediaBaseUrl = String.fromEnvironment(
     'MEDIA_BASE_URL',
-    // defaultValue: 'https://laravel9.etrueconcept.com/ecoachpro/storage/',
     defaultValue: 'https://laravel9.etrueconcept.com/ecoachpro/storage/',
+    // defaultValue: 'https://laravel9.etrueconcept.com/ecoachpro/storage/',
   );
  
   /// Skill images / videos (relative paths such as `skill-videos/abc.webp`)

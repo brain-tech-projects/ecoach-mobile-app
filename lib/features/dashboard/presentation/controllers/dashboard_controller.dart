@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:ecoach_pro/core/utils/role_extensions.dart';
 import 'package:get/get.dart';
+
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/constants/app_assets.dart';
@@ -40,11 +44,27 @@ class DashboardController extends GetxController {
 
   bool get isLoggedIn => session.isLoggedIn.value;
 
+  StreamSubscription<void>? _live;
+
   @override
   void onReady() {
     super.onReady();
     load();
     loadMember();
+    // New notification: update the bell badge at once.
+    if (Get.isRegistered<RealtimeService>()) {
+      _live = Get.find<RealtimeService>().notificationsChanged.listen((_) async {
+        if (!isLoggedIn) return;
+        final res = await _api.getUnreadCount();
+        if (res.success) unreadCount.value = res.data ?? 0;
+      });
+    }
+  }
+
+  @override
+  void onClose() {
+    _live?.cancel();
+    super.onClose();
   }
 
   Future<void> load() async {

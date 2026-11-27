@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
+
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 
 import 'package:ecoach_pro/app/routes/app_routes.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
@@ -14,10 +18,27 @@ class ChatListController extends GetxController {
   final RxBool loading = true.obs;
   final RxnString errorMessage = RxnString();
 
+  StreamSubscription<void>? _live;
+
   @override
   void onReady() {
     super.onReady();
     load();
+    if (Get.isRegistered<RealtimeService>()) {
+      _live = Get.find<RealtimeService>().chatChanged.listen((_) => _quietReload());
+    }
+  }
+
+  Future<void> _quietReload() async {
+    try {
+      coach.value = await _coaches.fetchConnectedCoach();
+    } catch (_) {}
+  }
+
+  @override
+  void onClose() {
+    _live?.cancel();
+    super.onClose();
   }
 
   Future<void> load() async {

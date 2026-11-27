@@ -32,6 +32,8 @@ dependencies:
   # Shows the banner while the app is open. Keep on 19.x (the code uses its
   # positional initialize()/show() API; 20.x changed it to named parameters).
   flutter_local_notifications: ^19.0.0
+  firebase_auth: ^7.1.0
+  firebase_database: ^13.1.0
 
 dev_dependencies:
   flutter_test:

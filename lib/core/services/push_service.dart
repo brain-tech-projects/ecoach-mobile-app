@@ -5,6 +5,7 @@ import 'dart:io' show Platform;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
@@ -25,7 +26,7 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {
 /// Push notifications (FCM): permission, device-token registration with the
 /// backend (`/device-token`, `/device-token/remove`), foreground banners and
 /// opening the right screen when a notification is tapped.
-class PushService extends GetxService {
+class PushService extends GetxService with WidgetsBindingObserver {
   PushService(this._session, this._api);
 
   final SessionService _session;
@@ -72,6 +73,7 @@ class PushService extends GetxService {
       if (initial != null) _pendingTap = Map<String, dynamic>.from(initial.data);
 
       _ready = true;
+      WidgetsBinding.instance.addObserver(this);
       ever<bool>(_session.isLoggedIn, (loggedIn) {
         if (loggedIn) sync();
       });
@@ -122,26 +124,66 @@ class PushService extends GetxService {
       permissionDenied.value = !granted;
       if (!granted) return;
 
-      // iOS: the APNs token arrives a moment after permission is granted.
-      if (!kIsWeb && Platform.isIOS) {
-        for (var i = 0; i < 6 && await _fcm.getAPNSToken() == null; i++) {
-          await Future<void>.delayed(const Duration(milliseconds: 500));
-        }
-      }
-      final token = await _fcm.getToken();
+      final token = await _fcmToken();
       if (token != null) await _register(token);
     } catch (error, stackTrace) {
       AppLogger.error('Push sync failed', error: error, stackTrace: stackTrace);
     }
   }
 
+  /// The FCM token, or null when it is not available (yet).
+  ///
+  /// iOS only hands out the FCM token after Apple has given the phone an APNs
+  /// token. That can take a few seconds, and never happens on the simulator or
+  /// when the app lacks the Push Notifications capability / a profile with
+  /// push. In that case we quietly give up; `onTokenRefresh` or the next time
+  /// the app comes to the front registers the device.
+  Future<String?> _fcmToken() async {
+    if (!kIsWeb && Platform.isIOS) {
+      String? apns;
+      for (var i = 0; i < 15 && apns == null; i++) {
+        try {
+          apns = await _fcm.getAPNSToken();
+        } catch (_) {}
+        if (apns == null) await Future<void>.delayed(const Duration(seconds: 1));
+      }
+      if (apns == null) {
+        AppLogger.error('Push: no APNs token yet (simulator, missing Push capability or provisioning profile?)');
+        return null;
+      }
+    }
+    try {
+      return await _fcm.getToken();
+    } on FirebaseException catch (error) {
+      if (error.code == 'apns-token-not-set') return null;
+      rethrow;
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Back in the app and still not registered (e.g. permission was just
+    // granted in Settings): try again.
+    if (state == AppLifecycleState.resumed && _registered == null) sync();
+  }
+
+  String? _registering;
+
   Future<void> _register(String token) async {
-    if (!_session.isLoggedIn.value || token == _registered) return;
+    // Already registered, or the same token is being sent right now (sign-in
+    // and token refresh can both ask at once).
+    if (!_session.isLoggedIn.value || token == _registered || token == _registering) return;
+    _registering = token;
+    // Debug builds only: the full token, to paste into Firebase Console >
+    // Messaging > "Send test message". (The network log masks it.)
+    if (kDebugMode) debugPrint('[Push] FCM token: $token');
     try {
       final res = await _api.registerDeviceToken(token, Platform.isIOS ? 'ios' : 'android');
       if (res.success) _registered = token;
     } catch (error, stackTrace) {
       AppLogger.error('Device token registration failed', error: error, stackTrace: stackTrace);
+    } finally {
+      _registering = null;
     }
   }
 
@@ -222,6 +264,7 @@ class PushService extends GetxService {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _events.close();
     super.onClose();
   }

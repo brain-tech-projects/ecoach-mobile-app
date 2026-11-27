@@ -5,6 +5,7 @@ import 'package:ecoach_pro/features/dashboard/presentation/controllers/dashboard
 import 'package:get/get.dart';
 
 import 'package:ecoach_pro/core/services/push_service.dart';
+import 'package:ecoach_pro/core/services/realtime_service.dart';
 
 import 'package:ecoach_pro/features/player/domain/notification_route.dart';
 
@@ -57,10 +58,14 @@ class NotificationsController extends GetxController {
   void dismissBanner() => permissionBlocked.value = false;
 
   StreamSubscription<Map<String, dynamic>>? _push;
+  StreamSubscription<void>? _live;
 
   @override
   void onInit() {
     super.onInit();
+    if (Get.isRegistered<RealtimeService>()) {
+      _live = Get.find<RealtimeService>().notificationsChanged.listen((_) => load());
+    }
     if (Get.isRegistered<PushService>()) {
       final push = Get.find<PushService>();
       permissionBlocked.value = push.permissionDenied.value;
@@ -73,6 +78,7 @@ class NotificationsController extends GetxController {
   @override
   void onClose() {
     _push?.cancel();
+    _live?.cancel();
     super.onClose();
   }
 
