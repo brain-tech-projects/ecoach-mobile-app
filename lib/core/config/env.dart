@@ -5,8 +5,8 @@
 abstract final class Env {
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    // defaultValue: 'https://laravel9.etrueconcept.com/ecoachpro/api',
-    defaultValue: 'https://app.ecoachpro.net/backend/api',
+    defaultValue: 'https://laravel9.etrueconcept.com/ecoachpro/api',
+    // defaultValue: 'https://app.ecoachpro.net/backend/api',
   );
  
   /// Images in API responses come as relative paths
