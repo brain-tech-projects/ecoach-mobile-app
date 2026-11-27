@@ -67,7 +67,8 @@ class TrainingDetailController extends GetxController {
   Future<void> openTrainingComplete(TrainingVideo video) async {
     final i = videos.indexWhere((v) => v.id == video.id);
     final next = (i != -1 && i + 1 < videos.length) ? videos[i + 1].title : null;
-    final changed = await Get.toNamed<bool>(
+    // final changed = 
+    await Get.toNamed<void>(
       AppRoutes.trainingComplete,
       arguments: TrainingCompleteArgs(
         levelId: level.id,
@@ -75,7 +76,7 @@ class TrainingDetailController extends GetxController {
         nextTitle: next,
       ),
     );
-    if (changed == true) await load();
+    // if (changed == true) await load();
   }
 
   /// TODO(api): no "complete video" endpoint yet. When it exists, call it

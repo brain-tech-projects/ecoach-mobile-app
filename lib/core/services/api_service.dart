@@ -331,6 +331,19 @@ class ApiService {
     );
   }
 
+  /// "Training Complete" page: current + next video of the level.
+  Future<ApiResponse<NextTrainingVideo>> getNextTrainingVideo(int trainingVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.nextTrainingVideo,
+      body: <String, dynamic>{'id': trainingVideoId.toString()},
+    );
+    return res.map<NextTrainingVideo>(
+      (data) => data is Map
+          ? NextTrainingVideo.fromJson(Map<String, dynamic>.from(data))
+          : null,
+    );
+  }
+
   /// "Training Complete" on a level video (unlocks the next one after its delay).
   Future<ApiResponse<void>> markTrainingVideoCompleted(int trainingVideoId) async {
     final res = await _network.post(
@@ -338,6 +351,20 @@ class ApiService {
       body: <String, dynamic>{'training_video_id': trainingVideoId},
     );
     return res.map<void>((_) => null);
+  }
+
+  /// "Training Complete" page: "Yes, let's do it!" + Okay.
+  /// Returns `available_in` ("2 days"), null when the next one is open now.
+  Future<ApiResponse<String?>> markVideoCompleted(int trainingVideoId) async {
+    final res = await _network.post(
+      ApiEndpoints.markVideoCompleted,
+      body: <String, dynamic>{'training_video_id': trainingVideoId.toString()},
+    );
+    return res.map<String?>((data) {
+      if (data is! Map) return null;
+      final value = data['available_in']?.toString().trim();
+      return (value == null || value.isEmpty) ? null : value;
+    });
   }
 
   Future<ApiResponse<void>> markSkillVideoCompleted(int skillVideoId) async {
@@ -812,6 +839,27 @@ class ApiService {
         CoachEndpoints.coachSummary,
         query: <String, dynamic>{'start_year': startYear, 'end_year': endYear},
       );
+
+  /// Coaches Summary cell tap: one player's history for one column.
+  /// [type]: skill | session | allocated_training | quiz | tracker | ai_sessions.
+  /// The backend reads the filters from the query string of a POST.
+  Future<ApiResponse<dynamic>> getCoachSummaryDetail({
+    required int playerId,
+    required String type,
+    required int startYear,
+    required int endYear,
+  }) {
+    final query = Uri(queryParameters: <String, String>{
+      'player_id': '$playerId',
+      'type': type,
+      'start_year': '$startYear',
+      'end_year': '$endYear',
+    }).query;
+    return _network.post(
+      '${CoachEndpoints.coachSummaryDetail}?$query',
+      body: const <String, dynamic>{},
+    );
+  }
 
   // Teams
   Future<ApiResponse<dynamic>> getCoachTeams() =>

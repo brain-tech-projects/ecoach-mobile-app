@@ -38,7 +38,21 @@
 //     }
 //   }
 
-//   void selectSeason(String v) {
+//   /// Tap on a count: [column] is the index in [SummaryRow.values]
+  /// (even = all time, odd = last 7 days). Zero opens nothing.
+  // void openDetail(SummaryRow row, int column) {
+  //   if (column < 0 || column >= row.values.length) return;
+  //   if (row.values[column] <= 0) return;
+  //   if (Get.isDialogOpen ?? false) return;
+  //   showSummaryDetailDialog(
+  //     player: row.player,
+  //     type: SummaryDetailType.columns[column ~/ 2],
+  //     lastSevenDays: column.isOdd,
+  //     season: season.value,
+  //   );
+  // }
+
+  // void selectSeason(String v) {
 //     if (v == season.value) return;
 //     season.value = v;
 //     rows.clear();
@@ -57,6 +71,7 @@ import 'package:ecoach_pro/core/network/api_guard.dart';
 import 'package:ecoach_pro/core/utils/logger.dart';
 import 'package:ecoach_pro/features/coach_portal/data/coach_portal_repository.dart';
 import 'package:ecoach_pro/features/coach_portal/domain/coach_portal_entities.dart';
+import 'package:ecoach_pro/features/coach_portal/presentation/widgets/summary_detail_dialog.dart';
 
 class SummaryController extends GetxController with CoachAutoRefresh {
   @override
@@ -97,6 +112,20 @@ class SummaryController extends GetxController with CoachAutoRefresh {
     } finally {
       if (requested == season.value) loading.value = false;
     }
+  }
+
+  /// Tap on a count: [column] is the index in [SummaryRow.values]
+  /// (even = all time, odd = last 7 days). Zero opens nothing.
+  void openDetail(SummaryRow row, int column) {
+    if (column < 0 || column >= row.values.length) return;
+    if (row.values[column] <= 0) return;
+    if (Get.isDialogOpen ?? false) return;
+    showSummaryDetailDialog(
+      player: row.player,
+      type: SummaryDetailType.columns[column ~/ 2],
+      lastSevenDays: column.isOdd,
+      season: season.value,
+    );
   }
 
   void selectSeason(String v) {

@@ -16,6 +16,7 @@ class TrainingCompleteArgs {
   final int videoId;
 
   /// Title of the next video ("Fundamental #3"), null when this is the last.
+  /// Shown until `/next-training-video` answers.
   final String? nextTitle;
 }
 
@@ -31,39 +32,57 @@ class TrainingCompleteController extends GetxController {
   final RxBool completed = true.obs;
   final RxBool isSubmitting = false.obs;
 
+  /// "NEXT UP: ..." title, from `/next-training-video`.
+  late final RxnString nextTitle = RxnString(args.nextTitle);
+  final RxBool isLoadingNext = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadNextVideo();
+  }
+
+  /// Called when the page opens: `POST /next-training-video {id}`.
+  Future<void> loadNextVideo() async {
+    isLoadingNext.value = true;
+    try {
+      final res = await _repository.fetchNextVideo(args.videoId);
+      if (res.success && res.data != null) {
+        nextTitle.value = res.data!.nextTitle;
+      } else if (!res.success) {
+        AppLogger.error('Next training video failed: ${res.message}');
+      }
+    } catch (error, stackTrace) {
+      AppLogger.error('Next training video failed', error: error, stackTrace: stackTrace);
+    } finally {
+      isLoadingNext.value = false;
+    }
+  }
+
   void select({required bool yes}) {
     if (isSubmitting.value) return;
     completed.value = yes;
   }
 
-  /// "Okay": Yes -> mark the video completed and return the days until the
-  /// next one unlocks (null = unlocked now). Not yet -> just go back.
-  Future<({bool done, int? days})> submit() async {
-    if (isSubmitting.value) return (done: false, days: null);
-    if (!completed.value) return (done: false, days: null);
+  /// "Okay" with "Yes, let's do it!": `POST /mark-video-completed`.
+  /// Returns the backend's `available_in` ("2 days"); null = unlocked now.
+  /// "Not yet" -> nothing to save.
+  Future<({bool done, String? availableIn})> submit() async {
+    if (isSubmitting.value) return (done: false, availableIn: null);
+    if (!completed.value) return (done: false, availableIn: null);
 
     isSubmitting.value = true;
     try {
-      final res = await _repository.completeVideo(args.videoId);
+      final res = await _repository.markVideoCompleted(args.videoId);
       if (!res.success) {
         AppToast.error(res.message);
-        return (done: false, days: null);
+        return (done: false, availableIn: null);
       }
-      // The next video's countdown comes from the refreshed list.
-      int? days;
-      final list = await _repository.fetchVideos(args.levelId);
-      if (list.success) {
-        final videos = list.data ?? const [];
-        final i = videos.indexWhere((v) => v.id == args.videoId);
-        if (i != -1 && i + 1 < videos.length && videos[i + 1].locked) {
-          days = videos[i + 1].availableAfterDays;
-        }
-      }
-      return (done: true, days: days);
+      return (done: true, availableIn: res.data);
     } catch (error, stackTrace) {
       AppLogger.error('Training complete failed', error: error, stackTrace: stackTrace);
       AppToast.error('Something went wrong. Please try again.');
-      return (done: false, days: null);
+      return (done: false, availableIn: null);
     } finally {
       isSubmitting.value = false;
     }

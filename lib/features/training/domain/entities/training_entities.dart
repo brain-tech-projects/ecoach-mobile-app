@@ -109,3 +109,32 @@ class TrainingVideo {
   /// `available_after_days`: days after the previous video this one unlocks.
   final int? availableAfterDays;
 }
+
+/// `POST /next-training-video` (the "Training Complete" page).
+@immutable
+class NextTrainingVideo {
+  const NextTrainingVideo({
+    required this.currentId,
+    required this.currentTitle,
+    this.nextId,
+    this.nextTitle,
+  });
+
+  factory NextTrainingVideo.fromJson(Map<String, dynamic> json) {
+    final nextId = _int(json['next_video_id']);
+    final nextTitle = json['next_video_title']?.toString().trim();
+    return NextTrainingVideo(
+      currentId: _int(json['current_video_id']),
+      currentTitle: (json['current_video_title'] ?? '').toString(),
+      nextId: nextId == 0 ? null : nextId,
+      nextTitle: (nextTitle == null || nextTitle.isEmpty) ? null : nextTitle,
+    );
+  }
+
+  final int currentId;
+  final String currentTitle;
+
+  /// Null when the current video is the last one of the level.
+  final int? nextId;
+  final String? nextTitle;
+}

@@ -78,7 +78,7 @@ class SummaryPage extends GetView<SummaryController> {
             final error = controller.errorMessage.value;
             if (error != null) return CoachEmpty(text: error, onRetry: controller.load);
             if (controller.rows.isEmpty) return const CoachEmpty(text: 'No players to summarise yet.');
-            return _Table(rows: controller.rows.toList(), scale: s);
+            return _Table(rows: controller.rows.toList(), scale: s, onCellTap: controller.openDetail);
           }),
         ],
       ),
@@ -171,9 +171,12 @@ class _SeasonDropdownState extends State<_SeasonDropdown> {
 
 /// Sticky PLAYER column + horizontally scrollable stats; stretches on wide screens.
 class _Table extends StatelessWidget {
-  const _Table({required this.rows, required this.scale});
+  const _Table({required this.rows, required this.scale, required this.onCellTap});
   final List<SummaryRow> rows;
   final double scale;
+
+  /// (row, index in [SummaryRow.values]); counts of zero are not tappable.
+  final void Function(SummaryRow row, int column) onCellTap;
 
   @override
   Widget build(BuildContext context) {
@@ -205,19 +208,35 @@ class _Table extends StatelessWidget {
           ),
         );
 
-        Widget valueCell(int v, Color c) => SizedBox(
-          width: cell,
-          height: rowH,
-          child: Center(
-            child: Container(
-              width: 34 * s,
-              height: 34 * s,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: c.withValues(alpha: 0.2), shape: BoxShape.circle),
-              child: Text('$v', style: AppTextStyles.programTitle.scaled(s).copyWith(color: c.withValues(alpha: 0.9), fontSize: 14 * s, fontWeight: FontWeight.w700)),
+        Widget valueCell(int v, Color c, VoidCallback onTap, String label) {
+          final badge = SizedBox(
+            width: cell,
+            height: rowH,
+            child: Center(
+              child: Container(
+                width: 34 * s,
+                height: 34 * s,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(color: c.withValues(alpha: 0.2), shape: BoxShape.circle),
+                child: Text('$v', style: AppTextStyles.programTitle.scaled(s).copyWith(color: c.withValues(alpha: 0.9), fontSize: 14 * s, fontWeight: FontWeight.w700)),
+              ),
             ),
-          ),
-        );
+          );
+          if (v <= 0) return Semantics(label: '$label: 0', excludeSemantics: true, child: badge);
+          return Semantics(
+            button: true,
+            label: '$label: $v',
+            excludeSemantics: true,
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onTap,
+                child: badge,
+              ),
+            ),
+          );
+        }
 
         return ClipRRect(
           borderRadius: BorderRadius.circular(20 * s),
@@ -242,13 +261,26 @@ class _Table extends StatelessWidget {
                               _Avatar(player: row.player, size: 32 * s, scale: s),
                               SizedBox(width: 8 * s),
                               Expanded(
-                                child: Text.rich(
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  TextSpan(children: <InlineSpan>[
-                                    TextSpan(text: row.player.name, style: AppTextStyles.programTitle.scaled(s).copyWith(fontSize: 13 * s, fontWeight: FontWeight.w700)),
-                                    if (coachFlag(row.player.countryCode) != null) TextSpan(text: ' ${coachFlag(row.player.countryCode)}', style: TextStyle(fontSize: 13 * s)),
-                                  ]),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text.rich(
+                                      maxLines: row.player.subtitle.isEmpty ? 3 : 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      TextSpan(children: <InlineSpan>[
+                                        TextSpan(text: row.player.name, style: AppTextStyles.programTitle.scaled(s).copyWith(fontSize: 13 * s, fontWeight: FontWeight.w700)),
+                                        if (coachFlag(row.player.countryCode) != null) TextSpan(text: ' ${coachFlag(row.player.countryCode)}', style: TextStyle(fontSize: 13 * s)),
+                                      ]),
+                                    ),
+                                    if (row.player.subtitle.isNotEmpty)
+                                      Text(
+                                        row.player.subtitle,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyles.programDesc.scaled(s).copyWith(fontSize: 11 * s),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -280,7 +312,13 @@ class _Table extends StatelessWidget {
                             color: _rowBg,
                             child: Row(
                               children: <Widget>[
-                                for (var i = 0; i < cols; i++) valueCell(row.values[i], _groups[i ~/ 2].color),
+                                for (var i = 0; i < cols; i++)
+                                  valueCell(
+                                    row.values[i],
+                                    _groups[i ~/ 2].color,
+                                    () => onCellTap(row, i),
+                                    '${_groups[i ~/ 2].title} ${i.isOdd ? 'last 7 days' : 'all time'}',
+                                  ),
                                 SizedBox(
                                   width: allocW,
                                   height: rowH,

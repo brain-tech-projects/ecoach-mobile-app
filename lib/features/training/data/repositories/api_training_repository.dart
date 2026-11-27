@@ -19,4 +19,12 @@ class ApiTrainingRepository implements TrainingRepository {
   @override
   Future<ApiResponse<void>> completeVideo(int videoId) =>
       _api.markTrainingVideoCompleted(videoId);
+
+  @override
+  Future<ApiResponse<NextTrainingVideo>> fetchNextVideo(int videoId) =>
+      _api.getNextTrainingVideo(videoId);
+
+  @override
+  Future<ApiResponse<String?>> markVideoCompleted(int videoId) =>
+      _api.markVideoCompleted(videoId);
 }

@@ -19,7 +19,6 @@ class TrainingCompletePage extends GetView<TrainingCompleteController> {
     final r = Responsive.of(context);
     final s = r.scale;
     final hPad = r.gutter + 24 * s;
-    final next = controller.args.nextTitle;
 
     TextStyle text(double size, FontWeight w, Color c, {double? spacing, double? height}) =>
         TextStyle(
@@ -38,24 +37,28 @@ class TrainingCompletePage extends GetView<TrainingCompleteController> {
         padding: EdgeInsets.fromLTRB(hPad, 28 * s, hPad, 24 * s),
         child: Column(
           children: <Widget>[
-            if (next != null) ...<Widget>[
-              Row(
-                children: <Widget>[
-                  Container(width: 16 * s, height: 2 * s, color: AppColors.accent),
-                  SizedBox(width: 14 * s),
-                  Flexible(
-                    child: Text(
-                      'NEXT UP: ${next.toUpperCase()}',
-                      textAlign: TextAlign.center,
-                      style: text(20, FontWeight.w700, AppColors.white, spacing: 1.2),
+            Obx(() {
+              final next = controller.nextTitle.value;
+              if (next == null) return const SizedBox.shrink();
+              return Padding(
+                padding: EdgeInsets.only(bottom: 20 * s),
+                child: Row(
+                  children: <Widget>[
+                    Container(width: 16 * s, height: 2 * s, color: AppColors.accent),
+                    SizedBox(width: 14 * s),
+                    Flexible(
+                      child: Text(
+                        'NEXT UP: ${next.toUpperCase()}',
+                        textAlign: TextAlign.center,
+                        style: text(20, FontWeight.w700, AppColors.white, spacing: 1.2),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 14 * s),
-                  Container(width: 16 * s, height: 2 * s, color: AppColors.accent),
-                ],
-              ),
-              SizedBox(height: 20 * s),
-            ],
+                    SizedBox(width: 14 * s),
+                    Container(width: 16 * s, height: 2 * s, color: AppColors.accent),
+                  ],
+                ),
+              );
+            }),
             Text(
               'Have you completed this training?',
               textAlign: TextAlign.center,
@@ -127,7 +130,9 @@ class TrainingCompletePage extends GetView<TrainingCompleteController> {
     }
     final result = await controller.submit();
     if (!result.done || !context.mounted) return;
-    await Get.dialog<void>(_AllSetDialog(days: result.days, scale: Responsive.of(context).scale));
+    await Get.dialog<void>(
+      _AllSetDialog(availableIn: result.availableIn, scale: Responsive.of(context).scale),
+    );
     // Back to the level; it reloads to show the next video's countdown.
     Get.back<bool>(result: true);
   }
@@ -196,17 +201,20 @@ class _Option extends StatelessWidget {
 
 /// "You're all set!" popup after confirming.
 class _AllSetDialog extends StatelessWidget {
-  const _AllSetDialog({required this.days, required this.scale});
+  const _AllSetDialog({required this.availableIn, required this.scale});
 
-  final int? days;
+  /// Backend's `available_in` ("2 days"); null = unlocked now.
+  final String? availableIn;
   final double scale;
 
   @override
   Widget build(BuildContext context) {
     final s = scale;
-    final message = (days == null || days! <= 0)
+    final wait = availableIn;
+    final unlockedNow = wait == null || RegExp(r'^0+(\D|$)').hasMatch(wait);
+    final message = unlockedNow
         ? 'Your next training session is now unlocked.'
-        : 'Your next training session will be unlocked in $days ${days == 1 ? 'day' : 'days'}.';
+        : 'Your next training session will be unlocked in $wait.';
 
     return Dialog(
       backgroundColor: Colors.transparent,

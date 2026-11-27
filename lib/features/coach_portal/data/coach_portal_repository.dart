@@ -278,7 +278,8 @@ class CoachPortalRepository {
           player: CoachPlayer(
             id: _int(r['player_id']),
             name: _str(r['full_name']).isNotEmpty ? _str(r['full_name']) : _str(r['nickname']),
-            photoUrl: Env.skillMediaUrl(r['avatar'] as String?),
+            subtitle: <String>[_str(r['my_position']), _str(r['my_club'])].where((e) => e.isNotEmpty).join(' . '),
+            photoUrl: Env.skillMediaUrl((r['avatar'] ?? r['profile_photo']) as String?),
             countryCode: r['country_code'] as String?,
           ),
           // Skills, Sessions, Training, Quizzes, Tracker, AI Sessions (all time, last 7 days)
@@ -293,6 +294,50 @@ class CoachPortalRepository {
           allocatedCompleted: r['is_all_training_completed'] == true,
         ),
     ];
+  }
+
+  /// History behind one Coaches Summary cell (`coach-summary-detail`).
+  Future<SummaryDetail> fetchSummaryDetail({required int playerId, required SummaryDetailType type, required String season}) async {
+    final y = _seasonYears(season);
+    final res = requireSuccess(
+      await _api.getCoachSummaryDetail(playerId: playerId, type: type.apiValue, startYear: y.start, endYear: y.end),
+    );
+    final d = res.data is Map ? Map<String, dynamic>.from(res.data as Map) : const <String, dynamic>{};
+    final p = d['player'];
+    final h = d['history'] is Map ? Map<String, dynamic>.from(d['history'] as Map) : const <String, dynamic>{};
+    List<SummaryHistoryItem> parse(Object? v) => <SummaryHistoryItem>[for (final m in _maps(v)) _historyItem(type, m)];
+    return SummaryDetail(
+      player: p is Map ? _player(Map<String, dynamic>.from(p)) : null,
+      allTime: parse(h['all_time']),
+      lastSevenDays: parse(h['last_seven_days']),
+    );
+  }
+
+  static SummaryHistoryItem _historyItem(SummaryDetailType type, Map<String, dynamic> m) {
+    final title = (switch (type) {
+      SummaryDetailType.skill => _str(m['skill_name']),
+      SummaryDetailType.session || SummaryDetailType.allocatedTraining => _str(m['training_name']),
+      SummaryDetailType.quiz => _str(m['quiz_name']),
+      SummaryDetailType.tracker => _str(m['opponent_team']).trim().isEmpty ? 'Match' : 'vs ${_str(m['opponent_team']).trim()}',
+      SummaryDetailType.aiSessions => _str(m['request']),
+    }).trim();
+    return SummaryHistoryItem(
+      title: title.isEmpty ? '-' : title,
+      completedAt: _summaryTime(m['completed_at']),
+      drills: type == SummaryDetailType.aiSessions
+          ? <SummaryDrill>[
+              for (final dr in _maps(m['drills']))
+                SummaryDrill(title: _str(dr['title']), completed: dr['completed'] == true || dr['completed'] == 1),
+            ]
+          : const <SummaryDrill>[],
+    );
+  }
+
+  /// "2026-11-20 09:53:46" is shown as sent; ISO UTC ("...Z") is shown in local time.
+  static DateTime? _summaryTime(Object? v) {
+    final t = DateTime.tryParse(_str(v).trim());
+    if (t == null) return null;
+    return t.isUtc ? t.toLocal() : t;
   }
 
   // ---- Programs ---------------------------------------------------------------
